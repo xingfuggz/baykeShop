@@ -1,0 +1,1 @@
+from baykeshop.module.product import models as product
