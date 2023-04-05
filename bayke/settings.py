@@ -20,12 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#($0@z-)#&skc_qm-%p17b_isl8t+64q2%z6bd$c)h^h=)l2%+'
+SECRET_KEY = 'django-insecure-bmbh#)!a+mc7qx0qf+gd4ip*_=el0yj%4dw2uqy_)+o95_m5i1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -37,20 +37,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
-    'django.contrib.flatpages',
-    'django.contrib.sitemaps',
-    'baykeshop.apps.BaykeshopConfig'
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'corsheaders',
+    'baykeshop'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # 处理跨域
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # 'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -65,7 +65,6 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.template.context_processors.media',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -78,6 +77,13 @@ WSGI_APPLICATION = 'bayke.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 DATABASES = {
     'default': {
@@ -112,9 +118,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'zh-hans'
+LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Shanghai'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -145,21 +151,32 @@ CACHES = {
 }
 
 
-# 站点框架 site
-# https://docs.djangoproject.com/zh-hans/4.1/ref/contrib/sites/#module-django.contrib.sites
-SITE_ID = 1
+# 跨域配置，设置信任站点
+if DEBUG:
+    # 开发模式下允许所有跨域行为
+    CORS_ALLOW_ALL_ORIGINS = True 
+else:
+    # CORS_ORIGIN_WHITELIST = (
+    #     # 配置你信任的站点列表。域名以http://或者https://开头
+    #     'http://127.0.0.1:8000', 
+    # )
+    CORS_ALLOWED_ORIGINS = [
+        'http://127.0.0.1:8000', 
+    ]
+    
 
+REST_FRAMEWORK = {
+    
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
+    # )
+    
+    'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S'
+}
 
-# 邮箱发送后端配置
-# https://docs.djangoproject.com/zh-hans/4.1/topics/email/
-EMAIL_HOST = 'smtp.qq.com'                # 用于发送电子邮件的主机。
-EMAIL_HOST_USER = "xxx.qq.com"            # 自己的邮箱地址
-EMAIL_HOST_PASSWORD = "xxxxxxx"           # 自己的邮箱密码，或授权码，一般现在的邮箱都需要授权码
-EMAIL_PORT = 465                          # 用于中定义的SMTP服务器的端口
-EMAIL_USE_SSL = True                      # 是否使用隐式的安全连接
+from datetime import timedelta
 
-# 邮件控制台后端
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-# 邮件测试后端
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
+}

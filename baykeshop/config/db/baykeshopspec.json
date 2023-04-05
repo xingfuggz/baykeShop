@@ -1,1 +1,0 @@
-[{"model": "baykeshop.baykeshopspec", "pk": 1, "fields": {"add_date": "2023-03-16T06:06:24.314Z", "pub_date": "2023-03-16T06:06:24.314Z", "is_del": false, "name": "版本"}}, {"model": "baykeshop.baykeshopspec", "pk": 2, "fields": {"add_date": "2023-03-16T06:07:19.801Z", "pub_date": "2023-03-16T06:07:19.801Z", "is_del": false, "name": "颜色"}}]
