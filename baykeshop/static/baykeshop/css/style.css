@@ -1,0 +1,46 @@
+body{
+    font-size: 14px;
+    display: flex; 
+    flex-direction: column;
+    height: 100vh;
+}
+.full-height{
+    height: 100%;
+} 
+#main{
+    flex: 1; 
+    background-color: rgba(236, 236, 236, 0.447);
+}
+
+#header-top, #header-top a, .usertools span{ 
+    font-size: 12px;
+    color: rgb(137, 137, 137);
+}
+.usertools a{
+    color: black !important;
+}
+
+#header-top .head-top-right a:hover, .usertools span:hover{color: aliceblue;}
+#header-top .head-top-right .cart{
+    background-color: rgba(194, 194, 194, 0.312);
+    line-height: 40px;
+    display: inline-block;
+    padding: 0 20px;
+}
+
+.spu-box:hover{
+    box-shadow: 0 0 15px rgba(210, 245, 255, 0.558);
+    /* border-radius: 3px; */
+    transition: all .5s;
+}
+
+#notification{
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    z-index: 1000;
+}
+/* login */
+.login-box{
+    min-width: 500px;
+}

@@ -25,6 +25,17 @@ class BaseModelMixin(models.Model):
         ordering = ['-pub_date']
 
 
+class CategoryMixin(BaseModelMixin):
+    """ 分类模型基类 """
+    name = models.CharField(_("分类名称"), max_length=50)
+    icon = models.CharField(_("分类图标"), max_length=50, blank=True, default="")
+    desc = models.CharField(_("描述"), max_length=150, blank=True, default="")
+    keywords = models.CharField(_("关键字"), max_length=150, blank=True, default="")
+    
+    class Meta(BaseModelMixin.Meta):
+        abstract = True
+
+
 class ArticleMixin(BaseModelMixin):
     """ 内容基类视图 """
     title = models.CharField(_("标题"), max_length=100)

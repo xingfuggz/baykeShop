@@ -2,6 +2,23 @@ from django.db import models
 from baykeshop.models import _abs
 
 
+class BaykeCategory(_abs.CategoryMixin):
+    """Model definition for BaykeCategory."""
+    
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, blank=True, null=True)
+    pic = models.ImageField(_abs._("封面图"), upload_to="product/category/", max_length=200)
+    is_nav = models.BooleanField(default=False, verbose_name=_abs._("是否导航"))
+
+    # TODO: Define fields here
+
+    class Meta(_abs.BaseModelMixin.Meta):
+        verbose_name = _abs._("分类")
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
+
+
 class BaykeSpec(_abs.BaseModelMixin):
     """Model definition for BaykeSpec."""
     name = models.CharField(_abs._("规格"), max_length=50)
@@ -31,7 +48,9 @@ class BaykeSpecOptions(_abs.BaseModelMixin):
 
 class BaykeGoods(_abs.GoodsMixin):
     """Model definition for BaykeProduct."""
-
+    
+    categorys = models.ManyToManyField(BaykeCategory, blank=True, verbose_name=_abs._("分类"))
+    
     # TODO: Define fields here
 
     class Meta(_abs.BaseModelMixin.Meta):
