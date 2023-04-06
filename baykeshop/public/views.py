@@ -5,17 +5,6 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from baykeshop.models import product
-from baykeshop.public.serializers import BaykeCategorySerializer
-
-
-class CategoryMixins:
-    
-    def get_parent_category(self):
-        return product.BaykeCategory.objects.filter(parent__isnull=True, is_nav=True)     
-    
-    def get_category(self):
-        pass
-
 
 
 class HomeView(GenericAPIView):

@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
+from django.contrib.sites.models import Site
+from django.contrib.sites.managers import CurrentSiteManager
 
 from baykeshop.models import tinymce_field
 
@@ -16,9 +18,17 @@ class BaseModelMixin(models.Model):
     
     add_date = models.DateTimeField(auto_now_add=True)
     pub_date = models.DateTimeField(auto_now=True)
+    site = models.ForeignKey(
+        Site, 
+        on_delete=models.CASCADE, 
+        blank=True, 
+        null=True, 
+        help_text=_("关联站点，如果选择，该信息仅在指定站点显示")
+    )
     is_del = models.BooleanField(default=False, editable=False)
     
     objects = BaseManager()
+    on_site = CurrentSiteManager()
 
     class Meta:
         abstract = True

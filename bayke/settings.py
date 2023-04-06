@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
@@ -46,7 +47,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # 处理跨域
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',      # 站点框架中间件
+    'corsheaders.middleware.CorsMiddleware',                      # 处理跨域
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -149,6 +151,10 @@ CACHES = {
         'LOCATION': 'redis://127.0.0.1:6379',
     }
 }
+
+# 启用站点框架
+# https://docs.djangoproject.com/zh-hans/4.1/ref/contrib/sites/
+SITE_ID = 1
 
 
 # 跨域配置，设置信任站点

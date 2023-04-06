@@ -3,6 +3,12 @@ from django.conf import settings
 
 bayke_defaults = {
     
+    "SITE_HEADER": "BaykeShop",
+    "SITE_TITLE": "BaykeShop",
+    
+    # 后台自定义菜单开关
+    "ADMIN_MENUS": True,
+    
     # 支付宝相关配置
     "ALIPAY_PRIVATE_KEY": settings.BASE_DIR / "baykeshop/module/payment/alipay/keys/app_private_key.pem",
     "ALIPAY_PUBLIC_KEY": settings.BASE_DIR / "baykeshop/module/payment/alipay/keys/app_public_key.pem",
@@ -12,11 +18,11 @@ bayke_defaults = {
     "ALIPAY_SIGN_TYPE": "RSA2",  # RSA 或者 RSA2
     "ALIPAY_DEBUG": settings.DEBUG,
     "ALIPAY_TIMOUT": 15,
-    
-     # 支付宝回调页模版，一个模版路径字符串
+    # 支付宝回调页模版，一个模版路径字符串
     "ALIPAYNOTIFY_TEMPLATE_NAME": None,
     
     
+    # tinymce富文本编辑器默认配置
     "TINYMCE_CDN": False,
     "TINYMCE_API_KEY": "no-api-key",   # 当TINYMCE_CDN未True时，必须设置该项为你的api-key,否则不能正确加载
     "TINYMCE_DEFAULTS": {
