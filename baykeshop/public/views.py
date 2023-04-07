@@ -26,11 +26,11 @@ class HomeView(GenericAPIView):
         return Response(datas, template_name="baykeshop/index.html")
     
     def get_queryset(self):
-        parent_cates = product.BaykeCategory.objects.filter(parent__isnull=True, is_nav=True).values()
+        parent_cates = product.BaykeCategory.objects.filter(parent__isnull=True, is_nav=True)
         for parent in parent_cates:
-            parent['products'] = list(product.BaykeGoods.objects.filter(
+            parent.products = list(product.BaykeGoods.objects.filter(
                 categorys__in=parent.baykecategory_set.all()).distinct().values())
-        return parent_cates
+        return parent_cates.values()
     
     
 
