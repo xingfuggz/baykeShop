@@ -26,4 +26,18 @@ class BaseModelAdmin(admin.ModelAdmin):
         h1 = reverse(f'baykeadmin:{obj._meta.app_label}_{obj._meta.model_name}_change', args=(obj.pk, ))
         h2 = reverse(f'baykeadmin:{obj._meta.app_label}_{obj._meta.model_name}_delete', args=(obj.pk, ))
         return format_html(hs, h1, h2)
+     
+    def get_exclude(self, request, obj=None):
+        return ['site'] if self.exclude is None else [*list(super().get_exclude(request, obj)), 'site']
     
+
+class TabularInline(admin.TabularInline):
+    
+    def get_exclude(self, request, obj=None):
+        return ['site'] if self.exclude is None else [*list(self.exclude), 'site']
+    
+
+class StackedInline(admin.StackedInline):
+    
+    def get_exclude(self, request, obj=None):
+        return ['site'] if self.exclude is None else [*list(self.exclude), 'site']

@@ -70,6 +70,7 @@ class ArticleMixin(BaseModelMixin):
 class GoodsMixin(ArticleMixin):
     """ 商品 """
     after_sale = tinymce_field.TinymceField(_("售后服务"), blank=True, default="")
+    pic = models.ImageField(_("主图"), upload_to="pic/%Y/", max_length=200)
     
     class Meta:
         abstract = True

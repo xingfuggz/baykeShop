@@ -24,7 +24,7 @@ class BaykeCategory(_abs.CategoryMixin):
     def get_cates(cls):
         cates = cls.objects.filter(is_nav=True, parent__isnull=True)
         for cate in cates:
-            cate.sub_cates = cate.baykeshopcategory_set.filter(is_nav=True)
+            cate.sub_cates = cate.baykecategory_set.filter(is_nav=True)
         return cates
     
     def get_absolute_url(self):
@@ -82,7 +82,7 @@ class BaykeProduct(_abs.ProductMixin):
     # TODO: Define fields here
 
     class Meta:
-        verbose_name = _abs._("SKU")
+        verbose_name = _abs._("商品规格")
         verbose_name_plural = verbose_name
 
     def __str__(self):

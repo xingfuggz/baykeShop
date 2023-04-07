@@ -20,7 +20,7 @@ class Tinymce(forms.Textarea):
         default_render = super().render(name, value, attrs, renderer)
         tinymce_default = TinyConfig.format(json.dumps({
             'selector': f'textarea#{attrs["id"]}', 
-            'language': 'zh-Hans' if settings.LANGUAGE_CODE == 'zh-hans' else '',
+            'language': 'zh-Hans' if settings.LANGUAGE_CODE == 'zh-hans' else 'en-us',
             **self.tinymce_kwargs
         }, ensure_ascii=False))
         return mark_safe(default_render+tinymce_default)
@@ -33,7 +33,7 @@ class Tinymce(forms.Textarea):
         
         js = (
             tinymce_js_url, 
-            "baykeadmin/tinymce/langs/zh-Hans.js",
+            # ("baykeadmin/tinymce/langs/zh-Hans.js" if settings.LANGUAGE_CODE == 'zh-hans' else '')
         )
 
 

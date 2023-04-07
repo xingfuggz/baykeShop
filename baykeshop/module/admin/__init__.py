@@ -6,7 +6,7 @@ from baykeshop.module.admin.options import BaseModelAdmin
 from baykeshop.public.sites import bayke_site
 from baykeshop.public.models import BaykeBanner
 from baykeshop.module.product import models as product
-
+from baykeshop.module.product import admin as product_admin
 
 
 @admin.register(BaykeBanner, site=bayke_site)
@@ -20,4 +20,4 @@ class BaykeShopBannerAdmin(BaseModelAdmin):
     class Media:
         css = {'all': ['baykeadmin/css/ordersku.css']}
         
-bayke_site.register(product.BaykeCategory)
+
