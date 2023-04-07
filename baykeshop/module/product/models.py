@@ -1,4 +1,6 @@
 from django.db import models
+from django.urls import reverse
+
 from baykeshop.models import _abs
 
 
@@ -17,6 +19,16 @@ class BaykeCategory(_abs.CategoryMixin):
 
     def __str__(self):
         return self.name
+    
+    @classmethod
+    def get_cates(cls):
+        cates = cls.objects.filter(is_nav=True, parent__isnull=True)
+        for cate in cates:
+            cate.sub_cates = cate.baykeshopcategory_set.filter(is_nav=True)
+        return cates
+    
+    def get_absolute_url(self):
+        return reverse('baykeshop:cate_detail', kwargs={'pk': self.pk})
 
 
 class BaykeSpec(_abs.BaseModelMixin):

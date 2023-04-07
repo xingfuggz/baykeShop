@@ -1,1 +1,17 @@
-asdasda
+{% extends 'baykeshop/base_site.html' %}
+
+{% load static bayke_tags %}
+
+{% block title %}
+    全开源Python django商城系统，拜客商城系统！
+{% endblock %}
+    
+
+{% block header %}
+    {% navbar_result %}
+{% endblock %}
+    
+{% block banners %}
+    {% carousel banners %}
+{% endblock %}
+    

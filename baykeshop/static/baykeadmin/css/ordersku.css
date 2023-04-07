@@ -1,0 +1,23 @@
+#result_list td, th {
+    vertical-align: middle;
+}
+.original p{
+    margin-bottom: 15px;
+}
+.orderSKU{
+    display: flex;
+    align-items: center;
+}
+.orderSKU img{
+    width: 32px;
+    height: 32px;
+    margin-right: 5px;
+}
+.orderSKU p{
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+}
+.orderSKU .spec{
+    color: #5e5e5e;
+}

@@ -1,0 +1,62 @@
+<div id="navbar">
+    <template>
+        <b-navbar spaced shadow transparent wrapper-class="{% block navclass %}container{% endblock %}">
+            <template #brand>
+                <b-navbar-item tag="div">
+                    {% block navbar_logo %}
+                    <h1 class="is-size-4 has-text-weight-medium">{{ logo }}</h1>
+                    {% endblock %} 
+                </b-navbar-item>
+            </template>
+            <template #start>
+                {% block navbar_start %}
+                <b-navbar-item href="{% url 'baykeshop:home' %}">
+                    首页
+                </b-navbar-item>
+                <b-navbar-item href="">
+                    全部分类
+                </b-navbar-item>
+                <b-navbar-item href="">
+                    商城资讯
+                </b-navbar-item>
+                {% for cate in navs %}
+                <b-navbar-dropdown label="{{ cate.name }}">
+                    {% for sub_cate in cate.sub_cates %}
+                    <b-navbar-item href="">
+                        {{ sub_cate.name }}
+                    </b-navbar-item>
+                    {% endfor %}
+                </b-navbar-dropdown>
+                {% endfor %}
+                {% endblock %}             
+            </template>
+    
+            <template #end>
+                {% block navbar_end %}
+                <b-navbar-item tag="div">
+                    <form action="" method="get">
+                        {% csrf_token %}
+                        搜索
+                    </form>
+                </b-navbar-item>
+                {% endblock %} 
+            </template>
+        </b-navbar>
+    </template>
+</div>
+
+<script>
+    var navbar = new Vue({
+        el: '#navbar',
+        delimiters: ['{$', '$}'],
+        data: {},
+        methods: {
+            toastMessage(type, message){
+                return this.$buefy.toast.open({
+                    message: message,
+                    type: type
+                })
+            },
+        }
+    })
+</script>

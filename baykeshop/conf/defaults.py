@@ -5,9 +5,10 @@ bayke_defaults = {
     
     "SITE_HEADER": "BaykeShop",
     "SITE_TITLE": "BaykeShop",
+    "PC_LOGO": "BaykeShop",
     
     # 后台自定义菜单开关
-    "ADMIN_MENUS": True,
+    "ADMIN_MENUS": False,
     
     # 支付宝相关配置
     "ALIPAY_PRIVATE_KEY": settings.BASE_DIR / "baykeshop/module/payment/alipay/keys/app_private_key.pem",

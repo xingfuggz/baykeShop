@@ -13,13 +13,12 @@
 from django.contrib import admin
 from django.db.models import Q
 from django.contrib.auth.models import Permission
-from django.http.response import HttpResponseRedirect
 from django.utils.text import capfirst
 from django.urls import NoReverseMatch, reverse
 from django.contrib import messages
 
 from baykeshop.conf import bayke_settings
-from baykeshop.models import admin as bayke_admin
+from baykeshop.module.admin.models import BaykeMenu
 
 
 class BaykeAdminSite(admin.AdminSite):
@@ -40,7 +39,7 @@ class BaykeAdminSite(admin.AdminSite):
     def _build_menus(self, request):
         request.breadcrumbs = None
         # 获取当前用户拥有的权限菜单
-        menus_queryset = bayke_admin.BaykeMenu.objects.filter(
+        menus_queryset = BaykeMenu.objects.filter(
             Q(baykepermission__is_show=True)&
             (Q(baykepermission__permission__group__user=request.user)|
             Q(baykepermission__permission__user=request.user))
@@ -49,7 +48,7 @@ class BaykeAdminSite(admin.AdminSite):
         # 如果为超管则赋予所有权限
         if self.has_permission(request) and request.user.is_superuser:
             perms_ids = Permission.objects.values_list('id', flat=True)
-            menus_queryset = bayke_admin.BaykeMenu.objects.filter(
+            menus_queryset = BaykeMenu.objects.filter(
                 baykepermission__is_show=True,
                 baykepermission__permission__id__in=list(perms_ids)
             ).distinct()

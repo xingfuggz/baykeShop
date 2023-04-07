@@ -1,7 +1,9 @@
 from django.template import Library
 
-from baykeshop.models import admin
 from baykeshop.conf import bayke_settings
+from baykeshop.models import admin, product
+from baykeshop.conf import bayke_settings
+from baykeshop.models.context import BaykeModelContext
 
 
 register = Library()
@@ -25,3 +27,16 @@ def breadcrumbs(request, opts=None):
         return request.breadcrumbs
     else:
         return None
+    
+
+@register.inclusion_tag("baykeshop/public/banners.html")
+def carousel(banners:list):
+    return {"banners": banners}
+
+
+@register.inclusion_tag("baykeshop/public/navbar.html")
+def navbar_result():
+    return {
+        'logo': bayke_settings.PC_LOGO,
+        'navs': product.BaykeCategory.get_cates()
+    } 

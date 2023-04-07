@@ -1,0 +1,27 @@
+{% load i18n static %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}-baykeShop</title>
+    <link rel="stylesheet" href="{% block stylesheet %}{% static "baykeshop/css/buefy.min.css" %}{% endblock %}">
+    <link rel="stylesheet" href="{% static 'baykeshop/css/style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.8.55/css/materialdesignicons.min.css">
+    <script src="{% static 'baykeshop/js/vue.js' %}"></script>
+    <script src="{% static 'baykeshop/js/buefy.min.js' %}"></script>
+    {% block extrastyle %}{% endblock %}
+</head>
+<body>
+
+    {% block header %}{% endblock %}
+
+    {% block banners %}{% endblock %}
+
+    {% block container %}{% endblock %}
+
+    {% block footer %}{% endblock %}
+        
+</body>
+</html>

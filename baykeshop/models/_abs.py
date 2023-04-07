@@ -35,6 +35,16 @@ class BaseModelMixin(models.Model):
         ordering = ['-pub_date']
 
 
+class ImageMixin(BaseModelMixin):
+    """ 图片基类 """
+    img = models.ImageField(_("图片"), upload_to="upload/", max_length=200)
+    desc = models.CharField(_("图片说明"), max_length=150, blank=True, default="")
+    # TODO
+
+    class Meta(BaseModelMixin.Meta):
+        abstract = True
+
+
 class CategoryMixin(BaseModelMixin):
     """ 分类模型基类 """
     name = models.CharField(_("分类名称"), max_length=50)
