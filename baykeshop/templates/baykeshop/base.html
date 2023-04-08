@@ -14,14 +14,17 @@
     {% block extrastyle %}{% endblock %}
 </head>
 <body>
+    <div id="header">
+        {% block header %}{% endblock %}
+    </div>
+    <div id="main">
+        {% block banners %}{% endblock %}
+        {% block container %}{% endblock %}
+    </div>
 
-    {% block header %}{% endblock %}
-
-    {% block banners %}{% endblock %}
-
-    {% block container %}{% endblock %}
-
-    {% block footer %}{% endblock %}
-        
+    <div id="footer">
+        {% block footer %}asdasd{% endblock %}
+    </div> 
+            
 </body>
 </html>

@@ -40,3 +40,8 @@ def navbar_result():
         'logo': bayke_settings.PC_LOGO,
         'navs': product.BaykeCategory.get_cates()
     } 
+    
+
+@register.inclusion_tag("baykeshop/public/spu_box.html")
+def spu_box(spu):
+    return {"spu": spu}
