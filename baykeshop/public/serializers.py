@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from baykeshop.models import public
 from baykeshop.models import product
+# from baykeshop.module.product.serializers import BaykeCategorySerializer
 
 
 class BaykeBannerSerializer(serializers.ModelSerializer):
@@ -20,6 +21,7 @@ class BaykeProductSerializer(serializers.ModelSerializer):
 class BaykeGoodsSerializer(serializers.ModelSerializer):
     
     baykeproduct_set = BaykeProductSerializer(many=True)
+    # categorys = BaykeCategorySerializer(many=True)
     
     class Meta:
         model = product.BaykeGoods

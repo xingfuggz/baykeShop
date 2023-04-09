@@ -1,0 +1,66 @@
+<div id="header-top" class="has-background-black-bis">
+    <div class="is-flex is-justify-content-space-between is-align-items-center container" style="height:40px">
+        <div class="head-top-left">
+            {% block head_top_left %}
+            欢迎您光临本店！
+            {% endblock %}  
+        </div>
+        <div class="head-top-right">
+            {% block head_top_right %}
+            {% if request.user.is_authenticated %}
+            <div class="dropdown is-hoverable usertools">
+                <div class="dropdown-trigger">
+                  <button class="button is-radiusless is-shadowless" aria-haspopup="true" aria-controls="dropdown-menu4" 
+                    style="background: none; border:none">
+                    <span>欢迎您，{{ request.user.username }}</span>
+                    <span class="icon is-small">
+                      <i class="mdi mdi-menu-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu4" role="menu" style="z-index:1000">
+                  <div class="dropdown-content">
+                    <a class="dropdown-item" href="">
+                        <span class="mdi mdi-account-box-outline"></span>
+                        个人中心
+                    </a>
+                    <a class="dropdown-item" href="">
+                        <span class="mdi mdi-basket-plus-outline"></span>
+                        我的订单
+                    </a>
+                    <div class=" dropdown-divider"></div>
+                    <a class="dropdown-item" href="">
+                        <span class="mdi mdi-logout"></span>
+                        退出
+                    </a>
+                  </div>
+                </div>
+            </div>
+            {% else %}
+            <a class="mr-2" href="" target="_top">
+                <span class="icon"><i class="mdi mdi-login"></i></span>
+                登录
+            </a> <span class="is-size-6">|</span>
+            <a class="mr-3" href="" target="_top">
+                <span class="icon"><i class="mdi mdi-cash-register"></i></span>
+                注册
+            </a>
+            {% endif %}
+            <a class="cart" href="" id="cartNum">
+                <span class="icon"><i class="mdi mdi-cart-check"></i></span>
+                购物车(0)
+            </a>
+            {% endblock %}
+        </div>
+    </div>
+</div>
+
+<script>
+    var cartNum = new Vue({
+        el: '#cartNum',
+        delimiters: ['{$', '$}'],
+        data: {
+           
+        }
+    })
+</script>

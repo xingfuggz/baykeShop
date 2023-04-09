@@ -1,0 +1,13 @@
+from django.urls import path
+
+from rest_framework.routers import DefaultRouter
+
+from baykeshop.module.product import views
+
+
+router = DefaultRouter()
+
+router.register('', views.BaykeGoodsViewSet, basename="goods")
+# router.register('cates', views.BaykeCategoryViewSet, basename="cates")
+
+urlpatterns = router.urls

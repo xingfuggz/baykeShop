@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_filters',
     'corsheaders',
     'baykeshop'
 ]
@@ -187,3 +188,7 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
 }
+
+# CRISPY_ALLOWED_TEMPLATE_PACKS = ("bulma",)
+
+# CRISPY_TEMPLATE_PACK = "bulma"

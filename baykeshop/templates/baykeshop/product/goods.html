@@ -1,0 +1,69 @@
+{% extends 'baykeshop/base_site.html' %}
+
+{% load i18n bayke_tags %}
+
+{% block title %}全部商品{% endblock %}
+
+
+{% block container %}
+    <div class="container mt-3">
+        <!-- 筛选模块 -->
+        {% strtoint query.categorys as categorys %}
+        <div class="box is-radiusless is-shadowless is-marginless">
+        {% for cate in cates %}
+            <a class="{% if categorys == cate.id %} has-text-danger {% else %} has-text-black-bis  {% endif %} mr-2" href="{% url 'baykeshop:goods-list' %}?categorys={{ cate.id }}">{{ cate.name }}</a>               
+        {% endfor %}
+        </div>
+
+        <div class="box is-radiusless">
+            <span class="has-text-grey">分类：</span>
+            <a class="{% if request.get_full_path == '/goods/' %}has-text-danger {% else %} has-text-black-bis {% endif %} mr-2" href="{% url 'baykeshop:goods-list' %}">全部分类</a>
+            {% for sub_cate in sub_cates %}
+                 <a class="{% if categorys == sub_cate.id %} has-text-danger {% else %} has-text-black-bis {% endif %} mr-2" 
+                    href="{% url 'baykeshop:goods-list' %}?categorys={{ sub_cate.id }}">{{ sub_cate.name }}</a>
+            {% endfor %} 
+            <div class="mt-1">
+                <span class="has-text-grey">筛选：</span>
+                {% if query.ordering == '-baykeproduct__price' %}
+                <a class="{% if 'baykeproduct__price' in request.get_full_path %} has-text-danger {% else %} has-text-black-bis{% endif %} mr-2" 
+                    href="{{ request.path }}?ordering=baykeproduct__price{% if query.categorys %}&categorys={{ query.categorys }}{% endif %}">
+                    价位
+                    <span class="mdi mdi-arrow-down"></span>
+                </a> 
+                {% else %}
+                <a class="{% if 'baykeproduct__price' in request.get_full_path %} has-text-danger {% else %} has-text-black-bis{% endif %} mr-2" 
+                    href="{{ request.path }}?ordering=-baykeproduct__price{% if query.categorys %}&categorys={{ query.categorys }}{% endif %}">
+                    价位
+                    <span class="mdi mdi-arrow-up"></span>
+                </a> 
+                {% endif %}
+                    
+                {% if query.ordering == '-add_date' %}
+                <a class="{% if 'add_date' in request.get_full_path %} has-text-danger {% else %} has-text-black-bis{% endif %} mr-2" href="{{ request.path }}?ordering=add_date{% if query.categorys %}&categorys={{ query.categorys }}{% endif %}">
+                    时间
+                    <span class="mdi mdi-arrow-down"></span>
+                </a>
+                {% else %}
+                <a class="{% if 'add_date' in request.get_full_path %} has-text-danger {% else %} has-text-black-bis{% endif %} mr-2" href="{{ request.path }}?ordering=-add_date{% if query.categorys %}&categorys={{ query.categorys }}{% endif %}">
+                    时间
+                    <span class="mdi mdi-arrow-up"></span>
+                </a>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <!-- 筛选模块 end -->
+        <div class="columns is-multiline">
+            {% for spu in goods %}
+            <div class="column is-3">
+                <div class=" has-background-white">
+                    {% spu_box spu %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+    
+    

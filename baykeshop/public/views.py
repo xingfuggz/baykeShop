@@ -30,7 +30,6 @@ class HomeView(GenericAPIView):
     
     def get_banners_serializer(self, *args, **kwargs):
         return BaykeBannerSerializer(public.BaykeBanner.objects.all(), many=True)
-
         
     
     

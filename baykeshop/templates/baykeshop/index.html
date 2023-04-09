@@ -6,12 +6,11 @@
     全开源Python django商城系统，拜客商城系统！
 {% endblock %}   
 
-{% block header %}
-    {% navbar_result %}
-{% endblock %}
     
 {% block banners %}
+<div class="has-background-white">
     {% carousel banners %}
+</div>
 {% endblock %}
 
 {% block container %}
@@ -42,4 +41,3 @@
     {% endfor %}
 </div>    
 {% endblock %}
-    

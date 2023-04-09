@@ -1,4 +1,4 @@
-{% load i18n static %}<!DOCTYPE html>
+{% load i18n static bayke_tags %}<!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
 <head>
@@ -14,8 +14,13 @@
     {% block extrastyle %}{% endblock %}
 </head>
 <body>
+    <div id="head-top">
+        {% block head_top %}
+            {% include 'baykeshop/public/head_top.html' %}
+        {% endblock %}
+    </div>
     <div id="header">
-        {% block header %}{% endblock %}
+        {% block header %}{% navbar_result %}{% endblock %}
     </div>
     <div id="main">
         {% block banners %}{% endblock %}
