@@ -82,7 +82,7 @@ class BaykeProduct(_abs.ProductMixin):
     # TODO: Define fields here
 
     class Meta:
-        ordering = ['price']
+        ordering = ['-add_date']
         verbose_name = _abs._("商品规格")
         verbose_name_plural = verbose_name
 

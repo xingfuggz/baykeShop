@@ -1,4 +1,5 @@
 from django.template import Library
+from django.utils.safestring import mark_safe
 
 from baykeshop.conf import bayke_settings
 from baykeshop.models import admin, product
@@ -62,4 +63,55 @@ def inttostr(intnum:str):
     if isinstance(intnum, int):
         return str(intnum)
 
+
+# @register.inclusion_tag("baykeshop/product/ordering.html")
+# def ordering_tag(query, order_field, ):
+#     return {
+        
+#     }
+
+
+
+
+@register.inclusion_tag("baykeshop/product/ordering.html")
+def ordering_tag(request, ordering_filed, query, show_name, **kwargs):
+    """
+    ordering_filed 需要排序的字段名
+    query          get请求的额外参数request.query_params
+    show_name      对外显示的名称
+    kwargs         需要添加到筛选后缀的额外参数
     
+    {% load bayke_tags %}
+    {% ordering_tag request 'baykeproduct__price' query '价位' categorys=query.categorys %}
+    """
+    cls_name = "has-text-black-bis"
+    href = f"{request.path}"
+    icon = ""
+    
+    if query.get('ordering') == ordering_filed:
+        href = f"{href}?ordering=-{ordering_filed}"
+        icon = '<span class="mdi mdi-arrow-down"></span>'
+    elif query.get('ordering') == f"-{ordering_filed}":
+        href = f"{href}?ordering={ordering_filed}"
+        icon = '<span class="mdi mdi-arrow-up"></span>'
+    else:
+        href = f"{href}?ordering={ordering_filed}"
+        
+    params = []
+    if kwargs and query:
+        for k, v in kwargs.items():
+            if query.get(f'{k}') and f"{k}={v}" not in params:
+                params.append(f"{k}={v}")
+        
+        if not query.get('ordering'):
+            href = f'{href}&{"&".join(params)}' 
+    
+    if f"{ordering_filed}" in request.get_full_path():
+        cls_name = "has-text-danger"
+    
+    return {
+        'cls_name': f"{cls_name} mr-2",
+        'href': href,
+        'icon': icon,
+        'show_name': show_name
+    }

@@ -80,8 +80,9 @@ class ProductMixin(BaseModelMixin):
     """ 规格 """
     pic = models.ImageField(_("主图"), upload_to="pic/%Y/", max_length=200)
     price = models.DecimalField(_("售价"), max_digits=8, decimal_places=2)
+    cost_price = models.DecimalField(_("原价"), max_digits=10, decimal_places=2, blank=True, default=0)
     stock = models.PositiveIntegerField(_("库存"), default=0)
-    sales = models.PositiveIntegerField(_("销量"), default=0)
+    sales = models.PositiveIntegerField(_("销量"), default=0, editable=False)
     num = models.CharField(_("商品编号"), max_length=50, blank=True, null=True, unique=True)
     weight = models.PositiveSmallIntegerField(_("重量"), default=0, help_text=_("单位：千克"))
     volume = models.PositiveSmallIntegerField(_("体积"), default=0, help_text=_("单位：立方米"))

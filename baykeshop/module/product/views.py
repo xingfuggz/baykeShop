@@ -12,8 +12,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from baykeshop.models import product
 from baykeshop.public.renderers import TemplateHTMLRenderer
-from baykeshop.public.serializers import BaykeGoodsSerializer, HomeBaykeCategorySerializer
-from baykeshop.module.product.filter import BaykeProductFilter
+from baykeshop.public.serializers import BaykeGoodsSerializer
+from baykeshop.module.product.filter import BaykeGoodsFilter, BaykeGoodsOrderingFilter
 from baykeshop.module.product.serializers import BaykeCategorySerializer
 
 
@@ -24,16 +24,19 @@ class BaykeGoodsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     authentication_classes = [SessionAuthentication, JWTAuthentication]
     pagination_class = pagination.PageNumberPagination
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_class = BaykeProductFilter
+    filter_backends = [DjangoFilterBackend, SearchFilter, BaykeGoodsOrderingFilter]
+    filterset_class = BaykeGoodsFilter
     template_name = "baykeshop/product/goods.html"
     search_fields = ("title", "desc", "keywords", "content")
-    ordering_fields = ('baykeproduct__price', 'add_date')
+    ordering_fields = ('baykeproduct__price', 'baykeproduct__sales', 'add_date',)
     
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs) 
         cates = BaykeCategorySerializer(self.get_parent_category_queryset(), many=True)
         sub_cates = BaykeCategorySerializer(self.get_sub_cates(), many=True)
+        
+        # print(response.data)
+        
         response.data = {
             'goods': response.data,
             'cates': cates.data,
@@ -61,5 +64,4 @@ class BaykeGoodsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 return self.get_category_queryset().filter(parent__id=cate.parent.id)
         elif not query.get('categorys'):
             return self.get_category_queryset().filter(parent=self.get_parent_category_queryset().first())
-        
         

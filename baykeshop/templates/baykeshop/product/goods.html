@@ -24,32 +24,12 @@
             {% endfor %} 
             <div class="mt-1">
                 <span class="has-text-grey">筛选：</span>
-                {% if query.ordering == '-baykeproduct__price' %}
-                <a class="{% if 'baykeproduct__price' in request.get_full_path %} has-text-danger {% else %} has-text-black-bis{% endif %} mr-2" 
-                    href="{{ request.path }}?ordering=baykeproduct__price{% if query.categorys %}&categorys={{ query.categorys }}{% endif %}">
-                    价位
-                    <span class="mdi mdi-arrow-down"></span>
-                </a> 
-                {% else %}
-                <a class="{% if 'baykeproduct__price' in request.get_full_path %} has-text-danger {% else %} has-text-black-bis{% endif %} mr-2" 
-                    href="{{ request.path }}?ordering=-baykeproduct__price{% if query.categorys %}&categorys={{ query.categorys }}{% endif %}">
-                    价位
-                    <span class="mdi mdi-arrow-up"></span>
-                </a> 
-                {% endif %}
-                    
-                {% if query.ordering == '-add_date' %}
-                <a class="{% if 'add_date' in request.get_full_path %} has-text-danger {% else %} has-text-black-bis{% endif %} mr-2" href="{{ request.path }}?ordering=add_date{% if query.categorys %}&categorys={{ query.categorys }}{% endif %}">
-                    时间
-                    <span class="mdi mdi-arrow-down"></span>
-                </a>
-                {% else %}
-                <a class="{% if 'add_date' in request.get_full_path %} has-text-danger {% else %} has-text-black-bis{% endif %} mr-2" href="{{ request.path }}?ordering=-add_date{% if query.categorys %}&categorys={{ query.categorys }}{% endif %}">
-                    时间
-                    <span class="mdi mdi-arrow-up"></span>
-                </a>
-                {% endif %}
 
+                {% ordering_tag request 'baykeproduct__price' query '价位' categorys=query.categorys %}
+
+                {% ordering_tag request 'baykeproduct__sales' query '销量' categorys=query.categorys %}
+
+                {% ordering_tag request 'add_date' query '时间' categorys=query.categorys %}
             </div>
         </div>
 
