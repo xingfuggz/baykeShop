@@ -10,6 +10,10 @@ bayke_defaults = {
     # 后台自定义菜单开关
     "ADMIN_MENUS": False,
     
+    # 商品列表页分页数量
+    "PAGE_SIZE": 16,
+    "MAX_PAGE_SIZE": 1000,
+    
     # 支付宝相关配置
     "ALIPAY_PRIVATE_KEY": settings.BASE_DIR / "baykeshop/module/payment/alipay/keys/app_private_key.pem",
     "ALIPAY_PUBLIC_KEY": settings.BASE_DIR / "baykeshop/module/payment/alipay/keys/app_public_key.pem",

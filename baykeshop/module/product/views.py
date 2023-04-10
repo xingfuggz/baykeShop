@@ -2,9 +2,8 @@ from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import mixins
 from rest_framework import viewsets
-from rest_framework import pagination
 from rest_framework.renderers import JSONRenderer
-from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.filters import SearchFilter
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
@@ -13,6 +12,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from baykeshop.models import product
 from baykeshop.public.renderers import TemplateHTMLRenderer
 from baykeshop.public.serializers import BaykeGoodsSerializer
+from baykeshop.public.pagination import PageNumberPagination
 from baykeshop.module.product.filter import BaykeGoodsFilter, BaykeGoodsOrderingFilter
 from baykeshop.module.product.serializers import BaykeCategorySerializer
 
@@ -22,21 +22,19 @@ class BaykeGoodsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = product.BaykeGoods.objects.all()
     serializer_class = BaykeGoodsSerializer
     authentication_classes = [SessionAuthentication, JWTAuthentication]
-    pagination_class = pagination.PageNumberPagination
+    pagination_class = PageNumberPagination
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     filter_backends = [DjangoFilterBackend, SearchFilter, BaykeGoodsOrderingFilter]
     filterset_class = BaykeGoodsFilter
     template_name = "baykeshop/product/goods.html"
     search_fields = ("title", "desc", "keywords", "content")
     ordering_fields = ('baykeproduct__price', 'baykeproduct__sales', 'add_date',)
-    
+     
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs) 
         cates = BaykeCategorySerializer(self.get_parent_category_queryset(), many=True)
         sub_cates = BaykeCategorySerializer(self.get_sub_cates(), many=True)
-        
-        # print(response.data)
-        
+
         response.data = {
             'goods': response.data,
             'cates': cates.data,

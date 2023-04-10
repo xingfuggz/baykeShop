@@ -4,7 +4,6 @@
 
 {% block title %}全部商品{% endblock %}
 
-
 {% block container %}
     <div class="container mt-3">
         <!-- 筛选模块 -->
@@ -24,18 +23,15 @@
             {% endfor %} 
             <div class="mt-1">
                 <span class="has-text-grey">筛选：</span>
-
-                {% ordering_tag request 'baykeproduct__price' query '价位' categorys=query.categorys %}
-
-                {% ordering_tag request 'baykeproduct__sales' query '销量' categorys=query.categorys %}
-
-                {% ordering_tag request 'add_date' query '时间' categorys=query.categorys %}
+                {% ordering_tag request 'baykeproduct__price' '价位' %}
+                {% ordering_tag request 'baykeproduct__sales' '销量'  %}
+                {% ordering_tag request 'add_date'  '时间' %}
             </div>
         </div>
 
         <!-- 筛选模块 end -->
         <div class="columns is-multiline">
-            {% for spu in goods %}
+            {% for spu in goods.results %}
             <div class="column is-3">
                 <div class=" has-background-white">
                     {% spu_box spu %}
@@ -43,7 +39,11 @@
             </div>
             {% endfor %}
         </div>
+
+        {% pages request goods %}
     </div>
+    
+    
 {% endblock %}
     
     

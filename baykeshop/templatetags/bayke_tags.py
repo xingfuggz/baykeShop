@@ -64,54 +64,63 @@ def inttostr(intnum:str):
         return str(intnum)
 
 
-# @register.inclusion_tag("baykeshop/product/ordering.html")
-# def ordering_tag(query, order_field, ):
-#     return {
-        
-#     }
+@register.inclusion_tag("baykeshop/public/pages.html")
+def pages(request, datas):
+    """ 分页小组件 """
+    params = []
+    query = request.query_params.dict()
+    
+    try:
+        page = query.pop('page')
+    except KeyError:
+        pass
+    
+    for k, v in query.items():
+        if f"{k}={v}" not in params:
+            params.append(f"{k}={v}")
+    params = '&'.join(params)
+    return {'datas': datas, 'params': params}
 
-
-
-
+    
 @register.inclusion_tag("baykeshop/product/ordering.html")
-def ordering_tag(request, ordering_filed, query, show_name, **kwargs):
+def ordering_tag(request, order_field, show_name):
+    
     """
-    ordering_filed 需要排序的字段名
-    query          get请求的额外参数request.query_params
+    order_field 需要排序的字段名
     show_name      对外显示的名称
-    kwargs         需要添加到筛选后缀的额外参数
     
     {% load bayke_tags %}
-    {% ordering_tag request 'baykeproduct__price' query '价位' categorys=query.categorys %}
+    {% ordering_tag request 'baykeproduct__price' '价位' %}
     """
-    cls_name = "has-text-black-bis"
-    href = f"{request.path}"
+    
     icon = ""
-    
-    if query.get('ordering') == ordering_filed:
-        href = f"{href}?ordering=-{ordering_filed}"
-        icon = '<span class="mdi mdi-arrow-down"></span>'
-    elif query.get('ordering') == f"-{ordering_filed}":
-        href = f"{href}?ordering={ordering_filed}"
-        icon = '<span class="mdi mdi-arrow-up"></span>'
-    else:
-        href = f"{href}?ordering={ordering_filed}"
-        
+    cls_name = "has-text-black-bis"
+    query = request.query_params.dict()
     params = []
-    if kwargs and query:
-        for k, v in kwargs.items():
-            if query.get(f'{k}') and f"{k}={v}" not in params:
-                params.append(f"{k}={v}")
-        
-        if not query.get('ordering'):
-            href = f'{href}&{"&".join(params)}' 
+    ordering = ""
     
-    if f"{ordering_filed}" in request.get_full_path():
+    try:
+        ordering = query.pop('ordering')
+    except KeyError:
+        pass
+    
+    for k, v in query.items():
+        if f"{k}={v}" not in params:
+            params.append(f"{k}={v}")
+    href = f"?ordering={order_field}&{'&'.join(params)}"
+    if ordering == f'{order_field}':
+        href = f"?ordering=-{order_field}&{'&'.join(params)}"
+        icon = '<span class="mdi mdi-arrow-down"></span>'
+    elif ordering == f'-{order_field}':
+        icon = '<span class="mdi mdi-arrow-up"></span>'
+    
+    # 判断是否选中
+    if f"{order_field}" in request.get_full_path():
         cls_name = "has-text-danger"
-    
+
     return {
-        'cls_name': f"{cls_name} mr-2",
         'href': href,
         'icon': icon,
+        'cls_name': f"{cls_name} mr-2",
         'show_name': show_name
     }
