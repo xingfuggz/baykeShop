@@ -1,5 +1,3 @@
-from django.db.models import Q
-from rest_framework.response import Response
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.renderers import JSONRenderer
@@ -14,7 +12,7 @@ from baykeshop.public.renderers import TemplateHTMLRenderer
 from baykeshop.public.serializers import BaykeGoodsSerializer
 from baykeshop.public.pagination import PageNumberPagination
 from baykeshop.module.product.filter import BaykeGoodsFilter, BaykeGoodsOrderingFilter
-from baykeshop.module.product.serializers import BaykeCategorySerializer
+from baykeshop.module.product.serializers import BaykeCategorySerializer, BaykeGoodsDetailSerializer
 
 
 class BaykeGoodsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -63,3 +61,12 @@ class BaykeGoodsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         elif not query.get('categorys'):
             return self.get_category_queryset().filter(parent=self.get_parent_category_queryset().first())
         
+        
+class BaykeGoodsDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    
+    queryset = product.BaykeGoods.objects.all()
+    serializer_class = BaykeGoodsDetailSerializer
+    authentication_classes = [SessionAuthentication, JWTAuthentication]
+    
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)

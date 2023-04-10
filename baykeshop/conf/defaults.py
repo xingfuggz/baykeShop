@@ -14,6 +14,9 @@ bayke_defaults = {
     "PAGE_SIZE": 16,
     "MAX_PAGE_SIZE": 1000,
     
+    # 是否开启按分类搜索功能
+    "HAS_SEARCH_CATEGORY": True,
+    
     # 支付宝相关配置
     "ALIPAY_PRIVATE_KEY": settings.BASE_DIR / "baykeshop/module/payment/alipay/keys/app_private_key.pem",
     "ALIPAY_PUBLIC_KEY": settings.BASE_DIR / "baykeshop/module/payment/alipay/keys/app_public_key.pem",

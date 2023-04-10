@@ -1,5 +1,5 @@
 from django.template import Library
-from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 from baykeshop.conf import bayke_settings
 from baykeshop.models import admin, product
@@ -34,11 +34,19 @@ def carousel(banners:list):
     return {"banners": banners}
 
 
-@register.inclusion_tag("baykeshop/public/navbar.html")
-def navbar_result():
+@register.inclusion_tag("baykeshop/public/navbar.html", takes_context=True)
+def navbar_result(context):
+    request = context['request']
+    query = request.query_params.dict()
+    search_value = query.get('search', '')
+    categorys = query.get('categorys', '') if bayke_settings.HAS_SEARCH_CATEGORY else ''
+    
     return {
         'logo': bayke_settings.PC_LOGO,
-        'navs': product.BaykeCategory.get_cates()
+        'navs': product.BaykeCategory.get_cates(),
+        'search_value': search_value,
+        'search_action':f'{reverse("baykeshop:goods-list")}',
+        'categorys': categorys
     } 
     
 
@@ -124,3 +132,4 @@ def ordering_tag(request, order_field, show_name):
         'cls_name': f"{cls_name} mr-2",
         'show_name': show_name
     }
+

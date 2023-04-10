@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from baykeshop.models import product
+from baykeshop.public.serializers import BaykeGoodsSerializer
 
 
 class BaykeCategorySetSerializer(serializers.ModelSerializer):
@@ -11,14 +12,15 @@ class BaykeCategorySetSerializer(serializers.ModelSerializer):
 
 
 class BaykeCategorySerializer(serializers.ModelSerializer):
-    
-    # children = serializers.SerializerMethodField()
-    
+     
     class Meta:
         model = product.BaykeCategory
         fields = "__all__"
         
-    # def get_children(self, obj):
-    #     return BaykeCategorySetSerializer(obj.baykecategory_set.all(), many=True).data
         
+
+class BaykeGoodsDetailSerializer(BaykeGoodsSerializer):
     
+    class Meta:
+        model = product.BaykeGoods
+        fields = "__all__"

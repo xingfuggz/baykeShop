@@ -1,0 +1,21 @@
+<form action="{{ search_action }}" method="get">
+    {% csrf_token %}
+    <div class="field-body">
+      <div class="field is-expanded">
+        <div class="field has-addons">
+          <p class="control is-expanded has-icons-left"> 
+            {% if categorys %}
+              <input type="hidden" name="categorys" value="{{ categorys }}">
+            {% endif %}
+            <input class="input" type="search" name="search" id="search" placeholder="BaykeShop Search " value="{{ search_value }}">
+            <span class="icon is-left">
+                <i class="mdi mdi-magnify"></i>
+            </span>
+          </p>
+          <p class="control has-icons-right">
+            <input class="button is-primary" type="submit" value="搜索">
+          </p>
+        </div>
+      </div>
+    </div>
+</form>

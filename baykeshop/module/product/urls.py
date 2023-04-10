@@ -8,6 +8,6 @@ from baykeshop.module.product import views
 router = DefaultRouter()
 
 router.register('', views.BaykeGoodsViewSet, basename="goods")
-# router.register('cates', views.BaykeCategoryViewSet, basename="cates")
+router.register('detail', views.BaykeGoodsDetailViewSet, basename="detail")
 
 urlpatterns = router.urls

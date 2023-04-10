@@ -34,10 +34,7 @@
             <template #end>
                 {% block navbar_end %}
                 <b-navbar-item tag="div">
-                    <form action="" method="get">
-                        {% csrf_token %}
-                        搜索
-                    </form>
+                    {% include 'baykeshop/public/search_form.html' %}
                 </b-navbar-item>
                 {% endblock %} 
             </template>

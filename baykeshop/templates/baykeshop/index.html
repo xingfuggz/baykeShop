@@ -21,7 +21,7 @@
             <h1 class=" has-text-weight-semibold is-size-5">{{ cate.name }}</h1>
         </div>
         <div class="">
-            <a href="">更多>></a>
+            <a href="{% url 'baykeshop:goods-list' %}?categorys={{ cate.id }}">更多>></a>
         </div>
     </div>
     <div class="columns is-multiline is-mobile">
