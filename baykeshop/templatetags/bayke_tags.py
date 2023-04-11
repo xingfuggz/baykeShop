@@ -2,7 +2,7 @@ from django.template import Library
 from django.urls import reverse
 
 from baykeshop.conf import bayke_settings
-from baykeshop.models import admin, product
+from baykeshop.models import admin, product, cart
 from baykeshop.conf import bayke_settings
 
 
@@ -40,7 +40,6 @@ def navbar_result(context):
     query = request.query_params.dict()
     search_value = query.get('search', '')
     categorys = query.get('categorys', '') if bayke_settings.HAS_SEARCH_CATEGORY else ''
-    
     return {
         'logo': bayke_settings.PC_LOGO,
         'navs': product.BaykeCategory.get_cates(),
@@ -48,6 +47,14 @@ def navbar_result(context):
         'search_action':f'{reverse("baykeshop:goods-list")}',
         'categorys': categorys
     } 
+    
+    
+@register.inclusion_tag("baykeshop/public/head_top.html")
+def head_top(request):
+    return {
+        'cartsnum': cart.BaykeShopingCart.get_cart_count(request.user) if request.user.is_authenticated else 0,
+        'request': request
+    }
     
 
 @register.inclusion_tag("baykeshop/public/spu_box.html")
@@ -94,7 +101,7 @@ def pages(request, datas):
 def ordering_tag(request, order_field, show_name):
     
     """
-    order_field 需要排序的字段名
+    order_field    需要排序的字段名
     show_name      对外显示的名称
     
     {% load bayke_tags %}
@@ -133,3 +140,9 @@ def ordering_tag(request, order_field, show_name):
         'show_name': show_name
     }
 
+
+@register.inclusion_tag("baykeshop/product/banners.html")
+def spu_banners(banners):
+    return {
+        'banners': banners
+    }

@@ -8,6 +8,6 @@ from baykeshop.module.product import views
 router = DefaultRouter()
 
 router.register('', views.BaykeGoodsViewSet, basename="goods")
-router.register('detail', views.BaykeGoodsDetailViewSet, basename="detail")
+router.register('spu', views.BaykeGoodsDetailViewSet, basename="spu")
 
 urlpatterns = router.urls

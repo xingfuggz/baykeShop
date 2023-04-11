@@ -3,7 +3,10 @@ from django.utils.html import format_html, format_html_join
 from django.utils.safestring import mark_safe
 
 from baykeshop.public.sites import bayke_site
-from baykeshop.module.product.models import BaykeCategory, BaykeGoods, BaykeProduct
+from baykeshop.module.product.models import (
+    BaykeCategory, BaykeGoods, BaykeProduct, BaykeSpec, BaykeSpecOptions,
+    BaykeGoodsBanners
+)
 from baykeshop.module.admin.options import BaseModelAdmin, TabularInline, StackedInline
 
 
@@ -12,8 +15,6 @@ class BaykeCategoryInline(StackedInline):
     min_num = 1
     max_num = 20
     extra = 1
-    # exclude = ('site', )
-    # raw_id_fields = (,)
     
     
 class BaykeProductInline(TabularInline):
@@ -22,11 +23,29 @@ class BaykeProductInline(TabularInline):
     max_num = 20
     extra = 1
     can_delete = False
+    
+
+class BaykeSpecOptionsInline(StackedInline):
+    '''Stacked Inline View for '''
+
+    model = BaykeSpecOptions
+    min_num = 1
+    max_num = 20
+    extra = 1
 
 
+class BaykeGoodsBannersInline(StackedInline):
+    '''Tabular Inline View for '''
+
+    model = BaykeGoodsBanners
+    min_num = 1
+    max_num = 20
+    extra = 1
+    exclude = ('desc',)
+    
 
 @admin.register(BaykeCategory, site=bayke_site)
-class BaykeShopCategoryAdmin(BaseModelAdmin):
+class BaykeCategoryAdmin(BaseModelAdmin):
     list_display = ('id', 'name', 'parent', 'operate')
     exclude = ('parent', )
     inlines = (BaykeCategoryInline, )
@@ -56,8 +75,7 @@ class BaykeGoodsAdmin(BaseModelAdmin):
     )
     list_display_links = ('title', )
     filter_horizontal = ('categorys',)
-    # form = BaykeShopSPUForm
-    inlines = (BaykeProductInline, )
+    inlines = (BaykeGoodsBannersInline, BaykeProductInline, )
     
     class Media:
         css = {'all': ['baykeadmin/css/ordersku.css']}
@@ -96,3 +114,10 @@ class BaykeGoodsAdmin(BaseModelAdmin):
     def dis_stock(self, obj):
         from django.db.models import Sum
         return self.get_skus(obj).aggregate(Sum('stock'))['stock__sum']
+    
+
+@admin.register(BaykeSpec, site=bayke_site)
+class BaykeShopSpecAdmin(BaseModelAdmin):
+    list_display = ('id', 'name', 'operate')
+    search_fields = ('name',)
+    inlines = (BaykeSpecOptionsInline, )

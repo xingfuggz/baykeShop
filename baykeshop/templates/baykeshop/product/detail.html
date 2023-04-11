@@ -1,0 +1,233 @@
+{% extends 'baykeshop/base_site.html' %}
+
+{% load i18n static bayke_tags %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block meta_desc %}{{ desc }}{% endblock %}
+{% block meta_kw %}{{ keywords }}{% endblock %}
+
+{% block extrahead_script %}
+<script src="{% static 'baykeshop/js/axios.min.js' %}"></script>
+<script src="{% static 'baykeshop/js/request.js' %}"></script>
+{% endblock %}
+
+{% block container %}
+    <div class="container mt-3">
+        <div class="columns">
+            <div class="column is-3">
+                {% spu_banners baykegoodsbanners_set %}
+            </div>
+            <div class="column">
+                <h1 class="is-size-5 has-text-justified has-text-weight-bold mb-2">{{ title }}</h1>
+                <div id="product">
+                    <div class="box is-marginless is-radiusless has-background-primary-dark has-text-white-ter">
+                        <div class="is-flex is-justify-content-space-between is-align-items-center">
+                            <div>
+                                <span class="is-size-7"> 原价：¥ <del>{$ cost_price $}</del></span>
+                                <h1 class="is-size-4">¥ {$ price $}</h1>
+                            </div>
+                            <div class=" has-text-centered">
+                                {$ sales $}
+                                <h1>销量</h1>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- specs规格数据获取 -->
+                    <div class="box is-radiusless is-marginless">
+                        {{ baykeproduct_set|json_script:"product-data" }}
+                        {{ specs|json_script:"specs-data" }}
+                        <div class="is-flex is-align-items-center" v-for="spec, index in specsData" :key="spec.id" style="height:40px;">
+                            <div class="has-text-grey-light">{$ spec.name $}：</div>
+                            <div class="is-flex is-flex-wrap-wrap is-flex-grow-1">
+                                <div class="mr-2" v-for="op, i in spec.baykespecoptions_set" :key="op.id" style="flex: 0 0 25%;">
+                                    <b-radio-button v-model="radioButton[index]"
+                                        :native-value="op.name"
+                                        size="is-small"
+                                        type="is-primary is-light is-outlined">
+                                        <span>{$ op.name $}</span>
+                                    </b-radio-button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 数量 -->
+                        <div class=" is-flex is-align-items-center mt-3">
+                            <div class=" has-text-grey-light">数量：</div>
+                            <div>
+                                <b-numberinput 
+                                    controls-position="compact" 
+                                    min="1" 
+                                    :max="stock" 
+                                    v-model="num"
+                                    size="is-small"
+                                    :editable="false">
+                                </b-numberinput> 
+                            </div>
+                            <div class=" has-text-grey-dark ml-3">(库存{$ stock $})</div>
+                        </div>
+                        <!-- 数量end -->
+                    </div>
+                    <!-- specs规格数据获取 end -->
+
+                    <!-- 加入购物车按钮及一键购买 -->
+
+                    <div class="box is-radiusless">
+                        <b-button 
+                            type="is-primary" 
+                            @click="addCart" 
+                            :disabled="stock ? false : true">
+                            加入购物车
+                        </b-button>
+                        <b-button 
+                            type="is-primary" 
+                            :disabled="stock ? false : true" 
+                            @click=""
+                            outlined>
+                            立即购买
+                        </b-button>
+                    </div>
+                    <!-- 加入购物车按钮及一键购买 -->
+                </div>
+
+                <!-- 详情 -->
+                <div class="box is-radiusless mt-3" id="productDetail" style="height: 100%;">
+                    <b-tabs class="block">
+                        <b-tab-item label="商品详情">
+                            <div class="content">
+                                {{ content|safe }}
+                            </div>
+                        </b-tab-item>
+                        <b-tab-item label="商品评价">
+                            啊实打实
+                        </b-tab-item>
+                        <b-tab-item label="售后服务">
+                            <div class="content">
+                                {{ after_sale|safe }}
+                            </div>
+                        </b-tab-item>
+                    </b-tabs>
+                </div>
+                <!-- 详情end -->
+            </div>
+
+            <!-- 热销商品 -->
+            <div class="column is-2">
+                <h1 class="has-text-centered has-background-white pt-3 is-size-6 pb-3 has-text-weight-bold">热销排行</h1>
+                <div class=" dropdown-divider is-marginless"></div>
+                {% for spu in hot_goods %}
+                <div class="has-background-white">
+                    {% spu_box spu %}
+                </div>
+                <div class="dropdown-divider"></div>
+                {% endfor %}
+            </div>
+            <!-- 热销商品 end -->
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block vue %}
+    <script>
+        var specsData = JSON.parse(document.getElementById('specs-data').textContent);
+        var productData = JSON.parse(document.getElementById('product-data').textContent);
+
+        var product = new Vue({
+            el: "#product",
+            delimiters: ['{$', '$}'],
+            data: {
+                specsData,
+                productData,
+                price: 0,
+                cost_price: 0,
+                sales: 0,
+                stock: 0,
+                sku:null,
+                num: 1,
+                radioButton: [],
+                watchProductDatas:{}
+            },
+            created(){
+                this.getProduct()
+            },
+            methods: {
+                getProduct(){
+                    if (this.productData.length > 0) {
+                        let product_item = this.productData[0]
+                        this.price = product_item.price
+                        this.cost_price = product_item.cost_price
+                        this.sales = product_item.sales
+                        this.stock = product_item.stock
+                        this.sku = product_item.id
+                        product_item.options.forEach(element => {
+                            this.radioButton.push(element.name)
+                        })
+                        // 整理数据
+                        this.watchProduct()
+                    }
+                },
+                watchProduct(){
+                    this.productData.forEach(el => {
+                        let ops_item = []
+                        el.options.forEach(op => {
+                            ops_item.push(op.name)
+                        })
+                        let ops = ops_item.join()
+                        this.watchProductDatas[ops] = el
+                    })
+                },
+
+                // 加入购物车
+                addCart(){
+                    // console.log('{% url "baykeshop:carts-list" %}?format=json')
+                    console.log(this.sku, this.num)
+                    request({
+                        url: '{% url "baykeshop:carts-list" %}?format=json',
+                        method: 'post',
+                        data: {
+                            sku: this.sku,
+                            num: this.num,
+                            owner: '{{ request.user.id }}'
+                        }
+                    }).then(res => {
+                        if (res.status == 201){
+                            cartNum._data.cartcount = parseInt(cartNum._data.cartcount) + parseInt(res.data.num)
+                            navbar.toastMessage('is-success', '加入购物车成功！')
+                        }
+                        
+                    })
+                }
+
+            },
+            watch:{
+                radioButton:{
+                    handler: function(val){
+                        let val_item = val.join()
+                        goods = this.watchProductDatas[val_item]
+                        if (goods){
+                            this.price = goods.price
+                            this.sales = goods.sales
+                            this.stock = goods.stock
+                            this.cost_price = goods.cost_price
+                            this.sku = goods.id
+                        }else{
+                            this.stock = 0
+                        }
+                    }
+                },
+                deep: true,
+            }
+
+        })
+    </script>
+
+    <script>
+        var productDetail = new Vue({
+            el: "#productDetail",
+            delimiters: ['{$', '$}'],
+        })
+    </script>
+{% endblock %}
+    
+    

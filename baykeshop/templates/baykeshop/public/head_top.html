@@ -48,7 +48,7 @@
             {% endif %}
             <a class="cart" href="" id="cartNum">
                 <span class="icon"><i class="mdi mdi-cart-check"></i></span>
-                购物车(0)
+                购物车({$ cartcount $})
             </a>
             {% endblock %}
         </div>
@@ -60,7 +60,7 @@
         el: '#cartNum',
         delimiters: ['{$', '$}'],
         data: {
-           
+           cartcount: '{{ cartsnum }}'
         }
     })
 </script>

@@ -89,3 +89,15 @@ class BaykeProduct(_abs.ProductMixin):
     def __str__(self):
         return self.goods.title
 
+
+class BaykeGoodsBanners(_abs.ImageMixin):
+    """ 商品轮播图 """
+    
+    goods = models.ForeignKey(BaykeGoods, on_delete=models.CASCADE, verbose_name=_abs._("商品"))
+    
+    class Meta(_abs.ImageMixin.Meta):
+        verbose_name = _abs._("商品轮播图")
+        verbose_name_plural = verbose_name
+    
+    def __str__(self):
+        return self.img.url if self.img else ""

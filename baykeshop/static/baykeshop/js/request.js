@@ -23,6 +23,7 @@ function request(config) {
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'X-CSRFToken': getCookie('csrftoken'),
+            'Accept': 'application/json'
             // 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
     });

@@ -60,6 +60,7 @@ class BaykeGoodsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 return self.get_category_queryset().filter(parent__id=cate.parent.id)
         elif not query.get('categorys'):
             return self.get_category_queryset().filter(parent=self.get_parent_category_queryset().first())
+
         
         
 class BaykeGoodsDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -67,6 +68,8 @@ class BaykeGoodsDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet
     queryset = product.BaykeGoods.objects.all()
     serializer_class = BaykeGoodsDetailSerializer
     authentication_classes = [SessionAuthentication, JWTAuthentication]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = "baykeshop/product/detail.html"
     
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
