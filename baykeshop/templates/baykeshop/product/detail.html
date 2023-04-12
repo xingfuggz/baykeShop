@@ -193,6 +193,7 @@
                         }
                     }).then(res => {
                         console.log(res)
+                        location.href = `{% url 'baykeshop:confirm' %}?action=nowBuy`
                     })
                 },
 
