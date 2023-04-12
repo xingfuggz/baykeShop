@@ -8,9 +8,18 @@ from django.contrib.auth.views import (
     LogoutView as BaseLogoutView
 )
 
+from rest_framework import mixins
+from rest_framework import viewsets
+from rest_framework.renderers import JSONRenderer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from baykeshop.public.renderers import TemplateHTMLRenderer
+from baykeshop.module.user.serializers import BaykeShopAddressSerializer
+
 from baykeshop.conf import bayke_settings
 from baykeshop.module.user.form import LoginForm, RegisterForm
-from baykeshop.module.user.models import BaykeUserInfo
+from baykeshop.module.user.models import BaykeUserInfo, BaykeShopAddress
 
 
 class LoginView(SuccessMessageMixin, BaseLoginView):
@@ -55,3 +64,13 @@ class RegisterView(SuccessMessageMixin, FormView):
             username=cleaned_data['username'],
         )
         
+        
+
+class BaykeShopAddressViewset(viewsets.ModelViewSet):
+    """ 地址增删改查接口 """
+    serializer_class = BaykeShopAddressSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, JWTAuthentication]
+    
+    def get_queryset(self):
+        return BaykeShopAddress.objects.filter(owner=self.request.user)
