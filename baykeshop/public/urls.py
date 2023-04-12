@@ -5,4 +5,5 @@ urlpatterns = [
     path('', views.HomeView.as_view(), name="home"),
     path('goods/', include('baykeshop.module.product.urls'), name='goods'),
     path('cart/', include('baykeshop.module.cart.urls'), name='cart'),
+    path('user/', include('baykeshop.module.user.urls'), name='user'),
 ]

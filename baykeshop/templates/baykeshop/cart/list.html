@@ -17,10 +17,21 @@
 </style>
 {% endblock %}
 
+{% block breadcrumb %}
+<div class="container">
+    <nav class="breadcrumb is-marginless mt-3 mb-3 is-small" aria-label="breadcrumbs">
+      <ul>
+        <li><a href="{% url 'baykeshop:home' %}">首页</a></li>
+        <li class="is-active"><a href="#" aria-current="page">购物车</a></li>
+      </ul>
+    </nav>
+</div>
+{% endblock %}
+
 {% block container %}
     {{ datas|json_script:"carts-data" }}
-    <div class="container" id="carts">
-        <div class="box is-marginless" v-if="cartsData.length > 0">
+    <div class="container mt-3" id="carts">
+        <div class="box is-radiusless" v-if="cartsData.length > 0">
             <template>
                 <b-table
                     checkable
@@ -56,10 +67,10 @@
                     <b-table-column field="price" label="单价" width="120" v-slot="props">
                         <span class="is-size-5 has-text-grey">¥</span>{$ props.row.sku.price $}
                     </b-table-column>
-                    <b-table-column field="sales" label="数量" v-slot="props">
+                    <b-table-column field="num" label="数量" v-slot="props">
                         <b-field>
                             <b-numberinput
-                                @input=""
+                                @input="updateCartNum(props.row)"
                                 controls-position="compact"
                                 size="is-small"
                                 type="is-light"
@@ -74,7 +85,7 @@
                         <span class="is-size-5 has-text-grey">¥</span>{$ props.row.sku.price * props.row.num $}
                     </b-table-column>
                     <b-table-column field="caozuo" label="操作" width="80" v-slot="props">
-                        <button class="delete" @click="">删除</button>
+                        <button class="delete" @click="delCart(props.row)">删除</button>
                     </b-table-column>
 
                     <template #footer>
@@ -83,7 +94,7 @@
                                 已选<span class="is-size-4 pl-2 pr-2">{$ checkedRows.length $}</span>件商品 
                             </div>
                             <div class=" is-flex is-align-items-center has-text-danger-dark ">
-                                <span class="is-size-5">合计：</span> <span class="is-size-3 pr-5">¥ zongjia</span>
+                                <span class="is-size-5">合计：</span> <span class="is-size-3 pr-5">¥ {$ totalPrice $}</span>
                                 <button class="button is-primary is-radiusless is-large pl-6 pr-6" :disabled="checkedRows.length > 0 ? false : true">
                                     去结算
                                 </button>
@@ -98,7 +109,6 @@
             <p> 亲，购物车还是空的哟~ </p>
             <a class=" button is-primary is-outlined mt-4" href="{% url 'baykeshop:home' %}">继 续 逛</a>
         </div>
-        {$ cartsData $}
     </div>
 {% endblock %}
 
@@ -112,7 +122,68 @@
             data: {
                 cartsData,
                 checkedRows: [],
-            }
+                totalPrice: 0
+            },
+            created(){
+                cartsData.forEach(item => {
+                    if (item.num < item.sku.stock){
+                        this.checkedRows.push(item)
+                    }
+                })
+            },
+            watch:{
+                checkedRows: {
+                    handler: function(val, oldval){
+                        this.totalPrice = 0;
+                        val.forEach(element => {
+                           this.totalPrice += element.num * element.sku.price 
+                        });
+                    },
+                    deep: true
+                }
+            },
+            methods: {
+                updateCartNum(row){
+                    request({
+                        url: `/cart/${row.id}/`,
+                        method: 'patch',
+                        data:{
+                            num: row.num
+                        }
+                    }).then(res => {
+                        if (res.status == 200){
+                            navbar.toastMessage('is-success', '数量修改成功！')
+                        }else{
+                            navbar.toastMessage('is-danger', '修改失败，请刷新重试！')
+                        }
+                    })
+                },
+
+                delCart(row){
+                    this.$buefy.dialog.confirm({
+                        message: '是否确认删除该购物车商品！',
+                        cancelText: '取消',
+                        onConfirm: () => {
+                            request({
+                                url: `/cart/${row.id}/`,
+                                method: 'delete',
+                            }).then(res => {
+                                if (res.status == 204){
+                                    // 前端删除数组
+                                    this.cartsData.forEach(item => {
+                                        if (item.id == row.id){
+                                            this.cartsData.splice(this.cartsData.indexOf(item), 1)
+                                            this.checkedRows.splice(this.checkedRows.indexOf(item), 1)
+                                            cartNum._data.cartcount = parseInt(cartNum._data.cartcount) - parseInt(row.num)
+                                        }
+                                    })
+                                    navbar.toastMessage('is-success', '删除成功！')
+                                }
+                            })
+                        }
+                    })
+                }
+            },
         })
     </script>
 {% endblock %}

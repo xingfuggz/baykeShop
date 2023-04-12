@@ -17,6 +17,12 @@ bayke_defaults = {
     # 是否开启按分类搜索功能
     "HAS_SEARCH_CATEGORY": True,
     
+    # 手机号验证规则
+    "PHONE_REGX": r"^1[35678]\d{9}$",
+    
+    # PC端登录后跳转配置
+    "LOGIN_NEXT_PAGE": "baykeshop:home",
+    
     # 支付宝相关配置
     "ALIPAY_PRIVATE_KEY": settings.BASE_DIR / "baykeshop/module/payment/alipay/keys/app_private_key.pem",
     "ALIPAY_PUBLIC_KEY": settings.BASE_DIR / "baykeshop/module/payment/alipay/keys/app_public_key.pem",

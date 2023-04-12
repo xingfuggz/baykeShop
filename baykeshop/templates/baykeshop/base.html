@@ -26,6 +26,7 @@
         {% block header %}{% navbar_result %}{% endblock %}
     </div>
     <div id="main">
+        {% block breadcrumb %}{% endblock %}
         {% block banners %}{% endblock %}
         {% block container %}{% endblock %}
     </div>
@@ -36,5 +37,26 @@
 
     {% block vue %}{% endblock %}
 
+    {% if messages %}
+        {% for message in messages %}
+        <div id="notification">
+            <b-notification
+                auto-close 
+                {% if message.tags %}type="is-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} is-light"{% endif %}
+                :duration="3000"
+                has-icon
+                position="is-top-right"
+                aria-close-label="Close notification">
+                {{ message }}
+            </b-notification>
+        </div>
+        {% endfor %}
+        <script>
+            var notification = new Vue({
+                el: '#notification',
+                delimiters: ['{$', '$}'],
+            })
+        </script>
+    {% endif %}
 </body>
 </html>

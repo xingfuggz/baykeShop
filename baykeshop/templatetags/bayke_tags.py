@@ -37,7 +37,11 @@ def carousel(banners:list):
 @register.inclusion_tag("baykeshop/public/navbar.html", takes_context=True)
 def navbar_result(context):
     request = context['request']
-    query = request.query_params.dict()
+    try:
+        query = request.query_params.dict()
+    except AttributeError:
+        query = request.GET.dict()
+        
     search_value = query.get('search', '')
     categorys = query.get('categorys', '') if bayke_settings.HAS_SEARCH_CATEGORY else ''
     return {

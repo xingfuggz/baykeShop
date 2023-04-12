@@ -13,6 +13,9 @@ class BaykeCategorySerializer(serializers.ModelSerializer):
 
 class BaykeSpecOptionsSerializer(serializers.ModelSerializer):
     """ 商品规格值 """
+    
+    spec = serializers.StringRelatedField()
+    
     class Meta:
         model = product.BaykeSpecOptions
         fields = "__all__"

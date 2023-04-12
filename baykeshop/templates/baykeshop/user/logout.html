@@ -1,0 +1,19 @@
+{% extends 'baykeshop/user/login.html' %}
+
+
+{% block login_title %}您已登出{% endblock %}
+{% block form %}
+<div class="has-text-centered">
+    <p>感谢您与本站今天度过的美好时光...</p>
+    <div class="buttons is-justify-content-center mt-4">
+        <a class="button is-primary is-small is-light" href="{% url 'baykeshop:login' %}">
+            <span class="mdi mdi-login-variant"></span>
+            重新登录
+        </a>
+        <a class=" button is-success is-small is-light" href="{% url 'baykeshop:home' %}">
+            <span class="mdi mdi-keyboard-return"></span>
+            返回首页
+        </a>
+    </div>
+</div>
+{% endblock %}

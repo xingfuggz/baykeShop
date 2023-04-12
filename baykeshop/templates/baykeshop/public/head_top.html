@@ -29,7 +29,7 @@
                         我的订单
                     </a>
                     <div class=" dropdown-divider"></div>
-                    <a class="dropdown-item" href="">
+                    <a class="dropdown-item" href="{% url 'baykeshop:logout' %}">
                         <span class="mdi mdi-logout"></span>
                         退出
                     </a>
@@ -37,16 +37,16 @@
                 </div>
             </div>
             {% else %}
-            <a class="mr-2" href="" target="_top">
+            <a class="mr-2" href="{% url 'baykeshop:login' %}" target="_top">
                 <span class="icon"><i class="mdi mdi-login"></i></span>
                 登录
             </a> <span class="is-size-6">|</span>
-            <a class="mr-3" href="" target="_top">
+            <a class="mr-3" href="{% url 'baykeshop:register' %}" target="_top">
                 <span class="icon"><i class="mdi mdi-cash-register"></i></span>
                 注册
             </a>
             {% endif %}
-            <a class="cart" href="" id="cartNum">
+            <a class="cart" @click="getCarts" id="cartNum">
                 <span class="icon"><i class="mdi mdi-cart-check"></i></span>
                 购物车({$ cartcount $})
             </a>
@@ -54,13 +54,26 @@
         </div>
     </div>
 </div>
-
 <script>
     var cartNum = new Vue({
         el: '#cartNum',
         delimiters: ['{$', '$}'],
         data: {
            cartcount: '{{ cartsnum }}'
-        }
+        },
+        methods: {
+            getCarts(){
+                fetch("{% url 'baykeshop:carts-list' %}").then(res => {
+                    if (res.status == 403){
+                        this.$buefy.toast.open({
+                            message: res.statusText+'未登录，请登录后查看！',
+                            type: 'is-danger'
+                        })
+                    } else {
+                        location.href = "{% url 'baykeshop:carts-list' %}"
+                    }
+                })
+            }
+        },
     })
 </script>
