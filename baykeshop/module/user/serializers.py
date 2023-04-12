@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from django.db.utils import IntegrityError
+from rest_framework.validators import UniqueTogetherValidator
 
 from baykeshop.module.user.models import BaykeShopAddress
 
@@ -9,5 +11,4 @@ class BaykeShopAddressSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = BaykeShopAddress
-        # fields = "__all__"
         exclude = ('site',)

@@ -1,4 +1,5 @@
 from django.views.generic import FormView
+from django.db.utils import IntegrityError
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import authenticate
@@ -74,3 +75,15 @@ class BaykeShopAddressViewset(viewsets.ModelViewSet):
     
     def get_queryset(self):
         return BaykeShopAddress.objects.filter(owner=self.request.user)
+    
+    def perform_create(self, serializer):
+        self.perform_only_default(serializer)
+        return super().perform_create(serializer)
+    
+    def perform_update(self, serializer):
+        self.perform_only_default(serializer)
+        return super().perform_update(serializer)
+    
+    def perform_only_default(self, serializer):
+        if serializer.validated_data['is_default']:
+            self.get_queryset().filter(is_default=True).update(is_default=False)

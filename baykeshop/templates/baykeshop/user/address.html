@@ -1,0 +1,192 @@
+<style>
+    .add-box{ border: solid 1px rgb(224, 224, 224); height: 150px;}
+    .add-box:hover{border-color: rgb(251, 59, 59); transition: ease .5s;}
+    .add-box .btn-default{position: absolute;top: 0;right: 0;}
+    .active{border-color: rgb(251, 59, 59);}
+</style>
+
+<div id="address">
+    {{ address|json_script:"address-data" }}
+    <div class="columns is-multiline">
+        <div class="column is-3" v-for="addr in addressData" :key="addr.id">
+            <div class="add-box is-clickable is-flex is-flex-direction-column is-align-items-start is-justify-content-center is-relative pl-5 pr-5"
+                :class="{active: addr.is_default}"
+                @click="pickAddress(addr)">
+                <span class="tag is-danger btn-default is-radiusless" v-if="addr.is_default">{$ text $}</span>
+                <h1 class="has-text-weight-bold">{$ addr.name $}</h1>
+                <p>{$ addr.phone $}</p>
+                <p>{$ addr.province $}{$ addr.city $}{$ addr.county $}{$ addr.address $}</p>
+            </div>
+        </div>
+        <div class="column is-3">
+            <div class="add-box is-clickable is-flex is-flex-direction-column is-align-items-center is-justify-content-center" 
+                @click="openModal">
+                <span class="icon is-size-1 has-text-grey-light"><i class="mdi mdi-plus"></i></span>
+                <p class="mt-3 has-text-grey-light">添加新地址</p>
+            </div>
+        </div>
+    </div>
+
+    <b-modal
+        v-model="isComponentModalActive"
+        has-modal-card
+        :can-cancel="false">
+        <modal-form v-bind="formProps"></modal-form>
+    </b-modal>
+</div>
+
+<script>
+    const ModalForm = {
+        props: ['id', 'name', 'phone', 'email', 'province', 'city', 'county', 'address', 'is_default'],
+        data(){
+            return {
+                labelPosition: 'on-border',
+                formProps: {
+                    'id': this.id || null,
+                    'name': this.name || "",
+                    'phone': this.phone || "",
+                    'email': this.email || "",
+                    'province': this.province || "",
+                    'city': this.city || "",
+                    'county': this.county || "",
+                    'address': this.address || "",
+                    'is_default': this.is_default || false
+                }
+            }
+        },
+        template: `
+            <div class="modal-card" style="min-width: 200px">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">收货地址</p>
+                </header>
+                <section class="modal-card-body">
+                    <b-field label="收件人" :label-position="labelPosition">
+                        <b-input
+                            v-model="formProps.name"
+                            type="text"
+                            :value="formProps.name"
+                            placeholder="Your name"
+                            required>
+                        </b-input>
+                    </b-field>
+
+                    <b-field label="手机号" :label-position="labelPosition">
+                        <b-input
+                            v-model="formProps.phone"
+                            type="text"
+                            :value="formProps.phone"
+                            placeholder="Your phone"
+                            :hasCounter="false"
+                            :maxlength="11"
+                            pattern="[1][3,4,5,7,8,9][0-9]{9}"
+                            validation-message="手机号格式有误！"
+                            required>
+                        </b-input>
+                    </b-field>
+                    <b-field label="省份" :label-position="labelPosition">
+                        <b-input
+                            v-model="formProps.province"
+                            type="text"
+                            :value="formProps.province"
+                            placeholder="Your province"
+                            required>
+                        </b-input>
+                    </b-field>
+                    <b-field label="城市" :label-position="labelPosition">
+                        <b-input
+                            v-model="formProps.city"
+                            type="text"
+                            :value="formProps.city"
+                            placeholder="Your city"
+                            required>
+                        </b-input>
+                    </b-field>
+                    <b-field label="区/县" :label-position="labelPosition">
+                        <b-input
+                            v-model="formProps.county"
+                            type="text"
+                            :value="formProps.county"
+                            placeholder="Your county"
+                            required>
+                        </b-input>
+                    </b-field>
+                    <b-field label="详细地址" :label-position="labelPosition">
+                        <b-input
+                            v-model="formProps.address"
+                            type="text"
+                            :value="formProps.address"
+                            placeholder="Your address"
+                            required>
+                        </b-input>
+                    </b-field>
+                    <b-checkbox v-model="formProps.is_default" :value="formProps.is_default">设为默认</b-checkbox>
+                </section>
+                <footer class="modal-card-foot">
+                    <b-button
+                        label="取消"
+                        @click="$parent.close()" />
+                    <b-button
+                        label="保存"
+                        type="is-primary"
+                        @click="save"/>
+                </footer>
+            </div>
+        `,
+        methods: {
+            // 保存地址
+            save(){
+                // 数据库修改
+                request({
+                    method: 'post',
+                    url: `{% url "baykeshop:address-list" %}`,
+                    headers: {'Accept': 'application/json'},
+                    data: this.formProps
+                }).then(res => {
+                    if (res.status == 201) {
+                        navbar.toastMessage('is-success', '增加成功！')
+                        this.$parent.close()
+                        location.reload()
+                    }else{
+                        navbar.toastMessage('is-danger', '失败')
+                    }
+                })
+            },
+        }
+    }
+</script>
+
+<script>
+    var addressData = JSON.parse(document.getElementById('address-data').textContent);
+    var address = new Vue({
+        el: '#address',
+        delimiters: ['{$', '$}'],
+        components: {
+            ModalForm
+        },
+        data: {
+            addressData,
+            text: "默认",
+            isComponentModalActive: false,
+            formProps: {}
+        },
+        methods:{
+            // 新增地址弹窗
+            openModal(){
+                this.isComponentModalActive = true
+                this.formProps = {}
+            },
+            // 选择地址
+            pickAddress(addr){
+                this.formProps = addr;
+                this.addressData.forEach(element => {
+                    if (addr.id == element.id){
+                        addr.is_default = true
+                        this.text = "选择 ✔"
+                    }else{
+                        element.is_default = false
+                    }
+                })
+            },
+        }
+    })
+</script>

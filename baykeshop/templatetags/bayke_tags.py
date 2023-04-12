@@ -150,3 +150,10 @@ def spu_banners(banners):
     return {
         'banners': banners
     }
+    
+
+@register.inclusion_tag("baykeshop/user/address.html")
+def address_result(address:list):
+    return {
+        'address': address
+    }
