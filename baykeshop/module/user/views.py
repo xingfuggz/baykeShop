@@ -66,7 +66,6 @@ class RegisterView(SuccessMessageMixin, FormView):
         )
         
         
-
 class BaykeShopAddressViewset(viewsets.ModelViewSet):
     """ 地址增删改查接口 """
     serializer_class = BaykeShopAddressSerializer
@@ -85,5 +84,6 @@ class BaykeShopAddressViewset(viewsets.ModelViewSet):
         return super().perform_update(serializer)
     
     def perform_only_default(self, serializer):
+        # 处理默认收货地址只能有一个
         if serializer.validated_data['is_default']:
             self.get_queryset().filter(is_default=True).update(is_default=False)

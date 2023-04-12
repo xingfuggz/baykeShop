@@ -3,6 +3,17 @@
     .add-box:hover{border-color: rgb(251, 59, 59); transition: ease .5s;}
     .add-box .btn-default{position: absolute;top: 0;right: 0;}
     .active{border-color: rgb(251, 59, 59);}
+    .meng-box {display: none;}
+    .add-box:hover .meng-box{
+        display: block; 
+        position: absolute;
+        top:0; 
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.755);
+        transition: ease .5s;
+    }
 </style>
 
 <div id="address">
@@ -10,8 +21,28 @@
     <div class="columns is-multiline">
         <div class="column is-3" v-for="addr in addressData" :key="addr.id">
             <div class="add-box is-clickable is-flex is-flex-direction-column is-align-items-start is-justify-content-center is-relative pl-5 pr-5"
-                :class="{active: addr.is_default}"
-                @click="pickAddress(addr)">
+                :class="{active: addr.is_default}" @click="pickAddress(addr)">
+
+                {% if update or delete %}
+                <div class="meng-box">
+                    <div class=" buttons is-flex is-align-items-center is-justify-content-center" style="height:100%">
+                        {% if update %}
+                        <div class="button is-success is-light is-small" @click="updateAddress(addr)">
+                            <span class="icon"><i class="mdi mdi-book-edit-outline"></i></span>
+                            <span>编辑</span> 
+                        </div>
+                        {% endif %}
+
+                        {% if delete %}
+                        <div class="button is-danger is-light is-small" @click="delAddress(addr.id)">
+                            <span class="icon"><i class="mdi mdi-delete-alert-outline"></i></span>
+                            <span>删除</span> 
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
                 <span class="tag is-danger btn-default is-radiusless" v-if="addr.is_default">{$ text $}</span>
                 <h1 class="has-text-weight-bold">{$ addr.name $}</h1>
                 <p>{$ addr.phone $}</p>
@@ -135,14 +166,20 @@
         methods: {
             // 保存地址
             save(){
+                let api = `{% url "baykeshop:address-list" %}`
+                let method = 'post'
+                if (this.formProps.id) {
+                    api = `{% url "baykeshop:address-list" %}${this.formProps.id}/`
+                    method = 'put'
+                }
                 // 数据库修改
                 request({
-                    method: 'post',
-                    url: `{% url "baykeshop:address-list" %}`,
+                    method: method,
+                    url: api,
                     headers: {'Accept': 'application/json'},
                     data: this.formProps
                 }).then(res => {
-                    if (res.status == 201) {
+                    if (res.status == 201 || res.status == 200) {
                         navbar.toastMessage('is-success', '增加成功！')
                         this.$parent.close()
                         location.reload()
@@ -175,6 +212,36 @@
                 this.isComponentModalActive = true
                 this.formProps = {}
             },
+
+            // 修改地址
+            updateAddress(addr){
+                this.isComponentModalActive = true
+                this.formProps = addr
+            },
+
+            // delAddress删除
+            delAddress(id){
+                this.$buefy.dialog.confirm({
+                    message: '是否确认删除该地址！',
+                    cancelText: '取消',
+                    onConfirm: () => {
+                        request({
+                            method: 'delete',
+                            url: `{% url "baykeshop:address-list" %}${id}/`,
+                            headers: {'Accept': 'application/json'},
+                        }).then(res => {
+                            console.log(res)
+                            if (res.status == 204 || res.status == 200) {
+                                navbar.toastMessage('is-success', '删除成功！')
+                                location.reload()
+                            }else{
+                                navbar.toastMessage('is-danger', '失败')
+                            }
+                        })
+                    }
+                })
+            },
+
             // 选择地址
             pickAddress(addr){
                 this.formProps = addr;

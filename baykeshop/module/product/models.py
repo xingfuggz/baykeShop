@@ -8,7 +8,7 @@ class BaykeCategory(_abs.CategoryMixin):
     """Model definition for BaykeCategory."""
     
     parent = models.ForeignKey("self", on_delete=models.CASCADE, blank=True, null=True)
-    pic = models.ImageField(_abs._("封面图"), upload_to="product/category/", max_length=200)
+    pic = models.ImageField(_abs._("封面图"), upload_to="product/category/", max_length=200, blank=True, default="catedefault.png")
     is_nav = models.BooleanField(default=False, verbose_name=_abs._("是否导航"))
 
     # TODO: Define fields here

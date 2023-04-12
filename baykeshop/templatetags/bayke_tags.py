@@ -153,7 +153,9 @@ def spu_banners(banners):
     
 
 @register.inclusion_tag("baykeshop/user/address.html")
-def address_result(address:list):
+def address_result(address:list, update=False, delete=False):
     return {
-        'address': address
+        'address': address,
+        'update': update,
+        'delete': delete
     }

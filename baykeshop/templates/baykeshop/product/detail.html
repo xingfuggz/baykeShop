@@ -82,7 +82,7 @@
                         <b-button 
                             type="is-primary" 
                             :disabled="stock ? false : true" 
-                            @click=""
+                            @click="nowBuy"
                             outlined>
                             立即购买
                         </b-button>
@@ -167,6 +167,8 @@
                         this.watchProduct()
                     }
                 },
+
+                // 处理监听需要比对的数据结构
                 watchProduct(){
                     this.productData.forEach(el => {
                         let ops_item = []
@@ -175,6 +177,22 @@
                         })
                         let ops = ops_item.join()
                         this.watchProductDatas[ops] = el
+                    })
+                },
+                
+                // 立即购买
+                nowBuy(){
+                    console.log(this.sku, this.num)
+                    request({
+                        url: `{% url 'baykeshop:confirm' %}`,
+                        method: 'post',
+                        data: {
+                            sku: this.sku,
+                            num: this.num,
+                            action: 'nowBuy'
+                        }
+                    }).then(res => {
+                        console.log(res)
                     })
                 },
 

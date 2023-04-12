@@ -1,5 +1,6 @@
 from rest_framework import mixins
 from rest_framework import viewsets
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework.renderers import JSONRenderer
@@ -14,19 +15,18 @@ from baykeshop.public.renderers import TemplateHTMLRenderer
 
 class ConfirmOrderAPIView(GenericAPIView):
     """ 订单确认 """
-    
     permission_classes = [IsAuthenticated]
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     authentication_classes = [SessionAuthentication, JWTAuthentication]
     serializer_class = BaykeShopAddressSerializer
     
     def get(self, request, *args, **kwargs):
-        
-        context = {
-            'address': self.address_datas
-        }
-        
+        context = {'address': self.address_datas}
         return Response(context, template_name="baykeshop/payment/confirm_order.html")
+    
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        return Response({'message': '缓存成功'}, status=status.HTTP_201_CREATED)
     
     @property
     def address_datas(self):
