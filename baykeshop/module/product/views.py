@@ -85,12 +85,11 @@ class BaykeCacheGoodsAPIview(APIView):
     def post(self, request, *args, **kwargs):
         message = ""
         code = ""
-        if request.data.get('action') == 'nowBuy':
-            cache.set(f'{request.user.id}nowBuy{request.data.get("sku")}', request.data, None)
+        if request.data.get('action') == 'cartBuy':
+            cache.set(f'{request.user.id}cartBuy', request.data, None)
             message = "缓存成功"
             code = status.HTTP_201_CREATED
-        elif request.data.get('action') == 'cartBuy':
-            cache.set(f'{request.user.id}cartBuy', request.data, None)
+        elif request.data.get('action') == 'nowBuy':
             message = "缓存成功"
             code = status.HTTP_201_CREATED
         else:

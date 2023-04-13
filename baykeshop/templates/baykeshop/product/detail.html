@@ -191,7 +191,11 @@
                             action: 'nowBuy'
                         }
                     }).then(res => {
-                        location.href = `{% url 'baykeshop:confirm' %}?sku=${this.sku}&num=${this.num}&action=noyBuy`
+                        if (res.status == 201){
+                            location.href = `{% url 'baykeshop:confirm' %}?sku=${this.sku}&num=${this.num}&action=nowBuy`
+                        }else{
+                            navbar.toastMessage('is-danger', res.data.message)
+                        }
                     })
                 },
 

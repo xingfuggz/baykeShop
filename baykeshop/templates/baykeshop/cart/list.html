@@ -198,7 +198,7 @@
                         }
                     }).then(res => {
                         if (res.status == 201){
-                            location.href = `{% url 'baykeshop:confirm' %}`
+                            location.href = `{% url 'baykeshop:confirm' %}?action=cartBuy`
                             navbar.toastMessage('is-success', res.data.message)
                         }else{
                             navbar.toastMessage('is-danger', res.data.message)

@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.core.cache import cache
 
 from baykeshop.module.product.models import BaykeProduct
@@ -13,26 +14,16 @@ class ComputedPayMent:
         self.request = request
         self.query = self.request.query_params
         self.actions = ['nowBuy', 'cartBuy']
-        self.action = None
-        
-    # def __call__(self, *args, **kwds):
-    #     return self.get_serializer_data
     
     def get_cache_carts(self):
-        return cache.get(f"{self.request.user}cartBuy")
-    
-    @property
-    def get_action(self):
-        if self.query and self.query.get('action') in self.actions:
-            self.action = self.query.get('action')
-        return self.action
+        return cache.get(f"{self.request.user.id}cartBuy")
     
     @property    
     def validate(self):
         # 验证是否为立即购买或购物车结算，
         # 如果不是，阻止一切运行，防止页面报错
         is_pay = False
-        action = self.get_action
+        action = self.query.get('action')
         query = self.query
         if query.get('sku') and query.get('num') and action:
             is_pay = True
@@ -49,36 +40,61 @@ class ComputedPayMent:
         """ 根据传递的操作参数返回对应的queryset """
         queryset = None
         query = self.query_validate_data
-        if self.get_action == 'nowBuy':
+        if self.query.get('action') == 'nowBuy':
             queryset = BaykeProduct.objects.filter(id=int(query.get('sku')))
-        elif self.get_action == 'cartBuy':
-            cart_ids = [cart['id'] for cart in self.get_cache_carts()]
-            queryset = BaykeShopingCart.objects.filter(id=cart_ids)
+        elif self.query.get('action') == 'cartBuy':
+            cart_ids = [cart['id'] for cart in self.get_cache_carts()['skus']]
+            queryset = BaykeShopingCart.objects.filter(id__in=cart_ids)    
         return queryset
     
     def get_serializer_class(self):
         # 根据验证信息返回对应的序列化类
         serializer_class = None
-        if self.get_action == 'nowBuy':
-            serializer_class = CartBaykeProductSerializer
-        elif self.get_action == 'cartBuy':
-            serializer_class = CartBaykeShopingListSerializer
+        if self.query.get('action') == 'nowBuy':
+            serializer_class = CartBaykeProductSerializer(self.get_queryset(), many=True)
+        elif self.query.get('action') == 'cartBuy':
+            serializer_class = CartBaykeShopingListSerializer(self.get_queryset(), many=True)
         return serializer_class
     
-    @property
-    def get_serializer(self):
-        # 根据传入的渠道返回对应的serializer
-        serializer = None
-        serializer_class = self.get_serializer_class()
-        if self.get_action == 'nowBuy':
-            serializer = serializer_class(CartBaykeProductSerializer(self.get_queryset()), many=True)
-        elif self.get_action == 'cartBuy':
-            serializer = serializer_class(CartBaykeShopingListSerializer(self.get_queryset()), many=True)
-        print(self.get_action)
-        print(serializer)
-        return serializer
+    def get_context(self):
+        context = {}
+        if self.get_serializer_class():
+            context = self.get_serializer_class().data
+            if self.query.get('action') == 'nowBuy':
+                context[0]['totalPrice'] = self.total_price(context[0]['price'], self.query.get('num', 1))
+                context[0]['count'] = self.query.get('num', 1)
+            elif self.query.get('action') == 'cartBuy':
+                for cart in context:
+                    cart['sku']['totalPrice'] = self.total_price(cart['sku']['price'], cart.get('num', 1))
+                    cart['sku']['count'] = cart.get('num', 1)
+        return context
     
-    def get_serializer_data(self):
-        data = self.get_serializer
-        print(data)
-        return data
+    def total_price(self, price, num):
+        # 计算价格
+        return Decimal(price) * int(num)
+
+    @property
+    def computed(self):
+        # 计算
+        computed_dict = {'num': 0, 'total': 0, 'freight': 0, 'total_amount': 0}
+        if self.query.get('action') == 'nowBuy':
+            computed_dict['num'] = int(self.query.get('num'))
+            computed_dict['total'] = self.total_price(self.get_context()[0]['price'], int(self.query.get('num')))
+            computed_dict['freight'] = Decimal(self.get_context()[0]['goods']['freight'])
+        elif self.query.get('action') == 'cartBuy':
+            for cart in self.get_context():
+                computed_dict['num'] += int(cart.get('num', 1))
+                computed_dict['total'] += self.total_price(cart['sku']['price'], cart.get('num', 1))
+                computed_dict['freight'] += Decimal(cart['sku']['goods']['freight'])
+        computed_dict['total_amount'] = computed_dict['total'] + computed_dict['freight']
+        return computed_dict
+    
+    def get_skus(self):
+        # 使商品结构保持一致
+        skus = []
+        if self.query.get('action') == 'nowBuy':
+            skus = self.get_context()
+        elif self.query.get('action') == 'cartBuy':
+            for cart in self.get_context():
+                skus.append(cart['sku'])
+        return skus
