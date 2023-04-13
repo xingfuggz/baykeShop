@@ -1,9 +1,15 @@
+from django.core.cache import cache
+
+from rest_framework import status
 from rest_framework import mixins
 from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.filters import SearchFilter
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -61,17 +67,33 @@ class BaykeGoodsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         elif not query.get('categorys'):
             return self.get_category_queryset().filter(parent=self.get_parent_category_queryset().first())
 
-        
-        
+             
 class BaykeGoodsDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    
+    """ 商品详情页接口 """
     queryset = product.BaykeGoods.objects.all()
     serializer_class = BaykeGoodsDetailSerializer
     authentication_classes = [SessionAuthentication, JWTAuthentication]
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = "baykeshop/product/detail.html"
+
+
+class BaykeCacheGoodsAPIview(APIView):
+    """ 缓存商品接口 """
+    authentication_classes = [SessionAuthentication, JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     
-    def retrieve(self, request, *args, **kwargs):
-        response = super().retrieve(request, *args, **kwargs)
-        
-        return response
+    def post(self, request, *args, **kwargs):
+        message = ""
+        code = ""
+        if request.data.get('action') == 'nowBuy':
+            cache.set(f'{request.user.id}nowBuy{request.data.get("sku")}', request.data, None)
+            message = "缓存成功"
+            code = status.HTTP_201_CREATED
+        elif request.data.get('action') == 'cartBuy':
+            cache.set(f'{request.user.id}cartBuy', request.data, None)
+            message = "缓存成功"
+            code = status.HTTP_201_CREATED
+        else:
+            message = "缓存失败"
+            code = status.HTTP_400_BAD_REQUEST
+        return Response({'message': message}, status=code)

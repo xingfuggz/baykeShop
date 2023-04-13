@@ -1,7 +1,7 @@
+from decimal import Decimal
 from django.core.cache import cache
 
-from rest_framework import mixins
-from rest_framework import viewsets
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
@@ -13,8 +13,10 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from baykeshop.module.user.models import BaykeShopAddress
 from baykeshop.module.user.serializers import BaykeShopAddressSerializer
 from baykeshop.public.renderers import TemplateHTMLRenderer
-from baykeshop.module.cart.serializers import CartBaykeProductSerializer
+from baykeshop.module.cart.models import BaykeShopingCart
+from baykeshop.module.cart.serializers import CartBaykeProductSerializer, CartBaykeShopingListSerializer
 from baykeshop.module.product.models import BaykeProduct
+from baykeshop.module.payment.computed import ComputedPayMent
 
 
 
@@ -26,32 +28,63 @@ class ConfirmOrderAPIView(GenericAPIView):
     serializer_class = BaykeShopAddressSerializer
     
     def get(self, request, *args, **kwargs):
+        
+        pay = ComputedPayMent(request)
+        pay.get_serializer
         context = {
             'address': self.address_datas,
             **self.get_goods()
         }
         return Response(context, template_name="baykeshop/payment/confirm_order.html")
     
-    def post(self, request, *args, **kwargs):
-        # 缓存
-        if request.data.get('action') == 'nowBuy':
-            cache.set(f'{request.user.id}goods', request.data)
-        return Response({'message': '缓存成功'}, status=status.HTTP_201_CREATED)
-    
     def get_goods(self):
-        query = self.request.query_params
-        cache_data = None
         serializer = {}
-        action = None
+        num = 0         # 商品总数量
+        total = 0       # 商品总价
+        freight = 0     # 运费
+        total_amount = 0
+        cache_data = (
+            cache.get(f'{self.request.user.id}nowBuy{self.request.query_params.get("sku")}') or
+            cache.get(f'{self.request.user.id}cartBuy')
+        )
         # 判断是从哪里跳转到该页面的
-        if query.get('action') == 'nowBuy':
-            cache_data = cache.get(f'{self.request.user.id}goods')
-            serializer['goods'] = CartBaykeProductSerializer(BaykeProduct.objects.filter(id=cache_data.get('sku')), many=True).data
-            serializer['num'] = cache_data.get('num', 0)
-            serializer['action'] = query.get('action')
+        if cache_data.get('action') == 'nowBuy':
+            serializer['sku'] = CartBaykeProductSerializer(BaykeProduct.objects.filter(id=cache_data.get('sku')).first()).data
+            num = cache_data.get('num', 0)
+            total = serializer['sku']['price'] * cache_data.get('num', 0)
+            freight = Decimal(serializer['sku']['goods']['freight'])
+            total_amount = Decimal(total) + Decimal(freight)
+            
+            serializer['num'] = num
+            serializer['totalprice'] = total
+            serializer['action'] = cache_data.get('action')
+            serializer['freight'] = freight
+            serializer['total_amount'] =  total_amount
+            
+        elif cache_data.get('action') == 'cartBuy':
+            cart_ids = [cart['id'] for cart in cache_data.get('skus', []) ]
+            serializer['carts'] = CartBaykeShopingListSerializer(BaykeShopingCart.objects.filter(id__in=cart_ids), many=True).data
+            serializer['action'] = cache_data.get('action')
+            for cart in serializer['carts']:
+                # 该商品的总价
+                cart['sku']['totalprice'] = int(cart['num']) * Decimal(cart['sku']['price'])
+                # 计算所有商品的总价
+                total += cart['sku']['totalprice']
+                # 总数量
+                num += cart['num']
+                # 计算运费
+                freight += Decimal(cart['sku']['goods']['freight'])
+            # 商品数量
+            serializer['num'] = num
+            # 运费
+            serializer['freight'] = freight
+            # 不含运费的总价
+            serializer['totalprice'] = total
+            # 含运费的总价
+            total_amount = total + freight
+            serializer['total_amount'] = total_amount
         return serializer
         
-    
     @property
     def address_datas(self):
         queryset = self.filter_queryset(self.get_queryset())
@@ -59,7 +92,6 @@ class ConfirmOrderAPIView(GenericAPIView):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-
         serializer = self.get_serializer(queryset, many=True)
         return serializer.data
     

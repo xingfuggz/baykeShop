@@ -82,7 +82,7 @@
                         </b-field>
                     </b-table-column>
                     <b-table-column field="total_price" label="小计" width="120" v-slot="props">
-                        <span class="is-size-5 has-text-grey">¥</span>{$ props.row.sku.price * props.row.num $}
+                        <span class="is-size-5 has-text-grey">¥</span>{$ parseFloat(props.row.sku.price * props.row.num).toFixed(2) $}
                     </b-table-column>
                     <b-table-column field="caozuo" label="操作" width="80" v-slot="props">
                         <button class="delete" @click="delCart(props.row)">删除</button>
@@ -95,7 +95,10 @@
                             </div>
                             <div class=" is-flex is-align-items-center has-text-danger-dark ">
                                 <span class="is-size-5">合计：</span> <span class="is-size-3 pr-5">¥ {$ totalPrice $}</span>
-                                <button class="button is-primary is-radiusless is-large pl-6 pr-6" :disabled="checkedRows.length > 0 ? false : true">
+                                <button 
+                                    class="button is-primary is-radiusless is-large pl-6 pr-6" 
+                                    :disabled="checkedRows.length > 0 ? false : true"
+                                    @click="cartBuy">
                                     去结算
                                 </button>
                             </div>
@@ -134,9 +137,10 @@
             watch:{
                 checkedRows: {
                     handler: function(val, oldval){
-                        this.totalPrice = 0;
+                        let totalPrice = 0;
                         val.forEach(element => {
-                           this.totalPrice += element.num * element.sku.price 
+                           totalPrice += element.num * element.sku.price
+                           this.totalPrice = parseFloat(totalPrice).toFixed(2)
                         });
                     },
                     deep: true
@@ -181,6 +185,25 @@
                                 }
                             })
                         }
+                    })
+                },
+
+                cartBuy(){
+                    request({
+                        url: `{% url 'baykeshop:cache' %}`,
+                        method: 'post',
+                        data: {
+                            skus: this.checkedRows, 
+                            action: 'cartBuy'
+                        }
+                    }).then(res => {
+                        if (res.status == 201){
+                            location.href = `{% url 'baykeshop:confirm' %}`
+                            navbar.toastMessage('is-success', res.data.message)
+                        }else{
+                            navbar.toastMessage('is-danger', res.data.message)
+                        }
+                        
                     })
                 }
             },

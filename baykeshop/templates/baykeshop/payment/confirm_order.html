@@ -11,29 +11,106 @@
 
 {% block breadcrumb %}
 <div class="container">
-    <nav class="breadcrumb is-marginless mt-3 mb-3 is-small" aria-label="breadcrumbs">
-      <ul>
-        <li><a href="{% url 'baykeshop:home' %}">首页</a></li>
-        <li class="is-active"><a href="#" aria-current="page">订单确认</a></li>
-      </ul>
-    </nav>
+	<nav class="breadcrumb is-marginless mt-3 mb-3 is-small" aria-label="breadcrumbs">
+		<ul>
+			<li><a href="{% url 'baykeshop:home' %}">首页</a></li>
+			<li class="is-active"><a href="#" aria-current="page">订单确认</a></li>
+		</ul>
+	</nav>
 </div>
 {% endblock %}
 
 {% block container %}
-    <div class="container">
-      <div class="box">
-        <h1 class="is-size-5">收货地址</h1>
-        <img width="100%" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAAAECAYAAACeNca/AAAAAXNSR0IArs4c6QAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAEsKADAAQAAAABAAAABAAAAAAdekyeAAABbUlEQVR4Ae2asW3DMBBFSWqGACkzRHprgyCbZASPEHiRjJC4TlYIkD4zWIyPd8WXzcZKw+KpkSCIBPHw+HWimNP5eHj5nae6vNv1pqPW4/fhfr5sW98e51TK9n5TPeanz6t+Ga+Thq9zwAd8cAL4oBzIB3zAB+qHRH0W04B6soHAB3xYvRj4fnMc5AP5sJoYrD8YjoHfF8XGNy2nvZ23Hqcy7bttS+7f7z7cubnUbnvGG6zg20DgAz4EAXxQEOQDPuCDEsAHpUE+4AM+KAF8UBrkAz7ggxLAB6UxQD4U272Sct7puG66Pq/O/bzefVy2aX//0z/6td1Xz19X/TJeJw1f54AP+OAE8EE5kA/4gA/UD/b3lPrMZgL1ZMsDfIhYxAd8CBUcBN+bxoF8CCnIB58WY9cPhd0r4esAq4kxktWJ3W2Bg914DQQ+4IMGBD7gAz4oAXxQGuQDPuCDEsAHpUE+4AM+KAF8UBqj58MfRyl5tp+pqv4AAAAASUVORK5CYII=">
-        {% address_result address update=True delete=True %}
-      </div>
+<div class="container">
+	<div class="box">
+		<h1 class="is-size-5">收货地址</h1>
+		<img width="100%"
+			src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAAAECAYAAACeNca/AAAAAXNSR0IArs4c6QAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAEsKADAAQAAAABAAAABAAAAAAdekyeAAABbUlEQVR4Ae2asW3DMBBFSWqGACkzRHprgyCbZASPEHiRjJC4TlYIkD4zWIyPd8WXzcZKw+KpkSCIBPHw+HWimNP5eHj5nae6vNv1pqPW4/fhfr5sW98e51TK9n5TPeanz6t+Ga+Thq9zwAd8cAL4oBzIB3zAB+qHRH0W04B6soHAB3xYvRj4fnMc5AP5sJoYrD8YjoHfF8XGNy2nvZ23Hqcy7bttS+7f7z7cubnUbnvGG6zg20DgAz4EAXxQEOQDPuCDEsAHpUE+4AM+KAF8UBrkAz7ggxLAB6UxQD4U272Sct7puG66Pq/O/bzefVy2aX//0z/6td1Xz19X/TJeJw1f54AP+OAE8EE5kA/4gA/UD/b3lPrMZgL1ZMsDfIhYxAd8CBUcBN+bxoF8CCnIB58WY9cPhd0r4esAq4kxktWJ3W2Bg914DQQ+4IMGBD7gAz4oAXxQGuQDPuCDEsAHpUE+4AM+KAF8UBqj58MfRyl5tp+pqv4AAAAASUVORK5CYII=">
+		{% address_result address update=False delete=False %}
+	</div>
 
-      <div class="box">
-        <h1 class="is-size-5">订单商品</h1>
-      </div>
+	<div class="box">
+		<h1 class="is-size-5">订单商品</h1>
+		<div class=" dropdown-divider"></div>
 
-      {{ goods }}{{ action }}{{ num }}
-      
-    </div>
+		{% if action == 'nowBuy' %}
+		<div class="columns">
+			<div class="column is-2 is-flex is-justify-content-center">
+				<figure class="image is-128x128">
+					<img src="{{ sku.pic }}" alt="{{ sku.goods.title }}">
+				</figure>
+			</div>
+			<div class="column is-flex is-flex-direction-column is-justify-content-center">
+				<h1 class=" has-text-weight-bold">{{ sku.goods.title }}</h1>
+				<div class="has-text-grey-light">
+					{% for op in sku.options %}
+					<span class="mr-3">{{ op.spec }}:{{ op.name }}</span>
+					{% endfor %}
+				</div>
+			</div>
+			<div class="column is-2 is-flex is-justify-content-center is-align-items-center">
+				{{ sku.price }}x{{ num }}
+			</div>
+			<div class="column is-2 is-flex is-justify-content-center is-align-items-center">
+				¥{{ totalprice }}
+			</div>
+		</div>
+		{% elif action == 'cartBuy' %}
+		{% for cart in carts %}
+		<div class="columns">
+			<div class="column is-2 is-flex is-justify-content-center">
+				<figure class="image is-128x128">
+					<img src="{{ cart.sku.pic }}" alt="{{ cart.sku.goods.title }}">
+				</figure>
+			</div>
+			<div class="column is-flex is-flex-direction-column is-justify-content-center">
+				<h1 class=" has-text-weight-bold">{{ cart.sku.goods.title }}</h1>
+				<div class="has-text-grey-light">
+					{% for op in cart.sku.options %}
+					<span class="mr-3">{{ op.spec }}:{{ op.name }}</span>
+					{% endfor %}
+				</div>
+			</div>
+			<div class="column is-2 is-flex is-justify-content-center is-align-items-center">
+				{{ cart.sku.price }}x{{ cart.num }}
+			</div>
+			<div class="column is-2 is-flex is-justify-content-center is-align-items-center">
+				¥{{ cart.sku.totalprice }}
+			</div>
+		</div>
+		{% endfor %}
+
+		{% endif %}
+
+		<div class="dropdown-divider"></div>
+		<div class="box is-shadowless is-radiusless has-background-light">
+			<div class="field">
+				<label class="label">订单留言</label>
+				<div class="control">
+					<textarea class="textarea" name="mark" placeholder="请备注说明您的特殊要求..."></textarea>
+				</div>
+			</div>
+		</div>
+
+		<div class="is-flex is-flex-direction-column">
+			<div class="is-flex mb-2">
+				<div class=" has-text-right" style="width:85%">{{ num }} 件商品，总商品金额：</div>
+				<div class=" has-text-left" style="width:10%; margin-left:5%;">¥{{ totalprice }} </div>
+			</div>
+			<div class="is-flex mb-2">
+				<div class="has-text-right" style="width:85%">运费：</div>
+				<div class="has-text-left" style="width:10%;margin-left:5%;">¥{{ freight }} </div>
+			</div>
+			<div class="is-flex has-text-danger-dark">
+				<div class=" has-text-right is-size-5" style="width:85%">应付总额：</div>
+				<div class=" has-text-left is-size-5" style="width:10%; margin-left:5%;">¥{{ total_amount }} </div>
+			</div>
+		</div>
+		<div class=" dropdown-divider"></div>
+		<div class="has-text-right">
+			<button class="button is-primary mt-2 pl-6 pr-6 is-large" @click="">提交订单</button>
+		</div>
+	</div>
+
+</div>
 {% endblock %}
-    

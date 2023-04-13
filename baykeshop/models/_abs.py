@@ -71,6 +71,7 @@ class GoodsMixin(ArticleMixin):
     """ 商品 """
     after_sale = tinymce_field.TinymceField(_("售后服务"), blank=True, default="")
     pic = models.ImageField(_("主图"), upload_to="pic/%Y/", max_length=200)
+    freight = models.DecimalField(_("运费"), max_digits=5, decimal_places=2, blank=True, default=0.00)
     
     class Meta:
         abstract = True

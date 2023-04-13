@@ -11,3 +11,6 @@ router.register('', views.BaykeGoodsViewSet, basename="goods")
 router.register('spu', views.BaykeGoodsDetailViewSet, basename="spu")
 
 urlpatterns = router.urls
+urlpatterns += [
+    path('cache/', views.BaykeCacheGoodsAPIview.as_view(), name='cache'),
+]

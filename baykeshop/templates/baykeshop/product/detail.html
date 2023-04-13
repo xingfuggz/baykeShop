@@ -182,9 +182,8 @@
                 
                 // 立即购买
                 nowBuy(){
-                    console.log(this.sku, this.num)
                     request({
-                        url: `{% url 'baykeshop:confirm' %}`,
+                        url: `{% url 'baykeshop:cache' %}`,
                         method: 'post',
                         data: {
                             sku: this.sku,
@@ -192,8 +191,7 @@
                             action: 'nowBuy'
                         }
                     }).then(res => {
-                        console.log(res)
-                        location.href = `{% url 'baykeshop:confirm' %}?action=nowBuy`
+                        location.href = `{% url 'baykeshop:confirm' %}?sku=${this.sku}&num=${this.num}&action=noyBuy`
                     })
                 },
 
