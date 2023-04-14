@@ -20,6 +20,7 @@ class BaykeOrderInfoSerializer(serializers.ModelSerializer):
     
     owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
     baykeordergoods_set = BaykeOrderGoodsSerializer(read_only=True, many=True)
+    pay_methods = serializers.SerializerMethodField()
     
     class Meta:
         model = BaykeOrderInfo
@@ -39,3 +40,33 @@ class BaykeOrderInfoSerializer(serializers.ModelSerializer):
         # 设置order_sn的值
         attrs["order_sn"] = self.generate_order_sn()
         return attrs
+    
+    def get_pay_methods(self, obj):
+        pay_methods = BaykeOrderInfo.get_pay_method()  
+        pay_list = [
+            { 
+                'value': 1,
+                'name': pay_methods[1],
+                'icon': "/static/baykeshop/img/hdpay.svg",
+                'is_default': False,
+            },
+            { 
+                'value': 2,
+                'name': pay_methods[2],
+                'icon': "/static/baykeshop/img/alipay.svg",
+                'is_default': True,
+            },
+            { 
+                'value': 3,
+                'name': pay_methods[3],
+                'icon': "/static/baykeshop/img/wxpay.svg",
+                'is_default': False,
+            },
+            { 
+                'value': 4,
+                'name': pay_methods[4],
+                'icon': "/static/baykeshop/img/ye.svg",
+                'is_default': False,
+            }
+        ]
+        return pay_list

@@ -104,6 +104,9 @@
 							address: `${addrs.province}${addrs.city}${addrs.county}${addrs.address}`
 						}
 					}).then(res => {
+						if (res.status == 201){
+							console.log(res)
+						}
 						console.log(res)
 					})
 

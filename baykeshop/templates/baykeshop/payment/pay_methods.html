@@ -1,0 +1,63 @@
+<style>
+    .pay-method-box{height: 100px;border: solid 1px #eee;position: relative;}
+    .pay-tag{position: absolute;right: 0;top: 0;}
+    .pay-method-box:hover{border: solid 1px #f14668;cursor: pointer;}
+    .active{border: solid 1px #f14668;}
+</style>
+
+<div id="payMethod">
+    {{ methods|json_script:"pay-methods-data" }}
+    <div class="columns">
+        <div class="column is-3" v-for="pay in payMethods" :key="pay.value" @click="payMethod(pay)">
+            <div class="pay-method-box is-flex is-align-items-center is-justify-content-center" :class="{active:pay.is_default}">
+                <div class="pay-icon mr-3" v-if="pay.value == 4">
+                    <img :src="pay.icon" width="36px">
+                </div>
+                <img v-else class="mr-3" :src="pay.icon" width="36px">
+
+                <div v-if="pay.value == 4">
+                    <h1 class=" is-size-4">{$ pay.name $}</h1> 
+                    <span class="has-text-grey-light">余额：{{ request.user.baykeuserinfo.balance }}</span>
+                </div>
+                <h1 v-else class="is-size-4">{$ pay.name $}</h1> 
+
+                <div v-if="pay.is_default" class="tag is-danger pay-tag is-radiusless is-size-6">{$ text $}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var pay_methods = JSON.parse(document.getElementById('pay-methods-data').textContent);
+    var payMethod = new Vue({
+        el: '#payMethod',
+        delimiters: ['{$', '$}'],
+        data: {
+            payMethods: pay_methods,
+            defaultPay: null,
+            text: "默认",
+        },
+        created(){
+            // 设置默认支付方式
+            this.payMethods.forEach(element => {
+                if (element.is_default) {
+                    this.defaultPay = element
+                }
+            })
+        },
+        methods: {
+            // 支付方式
+            payMethod(pay){
+                this.defaultPay = pay
+                this.payMethods.forEach(element => {
+                    if (pay.value == element.value){
+                        element.is_default = true
+                        this.text = "选择"
+                    }else{
+                        element.is_default = false
+                    }
+                })
+            },
+        }
+    })
+</script>

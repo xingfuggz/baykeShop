@@ -159,3 +159,12 @@ def address_result(address:list, update=False, delete=False):
         'update': update,
         'delete': delete
     }
+    
+
+@register.inclusion_tag("baykeshop/payment/pay_methods.html")
+def pay_methods(request, methods):
+    # 支付方式组件
+    return {
+        'methods': methods,
+        'request': request
+    }

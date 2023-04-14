@@ -1,15 +1,17 @@
 from decimal import Decimal
 from django.core.cache import cache
+from django.db.models.expressions import F
 
 from baykeshop.module.product.models import BaykeProduct
 from baykeshop.module.cart.models import BaykeShopingCart
 from baykeshop.module.cart.serializers import (
     CartBaykeProductSerializer, CartBaykeShopingListSerializer
 )
+from baykeshop.module.order.models import BaykeOrderGoods
 
 
 class BaseComputedPayMent:
-    
+        
     action = None
     model = None
     serializer_class = None
@@ -93,6 +95,25 @@ class BaseComputedPayMent:
             'total_amount': self.get_total_amount()
         }
     
+    def save_order_goods(self, orderinfo):
+        skus = self.get_skus()
+        for sku in skus:
+            product = BaykeProduct.objects.get(id=sku['id'])
+            BaykeOrderGoods.objects.create(
+                orderinfo=orderinfo, 
+                title=sku['goods']['title'],
+                options = sku['options'],
+                price=sku['price'],
+                content=sku['goods']['content'],
+                count=sku['count'],
+                product=product
+            )
+            # 减库存加销量
+            product.stock = F('stock')-int(sku['count'])
+            product.sales = F('sales')+int(sku['count'])
+            product.save()
+        return orderinfo
+        
 
 class NowBuyComputed(BaseComputedPayMent):
     """ 立即购买 """
