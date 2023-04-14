@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from baykeshop.module.cart.serializers import CartBaykeProductSerializer
 from baykeshop.module.order.models import BaykeOrderInfo, BaykeOrderGoods
+from baykeshop.module.payment.computed import computed_pay
 
 
 class BaykeOrderGoodsSerializer(serializers.ModelSerializer):
@@ -18,7 +19,7 @@ class BaykeOrderInfoSerializer(serializers.ModelSerializer):
     """ 订单序列化 """
     
     owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    baykeordergoods_set = BaykeOrderGoodsSerializer(many=True)
+    baykeordergoods_set = BaykeOrderGoodsSerializer(read_only=True, many=True)
     
     class Meta:
         model = BaykeOrderInfo

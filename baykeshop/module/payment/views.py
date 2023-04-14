@@ -9,10 +9,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from baykeshop.module.user.models import BaykeShopAddress
 from baykeshop.module.user.serializers import BaykeShopAddressSerializer
 from baykeshop.public.renderers import TemplateHTMLRenderer
-from baykeshop.module.cart.models import BaykeShopingCart
-from baykeshop.module.cart.serializers import CartBaykeProductSerializer, CartBaykeShopingListSerializer
-from baykeshop.module.product.models import BaykeProduct
-from baykeshop.module.payment.computed import ComputedPayMent
+from baykeshop.module.payment.computed import NowBuyComputed, CartBuyComputed
 
 
 
@@ -23,19 +20,23 @@ class ConfirmOrderAPIView(GenericAPIView):
     authentication_classes = [SessionAuthentication, JWTAuthentication]
     serializer_class = BaykeShopAddressSerializer
     
-    def get(self, request, *args, **kwargs):  
-        pay = ComputedPayMent(request)
+    def get(self, request, *args, **kwargs):
+        query = request.query_params
         code = status.HTTP_200_OK
-        context = {
-            'address': self.address_datas,
-            'skus': pay.get_skus(),
-            'pay': pay.computed,
-            'is_pay': pay.validate
-        }
-        if not pay.validate:
-            context['address'] = []
-            context['error'] = "不是有效地址！"
-            code = status.HTTP_404_NOT_FOUND
+        pay = None
+        if query.get('action') == 'nowBuy':
+            pay = NowBuyComputed(request, int(query.get('sku')), query.get('num'))
+        elif query.get('action') == 'cartBuy':
+            pay = CartBuyComputed(request)
+        context = {'address': self.address_datas,'skus': [], 'is_pay': False, 'pay': None,'query': query}
+        if pay:
+            context['skus'] = pay.get_skus()
+            context['pay'] = pay.computed()
+            context['is_pay'] = pay.validate
+            if not pay.validate:
+                context['address'] = []
+                context['error'] = "不是有效地址！"
+                code = status.HTTP_404_NOT_FOUND
         return Response(context, template_name="baykeshop/payment/confirm_order.html", status=code)
           
     @property

@@ -124,7 +124,7 @@
             delimiters: ['{$', '$}'],
             data: {
                 cartsData,
-                checkedRows: [],
+                checkedRows: [],  // 选择的动态
                 totalPrice: 0
             },
             created(){
@@ -197,6 +197,7 @@
                             action: 'cartBuy'
                         }
                     }).then(res => {
+                        console.log(this.checkedRows)
                         if (res.status == 201){
                             location.href = `{% url 'baykeshop:confirm' %}?action=cartBuy`
                             navbar.toastMessage('is-success', res.data.message)

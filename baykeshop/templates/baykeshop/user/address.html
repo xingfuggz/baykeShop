@@ -206,6 +206,13 @@
             isComponentModalActive: false,
             formProps: {}
         },
+        created() {
+            this.addressData.forEach(element => {
+                if (element.is_default){
+                    this.formProps = element
+                }
+            })
+        },
         methods:{
             // 新增地址弹窗
             openModal(){
