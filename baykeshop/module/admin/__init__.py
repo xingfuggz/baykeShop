@@ -5,8 +5,9 @@ from baykeshop.module.admin.options import BaseModelAdmin
 
 from baykeshop.public.sites import bayke_site
 from baykeshop.public.models import BaykeBanner
-from baykeshop.module.product import models as product
+# from baykeshop.module.product import models as product
 from baykeshop.module.product import admin as product_admin
+from baykeshop.module.user import admin as user_admin
 
 
 @admin.register(BaykeBanner, site=bayke_site)

@@ -1,5 +1,4 @@
 from django.core.cache import cache
-from django.urls import reverse
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -63,3 +62,26 @@ class BaykeOrderInfoViewset(mixins.ListModelMixin,
         orderinfo = self.get_object()
         serializer = self.get_serializer(orderinfo)
         return Response({'order': serializer.data}, template_name="baykeshop/payment/pay.html")
+    
+    @action(detail=True, methods=['get'])
+    def balance(self, request, order_sn=None):
+        # 订单结算视图
+        orderinfo = self.get_object()
+        serializer = self.get_serializer(orderinfo)
+        from django.utils import timezone
+        from django.db.models import F
+        from baykeshop.module.user.models import BaykeUserInfo, BaykeUserBalanceLog
+        userinfo = BaykeUserInfo.objects.filter(owner=request.user)
+        is_updates = [
+            userinfo.exists(), 
+            (userinfo.first().balance > orderinfo.total_amount), 
+            orderinfo.pay_status == 1
+        ]
+        if all(is_updates):
+            userinfo.update(balance=F('balance')-orderinfo.total_amount)
+            orderinfo.pay_status = 2
+            orderinfo.trade_sn = f"YE{orderinfo.order_sn}"
+            orderinfo.pay_method = 4
+            orderinfo.pay_time=timezone.now()
+            orderinfo.save()
+        return Response({'order': serializer.data}, template_name="baykeshop/payment/alipay_notfiy.html")

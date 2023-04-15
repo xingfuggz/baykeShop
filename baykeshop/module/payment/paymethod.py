@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.urls import NoReverseMatch, Resolver404, resolve, reverse
+from django.urls import NoReverseMatch, reverse
 
 from rest_framework.request import HttpRequest
 
@@ -35,7 +35,7 @@ class AlipayMethod(BasePayMethod):
     def __init__(self, request, orderinfo) -> None:
         self.request = request
         self.orderinfo = orderinfo
-        
+    
     @property
     def private_key_string(self):
         """"
@@ -107,7 +107,7 @@ class AlipayMethod(BasePayMethod):
             pass
         url = f"{self.request.scheme}://{self.request.get_host()}{url}"
         return url
-    
+
 
 class Pay:
     
@@ -115,13 +115,21 @@ class Pay:
         if method == 1:
             return None
         elif method == 2:
-            return AlipayMethod(request, orderinfo).redirct_url
+            return self.alipay(request, orderinfo).redirct_url
         elif method == 3:
             return None
         elif method == 4:
-            return None
+            return self.balance_pay(orderinfo)
         else:
             return None
 
     def __str__(self) -> str:
         return "<Pay: baykeshop.module.payment.paymethod>"
+    
+    def alipay(self, request, orderinfo):
+        """ 支付宝支付 """
+        return AlipayMethod(request, orderinfo)
+    
+    def balance_pay(self, orderinfo):
+        """ 余额支付 """
+        return reverse("baykeshop:orders-balance", args=[orderinfo.order_sn])

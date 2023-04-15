@@ -23,6 +23,9 @@
 
 {% block container %}
 <div class="container">
+    {% if order.pay_status and order.pay_status != '待支付'  %}
+        {% include 'baykeshop/payment/notfiy.html' with order=order %}
+    {% else %}
     <div class="box is-marginless is-radiusless has-background-primary-dark has-text-white-bis">
         <h1 class="is-size-3">订单提交成功！去付款咯~</h1>
         <p>剩余时间：01小时49分钟24秒</p>
@@ -71,6 +74,7 @@
             <button class="button is-danger is-large pl-6 pr-6" id="nowPay-btn">立即支付</button>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
 
