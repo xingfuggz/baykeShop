@@ -1,5 +1,5 @@
 from django.core.cache import cache
-
+from django.urls import reverse
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -33,13 +33,9 @@ class BaykeOrderInfoViewset(mixins.ListModelMixin,
         return BaykeOrderInfo.objects.filter(owner=self.request.user)
     
     def create(self, request, *args, **kwargs):
-        data = request.data
-        data['total_amount'] = self.confirm.get_total_amount()
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        request.data['total_amount'] = self.confirm.get_total_amount()
+        response = super().create(request, *args, **kwargs)
+        return response
     
     def perform_create(self, serializer):
         orderinfo = serializer.save()

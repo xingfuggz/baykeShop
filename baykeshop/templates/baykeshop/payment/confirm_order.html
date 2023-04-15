@@ -105,9 +105,10 @@
 						}
 					}).then(res => {
 						if (res.status == 201){
-							console.log(res)
+							location.href = res.data.redirectPay
+						}else{
+							navbar.toastMessage('is-danger', `${res.status}${res.statusText}`)
 						}
-						console.log(res)
 					})
 
 				}

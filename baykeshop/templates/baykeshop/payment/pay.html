@@ -23,7 +23,6 @@
 
 {% block container %}
 <div class="container">
-
     <div class="box is-marginless is-radiusless has-background-primary-dark has-text-white-bis">
         <h1 class="is-size-3">订单提交成功！去付款咯~</h1>
         <p>剩余时间：01小时49分钟24秒</p>
@@ -80,17 +79,15 @@
     <script>
         var nowPayBtn = document.querySelector('#nowPay-btn')
         nowPayBtn.addEventListener('click', function(){
-            console.log(payMethod._data.defaultPay) 
+            let defaultPay = payMethod._data.defaultPay
+            if (defaultPay.pay_url){
+                navbar.toastMessage('is-success', '正在跳转请稍后...')
+                location.href = defaultPay.pay_url
+            }else{
+                navbar.toastMessage('is-danger', '暂不支持该支付方式！')
+            }
 
-            // request({
-            //     url: '',
-            //     method: 'post',
-            //     data: {}
-            // }).then(res => {
-            //     console.log(res)
-            // })
         })
-
     </script>
 {% endblock %}
     

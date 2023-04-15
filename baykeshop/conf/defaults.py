@@ -24,8 +24,8 @@ bayke_defaults = {
     "LOGIN_NEXT_PAGE": "baykeshop:home",
     
     # 支付宝相关配置
-    "ALIPAY_PRIVATE_KEY": settings.BASE_DIR / "baykeshop/module/payment/alipay/keys/app_private_key.pem",
-    "ALIPAY_PUBLIC_KEY": settings.BASE_DIR / "baykeshop/module/payment/alipay/keys/app_public_key.pem",
+    "ALIPAY_PRIVATE_KEY":"baykeshop/module/payment/alipay/keys/app_private_key.pem",
+    "ALIPAY_PUBLIC_KEY": "baykeshop/module/payment/alipay/keys/app_public_key.pem",
     "ALIPAY_APPID": "2021000116697536",
     "ALIPAY_NOTIFY_URL": "baykeshop:alipay_notify",
     "ALIPAY_RETURN_URL": "baykeshop:alipay_notify",
