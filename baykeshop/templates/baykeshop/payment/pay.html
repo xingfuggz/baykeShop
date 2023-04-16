@@ -4,7 +4,6 @@
 
 {% block title %}收银台{% endblock %}
     
-
 {% block extrahead_script %}
 <script src="{% static 'baykeshop/js/axios.min.js' %}"></script>
 <script src="{% static 'baykeshop/js/request.js' %}"></script>
@@ -84,13 +83,25 @@
         var nowPayBtn = document.querySelector('#nowPay-btn')
         nowPayBtn.addEventListener('click', function(){
             let defaultPay = payMethod._data.defaultPay
-            if (defaultPay.pay_url){
+            if (defaultPay.pay_url && defaultPay.value == 2){
                 navbar.toastMessage('is-success', '正在跳转请稍后...')
                 location.href = defaultPay.pay_url
+            }else if (defaultPay.pay_url && defaultPay.value == 4){
+                request({
+                    url: defaultPay.pay_url,
+                    method: 'get',
+                }).then(res => {
+                    console.log(res)
+                    if (res.status == 200){
+                        navbar.toastMessage('is-success', '支付成功！')
+                        location.href = defaultPay.pay_url
+                    }else{
+                        navbar.toastMessage('is-danger', res.data.message) 
+                    }
+                })
             }else{
                 navbar.toastMessage('is-danger', '暂不支持该支付方式！')
             }
-
         })
     </script>
 {% endblock %}

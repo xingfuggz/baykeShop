@@ -90,6 +90,8 @@
 			methods: {
 				confirmOrder(){
 					let addrs = address._data.formProps
+					
+
 					request({
 						url: '{% url "baykeshop:orders-list" %}',
 						method: 'post',

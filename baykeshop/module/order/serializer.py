@@ -43,6 +43,8 @@ class BaykeOrderInfoSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         # 设置order_sn的值
         attrs["order_sn"] = self.generate_order_sn()
+        if 'undefined' in attrs['address']:
+            raise serializers.ValidationError("请选择或添加有效收货地址！")
         return attrs
     
     def get_pay_methods(self, obj):
@@ -88,3 +90,7 @@ class BaykeOrderInfoSerializer(serializers.ModelSerializer):
     
     def get_pay_method(self, obj):
         return obj.get_pay_method_display()
+    
+    # def validate(self, attrs):
+    #     print(attrs)
+    #     return attrs

@@ -63,7 +63,3 @@ class UserSerializer(serializers.ModelSerializer):
         except KeyError:
             pass
         return data
-    
-    # def get_balancelog(self, obj):
-    #     print(obj)
-    #     return 'asdas'
