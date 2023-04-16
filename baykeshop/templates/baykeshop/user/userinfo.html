@@ -1,0 +1,145 @@
+<div class="column" id="userinfo">
+    <!-- {{ username|json_script:"username-data" }} -->
+    {{ email|json_script:"email-data" }}
+    {{ baykeuserinfo|json_script:"baykeuserinfo-data" }}
+    <div class="columns is-align-items-center is-marginless">
+        <div class="column is-2 has-text-grey-light">用户名</div>
+        <div class="column">{{ request.user.username }}</div>
+    </div>
+    <div class="dropdown-divider is-marginless"></div>
+
+    <div class="columns is-align-items-center is-marginless">
+        <div class="column is-2 has-text-grey-light">手机号</div>
+        <div class="column is-flex is-justify-content-space-between is-align-items-center" id="phone">
+            <p v-if="!editphone">{$ baykeuserinfo.phone $}</p>
+            <div>
+                <b-input 
+                    v-if="editphone" 
+                    size="is-small" 
+                    v-model="baykeuserinfo.phone" 
+                    @blur="updateUserinfo('phone')">
+                </b-input>
+            </div> 
+            <button class="button is-primary is-small is-outlined" @click="clickUserinfo('phone')">修改</button>
+        </div>
+    </div> 
+    <div class="dropdown-divider is-marginless"></div>
+
+    <div class="columns is-align-items-center is-marginless">
+        <div class="column is-2 has-text-grey-light">邮箱</div>
+        <div class="column is-flex is-justify-content-space-between is-align-items-center">
+            <p v-if="!editemail">{$ email $}</p>
+            <div>
+                <b-input type="email"
+                    v-if="editemail"
+                    size="is-small"
+                    v-model="email"
+                    :has-counter="false"
+                    @blur="updateUserinfo('email')"
+                    maxlength="30">
+                </b-input>
+            </div>
+            <button class="button is-primary is-small is-outlined" @click="clickUserinfo('email')">修改</button>
+        </div>
+    </div>
+    <div class="dropdown-divider is-marginless"></div>
+
+    <div class="columns is-align-items-center is-marginless">
+        <div class="column is-2 has-text-grey-light">余额</div>
+        <div class="column is-flex is-justify-content-space-between is-align-items-center">
+            <p>¥ {{ request.user.baykeuserinfo.balance }}</p>
+            <!-- <p>
+                <button class=" button is-primary is-light is-small">
+                    <span class="icon"><i class="mdi mdi-credit-card-settings-outline"></i></span> 
+                    <span class="text">充值</span> 
+                </button>
+            </p> -->
+        </div>
+    </div>
+    <div class="dropdown-divider is-marginless"></div>
+
+    <div class="columns is-align-items-center is-marginless">
+        <div class="column is-2 has-text-grey-light">个人简介</div>
+        <div class="column is-flex is-justify-content-space-between is-align-items-center">
+            <p v-if="!editedesc">{$ baykeuserinfo.desc $}</p>
+            <div class=" is-flex-grow-1 mr-5">
+                <b-input type="textarea"
+                    v-if="editedesc"
+                    size="is-small"
+                    v-model="baykeuserinfo.desc"
+                    :has-counter="false"
+                    @blur="updateUserinfo('desc')"
+                    maxlength="150">
+                </b-input>
+            </div>
+            <button class="button is-primary is-small is-outlined" @click="clickUserinfo('desc')">修改</button>
+
+        </div>
+    </div>
+    <div class="dropdown-divider is-marginless"></div>
+</div>
+<script>
+    // var username = JSON.parse(document.getElementById('username-data').textContent);
+    var email = JSON.parse(document.getElementById('email-data').textContent);
+    var baykeuserinfo = JSON.parse(document.getElementById('baykeuserinfo-data').textContent);
+    var userinfo = new Vue({
+        el: '#userinfo',
+        delimiters: ['{$', '$}'],
+        data: {
+            email,
+            baykeuserinfo,
+            editphone: false,
+            editemail: false,
+            editedesc: false
+        },
+        methods: {
+            clickUserinfo(name){
+                if (name == 'phone'){
+                    this.editphone = true
+                }else if (name == 'email'){
+                    this.editemail = true
+                }else if (name == 'desc'){
+                    this.editedesc = true
+                }
+            },
+            updateUserinfo(name){
+                if (name == 'phone'){
+                    this.editphone = false
+                    console.log(this.baykeuserinfo.phone, '{{baykeuserinfo.phone}}')
+                    if (this.baykeuserinfo.phone !== '{{baykeuserinfo.phone}}'){
+                        this.patchClientUserinfo({baykeuserinfo:{phone:this.baykeuserinfo.phone}})
+                    }
+                }else if (name == 'email'){
+                    this.editemail = false
+                    if (this.email !== '{{ email }}'){
+                        this.patchClientUserinfo({email:this.email})
+                    }
+                }else if (name == 'desc'){
+                    this.editedesc = false
+                    if (this.baykeuserinfo.desc !== '{{ baykeuserinfo.desc }}'){
+                        this.patchClientUserinfo({baykeuserinfo:{desc:this.baykeuserinfo.desc}})
+                    }
+                }
+            },
+
+            patchClientUserinfo(data){
+                request({
+                    url: '{{ request.path }}',
+                    method: 'patch',
+                    data: data
+                }).then(res => {
+                    if (res.status == 200){
+                        navbar.toastMessage('is-success', '修改成功！')
+                    }else if (res.status == 400){
+                        if (!this.editphone){
+                            this.editphone = true
+                        }else if (!this.editemail){
+                            this.editemail = true
+                        }
+                        navbar.toastMessage('is-danger', res.data)
+                    }
+                })
+            }
+        },
+    })
+</script>

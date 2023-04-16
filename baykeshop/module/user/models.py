@@ -66,7 +66,7 @@ class BaykeUserBalanceLog(_abs.BaseModelMixin):
         ADMIN = 2, _('管理员手动更改') 
         SHOP = 3, _('余额抵扣商品')
     
-    owner = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="用户")
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="用户")
     amount = models.DecimalField("金额", max_digits=15, decimal_places=2)
     change_status = models.PositiveSmallIntegerField(
         choices=BalanceChangeStatus.choices, 

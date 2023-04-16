@@ -84,4 +84,14 @@ class BaykeOrderInfoViewset(mixins.ListModelMixin,
             orderinfo.pay_method = 4
             orderinfo.pay_time=timezone.now()
             orderinfo.save()
-        return Response({'order': serializer.data}, template_name="baykeshop/payment/alipay_notfiy.html")
+            
+            # 记录余额变动日志
+            BaykeUserBalanceLog.objects.create(
+                owner=request.user, 
+                amount=orderinfo.total_amount, 
+                change_status=2,
+                change_way=3
+            )
+            return Response({'order': serializer.data}, template_name="baykeshop/payment/alipay_notfiy.html")
+        else:
+            return Response({'message': '余额不足！'}, status=status.HTTP_400_BAD_REQUEST)

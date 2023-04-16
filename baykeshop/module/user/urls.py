@@ -12,4 +12,6 @@ urlpatterns = [
 
 router.register('address', views.BaykeShopAddressViewset, basename="address")
 
+router.register('menmber', views.UserMenmberViewset, basename='menmber')
+
 urlpatterns += router.urls

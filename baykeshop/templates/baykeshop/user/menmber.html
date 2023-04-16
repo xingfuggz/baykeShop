@@ -1,0 +1,82 @@
+{% extends 'baykeshop/base_site.html' %}
+
+{% load static %}
+
+{% block title %}
+{{ request.user.username }} - 个人中心    
+{% endblock %}
+
+{% block extrahead_script %}
+<script src="{% static 'baykeshop/js/axios.min.js' %}"></script>
+<script src="{% static 'baykeshop/js/request.js' %}"></script>
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="container">
+  <nav class="breadcrumb is-marginless mt-3 mb-3 is-small" aria-label="breadcrumbs">
+    <ul>
+      <li><a href="{% url 'baykeshop:home' %}">首页</a></li>
+      <li class="is-active"><a href="#" aria-current="page">个人中心</a></li>
+    </ul>
+  </nav>
+</div>
+{% endblock %}
+
+{% block container %}
+<div class="container">
+    <div class="columns">
+        <div class="column is-2">
+            <div class="box is-radiusless is-marginless is-flex is-flex-direction-column is-align-items-center">
+                <figure class="image is-64x64">
+                    <img class="is-rounded" src="{{ request.user.baykeuserinfo.avatar.url }}" >
+                </figure>
+                <p class="mt-2">
+                    {% if request.user.baykeuserinfo.nickname %}
+                        {{ request.user.baykeuserinfo.nickname }}
+                    {% else %}
+                        {{ request.user.username }}
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="box is-radiusless">
+                <aside class="menu">
+                    <p class="menu-label">
+                      账户管理
+                    </p>
+                    <ul class="menu-list">
+                      <li><a href="{% url 'baykeshop:menmber-detail' id %}" class="{% if active == 'userinfo' %} is-active {% endif %}">个人信息</a></li>
+                      <li><a href="" class="{% if 'balance' in request.path %} is-active {% endif %}">我的余额</a></li>
+                      <li><a href="" class="{% if 'address' in request.path %} is-active {% endif %}">地址管理</a></li>
+                    </ul>
+                    <p class="menu-label">
+                      订单管理
+                    </p>
+                    <ul class="menu-list">
+                      <li><a href="" class="{% if 'order' in request.path %} is-active {% endif %}">我的订单</a></li>
+                    </ul>
+
+                </aside>
+            </div>
+
+        </div>
+
+        <div class="column">
+            <div class="box is-radiusless">
+                <h1 class="is-size-4">个人中心</h1>
+                <div class="dropdown-divider"></div> 
+                {% block menmber %} 
+                <div class="columns pt-3 pb-3">
+                    <div class=" column is-2">个人信息</div>
+                    {% include 'baykeshop/user/userinfo.html' %}
+                </div>
+                {% endblock %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+    
