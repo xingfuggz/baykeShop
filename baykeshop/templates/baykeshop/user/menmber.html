@@ -45,9 +45,9 @@
                       账户管理
                     </p>
                     <ul class="menu-list">
-                      <li><a href="{% url 'baykeshop:menmber-detail' id %}" class="{% if active == 'userinfo' %} is-active {% endif %}">个人信息</a></li>
-                      <li><a href="" class="{% if 'balance' in request.path %} is-active {% endif %}">我的余额</a></li>
-                      <li><a href="" class="{% if 'address' in request.path %} is-active {% endif %}">地址管理</a></li>
+                      <li><a href="{% url 'baykeshop:menmber-detail' request.user.id %}" class="{% if active == 'userinfo' %} is-active {% endif %}">个人信息</a></li>
+                      <li><a href="{% url 'baykeshop:menmber-balance' request.user.id %}" class="{% if 'balance' in request.path %} is-active {% endif %}">我的余额</a></li>
+                      <li><a href="{% url 'baykeshop:address-list' %}" class="{% if 'address' in request.path %} is-active {% endif %}">地址管理</a></li>
                     </ul>
                     <p class="menu-label">
                       订单管理

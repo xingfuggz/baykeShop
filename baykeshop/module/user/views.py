@@ -1,5 +1,5 @@
 from django.views.generic import FormView
-from django.db.utils import IntegrityError
+from django.db.models import Sum
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import authenticate, get_user_model
@@ -21,7 +21,7 @@ from baykeshop.public.renderers import TemplateHTMLRenderer
 from baykeshop.module.user.serializers import BaykeShopAddressSerializer, UserSerializer
 from baykeshop.conf import bayke_settings
 from baykeshop.module.user.form import LoginForm, RegisterForm
-from baykeshop.module.user.models import BaykeUserInfo, BaykeShopAddress
+from baykeshop.module.user.models import BaykeUserInfo, BaykeShopAddress, BaykeUserBalanceLog
 
 
 User = get_user_model()
@@ -75,9 +75,15 @@ class BaykeShopAddressViewset(viewsets.ModelViewSet):
     serializer_class = BaykeShopAddressSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication, JWTAuthentication]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     
     def get_queryset(self):
         return BaykeShopAddress.objects.filter(owner=self.request.user)
+    
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        response.template_name = "baykeshop/user/menmberaddrs.html"
+        return response
     
     def perform_create(self, serializer):
         self.perform_only_default(serializer)
@@ -100,7 +106,6 @@ class UserMenmberViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, vie
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     authentication_classes = [SessionAuthentication, JWTAuthentication]
     permission_classes = [IsAuthenticated]
-    # lookup_field = 'owner_id'
     
     def get_queryset(self):
         return User.objects.filter(id=self.request.user.id)
@@ -115,6 +120,12 @@ class UserMenmberViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, vie
     def balance(self, request, *args, **kwargs):
         response = super().retrieve(request, *args, **kwargs)
         response.template_name = "baykeshop/user/balance.html"
+        
+        response.data['addplus'] = (
+            self.get_object().baykeuserbalancelog_set.filter(change_status=1).aggregate(Sum('amount'))['amount__sum'] or 0
+        )
+        response.data['minusplus'] = (
+            self.get_object().baykeuserbalancelog_set.filter(change_status=2).aggregate(Sum('amount'))['amount__sum'] or 0
+        )
         return response
-    
     

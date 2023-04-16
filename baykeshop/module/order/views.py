@@ -72,6 +72,10 @@ class BaykeOrderInfoViewset(mixins.ListModelMixin,
         from django.db.models import F
         from baykeshop.module.user.models import BaykeUserInfo, BaykeUserBalanceLog
         userinfo = BaykeUserInfo.objects.filter(owner=request.user)
+
+        code = status.HTTP_200_OK
+        message = ""
+       
         is_updates = [
             userinfo.exists(), 
             (userinfo.first().balance > orderinfo.total_amount), 
@@ -92,6 +96,8 @@ class BaykeOrderInfoViewset(mixins.ListModelMixin,
                 change_status=2,
                 change_way=3
             )
-            return Response({'order': serializer.data}, template_name="baykeshop/payment/alipay_notfiy.html")
         else:
-            return Response({'message': '余额不足！'}, status=status.HTTP_400_BAD_REQUEST)
+            code = status.HTTP_400_BAD_REQUEST
+            message = "余额不足！"
+        return Response({'order': serializer.data, 'message': message}, template_name="baykeshop/payment/alipay_notfiy.html", status=code)
+        

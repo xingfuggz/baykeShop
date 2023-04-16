@@ -90,7 +90,3 @@ class BaykeOrderInfoSerializer(serializers.ModelSerializer):
     
     def get_pay_method(self, obj):
         return obj.get_pay_method_display()
-    
-    # def validate(self, attrs):
-    #     print(attrs)
-    #     return attrs

@@ -19,10 +19,19 @@ class BaykeShopAddressSerializer(serializers.ModelSerializer):
 
 class BaykeUserBalanceLogSerializer(serializers.ModelSerializer):
     
+    change_status = serializers.SerializerMethodField()
+    change_way = serializers.SerializerMethodField()
+    
     class Meta:
         model = BaykeUserBalanceLog
         fields = "__all__"
-
+        
+    def get_change_status(self, obj):
+        return obj.get_change_status_display()
+    
+    def get_change_way(self, obj):
+        return obj.get_change_way_display()
+        
 
 class BaykeUserInfoSerializer(serializers.ModelSerializer):
     
