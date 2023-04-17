@@ -8,6 +8,7 @@ from baykeshop.public.models import BaykeBanner
 # from baykeshop.module.product import models as product
 from baykeshop.module.product import admin as product_admin
 from baykeshop.module.user import admin as user_admin
+from baykeshop.module.order import admin as order_admin
 
 
 @admin.register(BaykeBanner, site=bayke_site)

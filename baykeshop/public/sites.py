@@ -29,7 +29,7 @@ class BaykeAdminSite(admin.AdminSite):
     
     # index_template = "baykeadmin/index.html"
     
-    def get_app_list(self, request):
+    def get_app_list(self, request, app_label=None):
         # 判断是否启用了自定义菜单
         if request.user.is_authenticated and bayke_settings.ADMIN_MENUS:
             return self._build_menus(request)

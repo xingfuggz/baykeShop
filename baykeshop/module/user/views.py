@@ -120,7 +120,6 @@ class UserMenmberViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, vie
     def balance(self, request, *args, **kwargs):
         response = super().retrieve(request, *args, **kwargs)
         response.template_name = "baykeshop/user/balance.html"
-        
         response.data['addplus'] = (
             self.get_object().baykeuserbalancelog_set.filter(change_status=1).aggregate(Sum('amount'))['amount__sum'] or 0
         )

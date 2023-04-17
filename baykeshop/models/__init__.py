@@ -4,3 +4,4 @@ from baykeshop.public import models as public
 from baykeshop.module.cart import models as cart
 from baykeshop.module.user import models as user
 from baykeshop.module.order import models as order
+from baykeshop.module.comment import models as comment

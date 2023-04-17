@@ -12,8 +12,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from baykeshop.public.renderers import TemplateHTMLRenderer
 from baykeshop.module.order.filters import BaykeOrderInfoFilter
-from baykeshop.module.order.models import BaykeOrderInfo
-from baykeshop.module.order.serializer import BaykeOrderInfoSerializer, BaykeOrderInfoListSerializer
+from baykeshop.module.order.models import BaykeOrderInfo, BaykeOrderGoods
+from baykeshop.module.order.serializer import (
+    BaykeOrderInfoSerializer, BaykeOrderInfoListSerializer, BaykeOrderGoodsSerializer
+)
 from baykeshop.module.order.page import OrderInfoPageNumberPagination
 from baykeshop.module.payment.computed import computed_pay
 
@@ -39,11 +41,20 @@ class BaykeOrderInfoViewset(mixins.ListModelMixin,
     def get_serializer_class(self):
         if self.action == 'list':
             self.serializer_class = BaykeOrderInfoListSerializer
+        # elif self.action == 'commentgoods':
+        #     from baykeshop.module.comment.serializer import BaykeOrderInfoCommentsSerializer
+        #     self.serializer_class = BaykeOrderInfoCommentsSerializer
+            
         return super().get_serializer_class()
     
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
         return Response({'orders': response.data}, template_name="baykeshop/user/orders.html")
+    
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+        response.template_name = "baykeshop/order/detail.html"
+        return response
     
     def create(self, request, *args, **kwargs):
         request.data['total_amount'] = self.confirm.get_total_amount()
@@ -79,7 +90,13 @@ class BaykeOrderInfoViewset(mixins.ListModelMixin,
     
     @action(detail=True, methods=['get'])
     def balance(self, request, order_sn=None):
-        # 订单结算视图
+        """订单结算接口
+        @api: /order/{order_sn}/balance/
+        @method: get
+        @params: {}
+        @auth: True
+        @return: 成功 status=200   失败 status=400
+        """
         orderinfo = self.get_object()
         serializer = self.get_serializer(orderinfo)
         from django.utils import timezone
@@ -118,4 +135,81 @@ class BaykeOrderInfoViewset(mixins.ListModelMixin,
             template_name="baykeshop/payment/alipay_notfiy.html", 
             status=code
         )
+    
+    @action(detail=True, methods=['post'])
+    def confirmorder(self, request, order_sn=None):
+        """确认收货接口
+        @api: /order/{order_sn}/confirmorder/ 
+        @method: post
+        @data: {}
+        @return {'message': '已确认收货', 'order_sn': order_sn}
+        """
+        self.get_queryset().filter(order_sn=order_sn).update(pay_status=4)
+        return Response({'message': '已确认收货', 'order_sn': order_sn})
+    
+    @action(detail=True, methods=['get', 'post'])
+    def commentgoods(self, request, order_sn=None, *args, **kwargs):
+        """ 发表评价接口 """
         
+        # 评价表单
+        if request.method == "GET":
+            response = super().retrieve(request, *args, **kwargs)
+            response.template_name = "baykeshop/user/comment.html"
+            return response
+        
+        # 发表评价
+        if request.method == "POST":
+            message = "评价成功"
+            code = status.HTTP_201_CREATED
+            from django.contrib.contenttypes.models import ContentType
+            from baykeshop.module.order.models import BaykeOrderGoods
+            from baykeshop.module.comment.models import BaykeOrderInfoComments
+            
+            if not request.data or not request.data.get('content'):
+                message = "评价内容不能为空！"
+                code = status.HTTP_400_BAD_REQUEST
+                return Response({'message': message}, status=code)
+            
+            # 查询出当前评论的商品
+            order_goods = BaykeOrderGoods.objects.filter(
+                id=int(request.data['object_id']), 
+                is_commented=False, 
+                orderinfo__owner=request.user
+            )
+            
+            # 判断是否已经评价过，禁止重复评价
+            if not order_goods.exists():
+                message = "该商品已经评价，无需重复评价！"
+                code = status.HTTP_400_BAD_REQUEST
+                return Response({'message': message}, status=code)
+            
+            # 获取关联的评论模型
+            content_type = ContentType.objects.get_for_model(BaykeOrderGoods)
+            
+            # 增加一条评论
+            BaykeOrderInfoComments.objects.create(
+                owner=request.user,
+                content_type=content_type,
+                **request.data
+            )
+            # 标记为已评价
+            order_goods.update(is_commented=True)
+            
+            # 修改订单状态
+            order = self.get_object()
+            order.pay_status = 5
+            order.save()
+    
+            return Response({'message': message}, status=code)
+    
+
+
+class BaykeOrderGoodsViewset(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, JWTAuthentication]
+    serializer_class = BaykeOrderGoodsSerializer 
+    
+    def get_queryset(self):
+        return BaykeOrderGoods.objects.filter(orderinfo__owner=self.request.user)
+    

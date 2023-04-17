@@ -4,9 +4,11 @@
     {% if order.pay_status == '待支付' %}
         <a class="button is-primary is-small" href="/order/{{ order.order_sn }}/pay/">立即支付</a>
     {% elif order.pay_status == '待收货' %}
-        <a class="button is-primary is-small" href="">确认收货</a>
-    {% elif order.pay_status == '待评级' and not is_commented %}
-        <a class=" button is-primary is-small" href="">立即评价</a>
+        <button class="button is-primary is-small" @click="confirmGoods('{{order.order_sn}}')">确认收货</button>
+    {% elif order.pay_status == '待评价' and not is_commented %}
+        <a class=" button is-primary is-small" href="/order/{{ order.order_sn }}/commentgoods/">立即评价</a>
     {% endif %}
+    <a href="/order/{{ order.order_sn }}/" class="button is-small">订单详情</a>
     </div>
 </div>
+

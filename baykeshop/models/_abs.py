@@ -4,6 +4,8 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.sites.models import Site
 from django.contrib.auth import get_user_model
 from django.contrib.sites.managers import CurrentSiteManager
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 from baykeshop.models import tinymce_field
 
@@ -189,3 +191,17 @@ class OrderMixin(BaseModelMixin):
     def get_pay_default(cls):
         # 获取支付方式的默认值
         return cls._meta.get_field('pay_method').default
+    
+
+class ContentTypeAbstract(BaseModelMixin):
+    """ 模型的通用关系 """
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField(blank=True, null=True, unique=True)
+    tag = models.CharField(_('标记'), max_length=80, blank=True, null=True, unique=True)
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        abstract = True
+        indexes = [
+            models.Index(fields=["content_type", "object_id"]),
+        ]

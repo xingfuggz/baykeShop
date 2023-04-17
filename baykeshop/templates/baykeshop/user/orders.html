@@ -5,6 +5,17 @@
 {% block menmber_title %}我的订单{% endblock %}
 
 {% block menmber %}
+<style>
+ 
+    .b-tooltip:not(:last-child) {
+        margin-right: .5em
+    }
+    .b-tooltip {
+        margin-bottom: .5em
+    }
+    
+</style>
+
 <div class="tabs is-boxed is-fullwidth">
     <ul>
         <li class="{% if 'status' not in request.get_full_path or status == '' %} is-active {% endif %}" ><a href="{% url 'baykeshop:orders-list' %}">全部订单</a></li>
@@ -16,42 +27,68 @@
     </ul>
 </div>
 
+<div id="confirmAction" class="mb-3">
+    {% for order in orders.results %}
+    <div class="box has-background-light is-shadowless">
+        <div class="is-flex is-justify-content-space-between">
+            <div class=" has-text-grey-light1">订单日期：{{ order.add_date }}</div>
+            <div class=" has-text-danger-dark">
+                {{ order.pay_status }}
+            </div>
+        </div>
+        <div class="dropdown-divider"></div>
+        {% for sku in order.baykeordergoods_set %}
+        <div class="is-flex is-justify-content-space-between">
+            <div>
+                <figure class=" image is-96x96">
+                    <img src="{{ sku.product.pic }}" alt="{{ sku.product.goods.title }}" srcset="">
+                </figure>
+            </div>
+            <div class="has-background-danger1 is-flex is-flex-direction-column is-justify-content-center is-flex-grow-1 pl-3 pr-3">
+                <h1 class="has-text-weight-bold">{{ sku.product.goods.title }}</h1>
+                {% for op in sku.product.options %}
+                <span class="mr-3">{{ op.spec }}:{{ op.name }}</span>
+                {% endfor %}
+            </div>
+            <div class="has-background-danger1 is-flex is-justify-content-center is-align-items-center">
+                <p class="has-text-danger-dark">¥ {{ sku.product.price }} x {{ sku.count }}</p>
+            </div>
+        </div>
 
-{% for order in orders.results %}
-<div class="box has-background-light is-shadowless">
-    <div class="is-flex is-justify-content-space-between">
-        <div class=" has-text-grey-light1">订单日期：{{ order.add_date }}</div>
-        <div class=" has-text-danger-dark">
-            {{ order.pay_status }}
-        </div>
+        <div class="dropdown-divider"></div>
+        {% endfor %}
+
+        {% orderinfo_action order %}
+
     </div>
-    <div class="dropdown-divider"></div>
-    {% for sku in order.baykeordergoods_set %}
-    <div class="is-flex is-justify-content-space-between">
-        <div>
-            <figure class=" image is-128x128">
-                <img src="{{ sku.product.pic }}" alt="{{ sku.product.goods.title }}" srcset="">
-            </figure>
-        </div>
-        <div class="has-background-danger1 is-flex is-flex-direction-column is-justify-content-center is-flex-grow-1 pl-3 pr-3">
-            <h1 class="has-text-weight-bold">{{ sku.product.goods.title }}</h1>
-            {% for op in sku.product.options %}
-            <span class="mr-3">{{ op.spec }}:{{ op.name }}</span>
-            {% endfor %}
-        </div>
-        <div class="has-background-danger1 is-flex is-justify-content-center is-align-items-center">
-            <p class="has-text-danger-dark">¥ {{ sku.product.price }} x {{ sku.count }}</p>
-        </div>
-    </div>
-    <div class="dropdown-divider"></div>
     {% endfor %}
-
-    {% orderinfo_action order %}
-
 </div>
-{% endfor %}
-    
-
 
 {% pages request orders %}
 {% endblock %}
+
+{% block vue %}
+<script>
+    var confirmAction = new Vue({
+        el: '#confirmAction',
+        delimiters: ['{$', '$}'],
+        data: {},
+        methods: {
+            confirmGoods(order_sn){
+                request({
+                    url:`/order/${order_sn}/confirmorder/`,
+                    method: 'post',
+                    data: {pay_status: 4}
+                }).then(res => {
+                    if (res.status == 200) {
+                        navbar.toastMessage('is-success', res.data.message)
+                        setTimeout(function(){location.reload()}, 2000)
+                    }
+                })
+            }
+            
+        },
+    })
+</script>
+{% endblock %}
+    

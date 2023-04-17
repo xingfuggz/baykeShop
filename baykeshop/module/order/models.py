@@ -1,7 +1,7 @@
 from django.db import models
 
 from baykeshop.models import _abs
-from baykeshop.models import product
+from baykeshop.module.product.models import BaykeProduct
 
 
 class BaykeOrderInfo(_abs.OrderMixin):
@@ -23,7 +23,7 @@ class BaykeOrderGoods(_abs.BaseModelMixin):
     price = models.DecimalField(_abs._("商品单价"), max_digits=8, decimal_places=2, editable=False)
     content = models.TextField(_abs._("商品详情"), editable=False)
     count = models.IntegerField(default=1, verbose_name=_abs._("数量"))
-    product = models.ForeignKey(product.BaykeProduct, on_delete=models.SET_NULL, blank=True, null=True)
+    product = models.ForeignKey(BaykeProduct, on_delete=models.SET_NULL, blank=True, null=True)
     is_commented = models.BooleanField(default=False, verbose_name="是否已评价")
     
     class Meta:
