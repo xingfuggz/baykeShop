@@ -1,11 +1,7 @@
-from django.urls import path, include
+from django.urls import path
 from baykeshop.public import views
 
 urlpatterns = [
     path('', views.HomeView.as_view(), name="home"),
-    path('goods/', include('baykeshop.module.product.urls'), name='goods'),
-    path('cart/', include('baykeshop.module.cart.urls'), name='cart'),
-    path('user/', include('baykeshop.module.user.urls'), name='user'),
-    path('payment/', include('baykeshop.module.payment.urls'), name='payment'),
-    path('order/', include('baykeshop.module.order.urls'), name='order'),
+    path("upload/tinymce/", views.TinymceUploadImg.as_view(), name="upload_tinymce"),
 ]

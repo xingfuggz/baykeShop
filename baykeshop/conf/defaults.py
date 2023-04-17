@@ -60,5 +60,8 @@ bayke_defaults = {
     
     
     # 是否开启邮件通知
-    'HAS_MESSAGE_EAMIL': True
+    'HAS_MESSAGE_EAMIL': True,
+    
+    # 编辑器上传图片路径
+    "FILE_PATH": "upload/",
 }
