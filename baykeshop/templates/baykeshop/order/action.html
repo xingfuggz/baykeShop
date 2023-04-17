@@ -1,0 +1,12 @@
+<div>
+    <p class=" has-text-weight-bold pt-1 pb-1 has-text-right">共{{ ordergoods_count }}件商品，总金额{{ order.total_amount }}元（含运费）</p>
+    <div class=" buttons is-justify-content-end">
+    {% if order.pay_status == '待支付' %}
+        <a class="button is-primary is-small" href="/order/{{ order.order_sn }}/pay/">立即支付</a>
+    {% elif order.pay_status == '待收货' %}
+        <a class="button is-primary is-small" href="">确认收货</a>
+    {% elif order.pay_status == '待评级' and not is_commented %}
+        <a class=" button is-primary is-small" href="">立即评价</a>
+    {% endif %}
+    </div>
+</div>

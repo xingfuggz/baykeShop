@@ -8,11 +8,13 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django_filters.rest_framework import DjangoFilterBackend
 
 from baykeshop.public.renderers import TemplateHTMLRenderer
-from baykeshop.module.cart.models import BaykeShopingCart
-from baykeshop.module.order.models import BaykeOrderInfo, BaykeOrderGoods
-from baykeshop.module.order.serializer import BaykeOrderInfoSerializer
+from baykeshop.module.order.filters import BaykeOrderInfoFilter
+from baykeshop.module.order.models import BaykeOrderInfo
+from baykeshop.module.order.serializer import BaykeOrderInfoSerializer, BaykeOrderInfoListSerializer
+from baykeshop.module.order.page import OrderInfoPageNumberPagination
 from baykeshop.module.payment.computed import computed_pay
 
 
@@ -27,9 +29,21 @@ class BaykeOrderInfoViewset(mixins.ListModelMixin,
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     serializer_class = BaykeOrderInfoSerializer
     lookup_field = 'order_sn'
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = BaykeOrderInfoFilter
+    pagination_class = OrderInfoPageNumberPagination
     
     def get_queryset(self):
-        return BaykeOrderInfo.objects.filter(owner=self.request.user)
+        return BaykeOrderInfo.objects.filter(owner=self.request.user).order_by('-add_date')
+    
+    def get_serializer_class(self):
+        if self.action == 'list':
+            self.serializer_class = BaykeOrderInfoListSerializer
+        return super().get_serializer_class()
+    
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        return Response({'orders': response.data}, template_name="baykeshop/user/orders.html")
     
     def create(self, request, *args, **kwargs):
         request.data['total_amount'] = self.confirm.get_total_amount()
@@ -99,5 +113,9 @@ class BaykeOrderInfoViewset(mixins.ListModelMixin,
         else:
             code = status.HTTP_400_BAD_REQUEST
             message = "余额不足！"
-        return Response({'order': serializer.data, 'message': message}, template_name="baykeshop/payment/alipay_notfiy.html", status=code)
+        return Response(
+            {'order': serializer.data, 'message': message}, 
+            template_name="baykeshop/payment/alipay_notfiy.html", 
+            status=code
+        )
         

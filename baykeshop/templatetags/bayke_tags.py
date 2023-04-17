@@ -1,5 +1,5 @@
 from django.template import Library
-from django.urls import reverse
+from django.urls import reverse, NoReverseMatch
 
 from baykeshop.conf import bayke_settings
 from baykeshop.models import admin, product, cart
@@ -167,4 +167,13 @@ def pay_methods(request, methods):
     return {
         'methods': methods,
         'request': request
+    }
+    
+@register.inclusion_tag("baykeshop/order/action.html")
+def orderinfo_action(order):
+
+    return {
+        'ordergoods_count': sum([good['count'] for good in order['baykeordergoods_set']]),
+        'is_commented':all([good['is_commented'] for good in order['baykeordergoods_set']]),
+        'order': order
     }

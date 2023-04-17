@@ -53,7 +53,7 @@
                       订单管理
                     </p>
                     <ul class="menu-list">
-                      <li><a href="" class="{% if 'order' in request.path %} is-active {% endif %}">我的订单</a></li>
+                      <li><a href="{% url 'baykeshop:orders-list' %}" class="{% if 'order' in request.path %} is-active {% endif %}">我的订单</a></li>
                     </ul>
 
                 </aside>
@@ -63,7 +63,9 @@
 
         <div class="column">
             <div class="box is-radiusless">
-                <h1 class="is-size-4">个人中心</h1>
+                <h1 class="is-size-4">
+                {% block menmber_title %}个人中心{% endblock %}
+                </h1>
                 <div class="dropdown-divider"></div> 
                 {% block menmber %} 
                 <div class="columns pt-3 pb-3">

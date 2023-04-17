@@ -17,14 +17,31 @@ class BaykeOrderGoodsSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class BaykeOrderInfoSerializer(serializers.ModelSerializer):
-    """ 订单序列化 """
+class BaykeOrderInfoListSerializer(serializers.ModelSerializer):
     owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
     baykeordergoods_set = BaykeOrderGoodsSerializer(read_only=True, many=True)
-    pay_methods = serializers.SerializerMethodField()
-    redirectPay = serializers.SerializerMethodField()
     pay_status = serializers.SerializerMethodField()
     pay_method = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = BaykeOrderInfo
+        fields = "__all__"
+    
+    def get_pay_status(self, obj):
+        return obj.get_pay_status_display()
+    
+    def get_pay_method(self, obj):
+        return obj.get_pay_method_display()
+    
+
+class BaykeOrderInfoSerializer(BaykeOrderInfoListSerializer):
+    """ 订单序列化 """
+    # owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    # baykeordergoods_set = BaykeOrderGoodsSerializer(read_only=True, many=True)
+    pay_methods = serializers.SerializerMethodField()
+    redirectPay = serializers.SerializerMethodField()
+    # pay_status = serializers.SerializerMethodField()
+    # pay_method = serializers.SerializerMethodField()
     
     class Meta:
         model = BaykeOrderInfo
@@ -85,8 +102,8 @@ class BaykeOrderInfoSerializer(serializers.ModelSerializer):
     def get_redirectPay(self, obj):
         return reverse('baykeshop:orders-pay', args=[obj.order_sn])
     
-    def get_pay_status(self, obj):
-        return obj.get_pay_status_display()
+    # def get_pay_status(self, obj):
+    #     return obj.get_pay_status_display()
     
-    def get_pay_method(self, obj):
-        return obj.get_pay_method_display()
+    # def get_pay_method(self, obj):
+    #     return obj.get_pay_method_display()
