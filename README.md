@@ -3,17 +3,18 @@
 For full documentation visit [bayke.shop（拜客商城系统）](http://www.bayke.shop).
 
 ## 项目简介
+baykeshop（拜客商城系统）是一款全开源Python栈商城系统，采用最新版django4以上版本开发，代码精炼简洁易于学习及二次开发。
 
-- **曾用名**：[django-happy-shop](https://gitee.com/xingfugz/happy-shop)【不再维护】
-- **现用名**：[baykeShop](https://gitee.com/bayke/bayke-shop/)
-- **baykeShop(拜客商城系统)** 的由来：
-> `django-happy-shop`诞生于2022年，作为django框架的一个包出现，但商城作为一个综合性和定制性很强的项目，
-单纯已三方包的形式维护并实现更多的功能就会显得非常臃肿，部署也变得更加困难，另外`django-happy-shop`在开发之初缺乏合理的架构设计，
-很多地方设计并不合理，也不利于后期扩展，于是便萌生了重构的念想，也就有了现在的**拜客商城系统**，英文名称直接已域名命名为：**baykeShop**。
+### 分支介绍
+- 项目主要分为两个分支即【主分支(默认分支)】和【djangocbv】分支。
 
-## 项目特色
-一款更符合国人使用和学习的Python django开源商城项目，没有复杂的语法和过渡的封装，
-一切符合django的使用方式，全部采用django的cbv模式开发，便于代码复用及二开和学习！
+- 主分支主要是以接口为主，也就是所有的视图逻辑采用Django REST framework框架完成，采用了[TemplateHTMLRenderer, JSONRenderer]的双渲染模式，也就是默认的PC站点直接将接口数据通过TemplateHTMLRenderer渲染器可视化，其json数据可以在url后加参数format=json进行预览，支持JWT登录认证，该分支则适合有二次开发需求的同学，以及前后端分离项目！
+
+- djangocbv分支则纯粹已原生django实现，不支持JWT认证方式，该分支非常符合初学django框架的同学参考学习以及普通的企业站建站使用非常方便！
+
+### 项目特色
+
+更符合国人使用和学习的Python django开源商城项目，没有复杂的语法和过渡的封装，一切符合django的使用方式！
 
 1、后台定制默认admin,支持动态菜单，兼容三方皮肤（如：django-simpleui）
 
@@ -25,17 +26,13 @@ For full documentation visit [bayke.shop（拜客商城系统）](http://www.bay
 
 5、独立配置文件，通过简单的配置修改可控制全局相关功能
 
-6、PC端采用django的模板系统开发，移动端通过DRF框架将分离开放标准的RestFull api接口（开发中）
+6、主分支PC端采用DRF的模板渲染器对接口可视化，开放了标准的RestFull api接口【接口文档整理中...】
 
 ## 演示
 - [演示地址-demo.bayke.shop](http://demo.bayke.shop)
 - 演示账号：demo  密码：demo123zxc
 - 后台地址：http://demo.bayke.shop/baykeadmin/
 > 因为部分恶意测试者，不断删改数据，造成演示站崩溃，故后台已禁用所有新增及编辑权限，如有更深层次使用需求，请拉取到本地测试！
-
-## 运行环境
-
-> python > 3.8 & django4.1 & Mysql8.0 & redis
 
 ## 快速上手
 

@@ -164,10 +164,6 @@ if DEBUG:
     # 开发模式下允许所有跨域行为
     CORS_ALLOW_ALL_ORIGINS = True 
 else:
-    # CORS_ORIGIN_WHITELIST = (
-    #     # 配置你信任的站点列表。域名以http://或者https://开头
-    #     'http://127.0.0.1:8000', 
-    # )
     CORS_ALLOWED_ORIGINS = [
         'http://127.0.0.1:8000', 
     ]

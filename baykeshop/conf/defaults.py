@@ -7,9 +7,6 @@ bayke_defaults = {
     "SITE_TITLE": "BaykeShop",
     "PC_LOGO": "BaykeShop",
     
-    # 后台自定义菜单开关
-    "ADMIN_MENUS": True,
-    
     # 商品列表页分页数量
     "PAGE_SIZE": 16,
     "MAX_PAGE_SIZE": 1000,
@@ -64,4 +61,10 @@ bayke_defaults = {
     
     # 编辑器上传图片路径
     "FILE_PATH": "upload/",
+    
+    
+    # 后台自定义菜单开关
+    "ADMIN_MENUS": True,
+    # 后台自定义菜单数据
+    "ADMIN_MENUS_DATAS": None
 }
