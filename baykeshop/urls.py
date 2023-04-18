@@ -9,4 +9,5 @@ urlpatterns = [
     path('user/', include('baykeshop.module.user.urls'), name='user'),
     path('payment/', include('baykeshop.module.payment.urls'), name='payment'),
     path('order/', include('baykeshop.module.order.urls'), name='order'),
+    path('article/', include('baykeshop.module.article.urls'), name='article'),
 ]

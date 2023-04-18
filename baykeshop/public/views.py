@@ -1,5 +1,5 @@
 from django.http.response import JsonResponse
-from django.views.generic import View, TemplateView
+from django.views.generic import View
 
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView

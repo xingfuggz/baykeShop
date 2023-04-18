@@ -1,0 +1,30 @@
+{% extends 'baykeshop/article/list.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="container">
+	<nav class="breadcrumb is-marginless mt-3 mb-3 is-small" aria-label="breadcrumbs">
+		<ul>
+			<li><a href="{% url 'baykeshop:home' %}">首页</a></li>
+            <li><a href="{% url 'baykeshop:article-list' %}">商城资讯</a></li>
+			<li class="is-active"><a href="#" aria-current="page">{{ title }}</a></li>
+		</ul>
+	</nav>
+</div>
+{% endblock %}
+
+{% block article_box %}
+<h1 class="is-size-4 has-text-weight-bold has-text-centered"><a class=" has-text-black-bis" href="{% url 'baykeshop:article-detail' id %}">{{ title }}</a></h1>
+<p class="is-size-7 has-text-grey has-text-centered mt-2">
+  分类:{{ category }}&nbsp;&nbsp;
+  <!-- 浏览量:{{ article.pv }}&nbsp;&nbsp;
+  访问量:{{ article.uv }}&nbsp;&nbsp; -->
+  发布日期:{{ add_date }} 
+</p>
+<div class=" dropdown-divider"></div>
+<div class="content">
+    {{ content|safe }}
+</div>
+{% endblock %}
+    

@@ -12,7 +12,8 @@ class PageNumberPagination(DrfPageNumberPagination):
     def get_paginated_response(self, data):
         response = super().get_paginated_response(data)
         response.data.update({
-                'pages': [ i for i in self.page.paginator.get_elided_page_range()], 
+                'page_size': self.page_size,
+                'pages': [ i for i in self.page.paginator.get_elided_page_range()],
                 'current': int(self.request.query_params.get('page', 1))
             })
         return response

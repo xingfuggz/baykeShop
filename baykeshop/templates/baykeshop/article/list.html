@@ -1,0 +1,85 @@
+{% extends 'baykeshop/base_site.html' %}
+{% load static %}
+{% block title %}商城资讯{% endblock %}
+
+{% block extrahead_script %}
+<script src="{% static 'baykeshop/js/axios.min.js' %}"></script>
+<script src="{% static 'baykeshop/js/request.js' %}"></script>
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="container">
+	<nav class="breadcrumb is-marginless mt-3 mb-3 is-small" aria-label="breadcrumbs">
+		<ul>
+			<li><a href="{% url 'baykeshop:home' %}">首页</a></li>
+			<li class="is-active"><a href="#" aria-current="page">商城资讯</a></li>
+		</ul>
+	</nav>
+</div>
+{% endblock %}
+
+{% block container %}
+<div class="container mt-3">
+    <div class="columns">
+      <div class="column is-9">
+        <div class="box" style="height: 100%;">
+
+          {% block article_box %}
+            {% for article in results %}
+              <h1 class="is-size-5 has-text-weight-bold"><a class=" has-text-black-bis" href="{% url 'baykeshop:article-detail' article.id %}">{{ article.title }}</a></h1>
+              <p class="is-size-7 has-text-grey">
+                分类:{{ article.category }}&nbsp;&nbsp;
+                <!-- 浏览量:{{ article.pv }}&nbsp;&nbsp;
+                访问量:{{ article.uv }}&nbsp;&nbsp; -->
+                发布日期:{{ article.add_date }}
+              </p>
+            <div class=" dropdown-divider"></div>
+            {% endfor %}
+            {% include 'baykeshop/pagination.html' %}
+          {% endblock %}
+        </div>
+      </div>
+      <div class="column">
+        <div class="box">
+          <h1 class=" is-size-6 has-text-weight-bold">资讯分类</h1>
+          <div class="dropdown-divider"></div>
+          <aside class="menu">
+            <ul class="menu-list">
+              <li>
+                <a class="{% if '/article/' == request.get_full_path %} is-active {% endif %}" 
+                   href="{% url 'baykeshop:article-list' %}">全部分类</a>
+              </li>
+              {% for cate in cates %}
+                <li>
+                  <a class="{% if category == cate.name or request.query_params.category__name == cate.name %} is-active {% endif %}" 
+                     href="{% url 'baykeshop:article-list' %}?category__name={{ cate.name }}">{{ cate.name }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </aside>
+        </div>
+        <!-- <div class="box">
+          <h1 class=" is-size-6 has-text-weight-bold">资讯归档</h1>
+          <div class="dropdown-divider"></div>
+          <aside class=" menu">
+            <ul class=" menu-list">
+              {% for arch in archive %}
+                <li><a href="">{{ arch }}</a></li>
+              {% endfor %}
+            </ul>
+          </aside>
+        </div> -->
+        <div class="box">
+          <h1 class=" is-size-6 has-text-weight-bold">资讯标签</h1>
+          <div class="dropdown-divider"></div>
+          <div class="tags">
+            {% for tag in tags %}
+            <a href="" class="tag">{{ tag.name }}</a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+    

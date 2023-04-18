@@ -5,3 +5,4 @@ from baykeshop.module.cart import models as cart
 from baykeshop.module.user import models as user
 from baykeshop.module.order import models as order
 from baykeshop.module.comment import models as comment
+from baykeshop.module.article import models as article
