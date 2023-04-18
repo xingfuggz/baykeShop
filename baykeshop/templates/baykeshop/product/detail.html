@@ -6,6 +6,18 @@
 {% block meta_desc %}{{ desc }}{% endblock %}
 {% block meta_kw %}{{ keywords }}{% endblock %}
 
+
+{% block extrastyle %}
+<style>
+.content{
+    line-height: 0;        
+}
+</style>
+    
+{% endblock %}
+    
+    
+
 {% block extrahead_script %}
 <script src="{% static 'baykeshop/js/axios.min.js' %}"></script>
 <script src="{% static 'baykeshop/js/request.js' %}"></script>

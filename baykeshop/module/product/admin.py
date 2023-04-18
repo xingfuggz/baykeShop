@@ -10,7 +10,7 @@ from baykeshop.module.product.models import (
 from baykeshop.module.admin.options import BaseModelAdmin, TabularInline, StackedInline
 
 
-class BaykeCategoryInline(StackedInline):
+class BaykeCategoryInline(TabularInline):
     model = BaykeCategory
     min_num = 1
     max_num = 20
