@@ -1,36 +1,43 @@
 {% extends 'baykeshop/base_site.html' %}
 
-{% load i18n shop_tags %}
+{% load static bayke_tags %}
 
-{% block content %}
-<div class=" has-background-white">
-    {% banners_result %}
+{% block title %}
+    全开源Python django商城系统，拜客商城系统！
+{% endblock %}   
+
+    
+{% block banners %}
+<div class="has-background-white">
+    {% carousel banners %}
 </div>
-    <div class="container mt-4 mb-4">
-        {% for cate in cates %}
-        <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
-            <div class="">
-                <h1 class=" has-text-weight-semibold is-size-5">{{ cate.name }}</h1>
-            </div>
-            <div class="">
-                <a href="{% url 'baykeshop:cate_detail' cate.id %}">更多>></a>
-            </div>
+{% endblock %}
+
+{% block container %}
+<div class="container mt-4 mb-4">
+    {% for cate in cates %}
+    <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+        <div class="">
+            <h1 class=" has-text-weight-semibold is-size-5">{{ cate.name }}</h1>
         </div>
-        <div class="columns is-multiline is-mobile">
-            <div class="column is-4-fullhd is-6-tablet is-12-mobile">
-                <figure class="image is-4by3">
-                    <img src="{% if cate.img_map %} {{ cate.img_map.url }}{% endif %}" alt="" srcset="">
-                </figure>
+        <div class="">
+            <a href="{% url 'baykeshop:goods-list' %}?categorys={{ cate.id }}">更多>></a>
+        </div>
+    </div>
+    <div class="columns is-multiline is-mobile">
+        <div class="column is-4-fullhd is-6-tablet is-12-mobile">
+            <figure class="image is-4by3">
+                <img src="{{ cate.pic }}" alt="asdasd" srcset="">
+            </figure>
+        </div>
+        {% for spu in cate.products %}
+        <div class="column is-2-fullhd is-3-tablet is-6-mobile">
+            <div class="is-flex is-flex-direction-column is-justify-content-space-between has-background-white" style="height:100%">
+                {% spu_box spu %}
             </div>
-            {% for spu in cate.spus %}
-            <div class="column is-2-fullhd is-3-tablet is-6-mobile">
-                <div class="is-flex is-flex-direction-column is-justify-content-space-between has-background-white" style="height:100%">
-                    {% spu_box spu %}
-                </div>
-            </div>
-            {% endfor %}
         </div>
         {% endfor %}
-    </div>    
+    </div>
+    {% endfor %}
+</div>    
 {% endblock %}
-    

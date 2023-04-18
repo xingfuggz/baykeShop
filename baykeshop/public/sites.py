@@ -13,13 +13,12 @@
 from django.contrib import admin
 from django.db.models import Q
 from django.contrib.auth.models import Permission
-from django.http.response import HttpResponseRedirect
 from django.utils.text import capfirst
 from django.urls import NoReverseMatch, reverse
 from django.contrib import messages
 
-from baykeshop.config.settings import bayke_settings
-from baykeshop.models import BaykeMenu
+from baykeshop.conf import bayke_settings
+from baykeshop.module.admin.models import BaykeMenu
 
 
 class BaykeAdminSite(admin.AdminSite):
@@ -30,7 +29,7 @@ class BaykeAdminSite(admin.AdminSite):
     
     # index_template = "baykeadmin/index.html"
     
-    def get_app_list(self, request):
+    def get_app_list(self, request, app_label=None):
         # 判断是否启用了自定义菜单
         if request.user.is_authenticated and bayke_settings.ADMIN_MENUS:
             return self._build_menus(request)

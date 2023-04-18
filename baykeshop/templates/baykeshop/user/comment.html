@@ -1,0 +1,100 @@
+{% extends 'baykeshop/user/menmber.html' %}
+
+{% block menmber_title %}订单评价{% endblock %}
+
+{% block menmber %}
+<div id="commentGoods">
+    {% for sku in baykeordergoods_set %}
+    <div class="box has-background-primary-light">
+        <div class="is-flex is-justify-content-space-between box is-radiusless is-marginless is-shadowless has-background-light">
+            <div>
+                <figure class=" image is-64x64">
+                    <img src="{{ sku.product.pic }}" alt="{{ sku.product.goods.title }}" srcset="">
+                </figure>
+            </div>
+            <div class="has-background-danger1 is-flex is-flex-direction-column is-justify-content-center is-flex-grow-1 pl-3 pr-3">
+                <h1 class="has-text-weight-bold">{{ sku.product.goods.title }}</h1>
+                {% for op in sku.product.options %}
+                <span class="mr-3">{{ op.spec }}:{{ op.name }}</span>
+                {% endfor %}
+            </div>
+            <div class="has-background-danger1 is-flex is-justify-content-center is-align-items-center">
+                <p class="has-text-danger-dark">¥ {{ sku.product.price }} x {{ sku.count }}</p>
+            </div>
+        </div>
+        <div class="dropdown-divider"></div>
+        
+        {% if not sku.is_commented %}
+        <b-field>
+            <b-input 
+                custom-class="is-radiusless" 
+                type="textarea" 
+                placeholder="请发表您对货物最真实的感受评价..." 
+                v-model="content" 
+                :has-counter="false"
+                maxlength="200">
+            </b-input>
+        </b-field>
+        <div class="block">
+            <b-radio v-model="radio"
+                name="comment_choices"
+                native-value="5">
+                好评
+            </b-radio>
+            <b-radio v-model="radio"
+                name="comment_choices"
+                native-value="3">
+                中评
+            </b-radio>
+            <b-radio v-model="radio"
+                name="comment_choices"
+                native-value="1">
+                差评
+            </b-radio>
+        </div>
+        <div class=" has-text-right">
+            <b-button type=" is-primary" @click="pushComment('{{ sku.id }}')">发表评价</b-button>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+
+
+{% block vue %}
+    <script>
+        var commentGoods = new Vue({
+            el: '#commentGoods',
+            delimiters: ['{$', '$}'],
+            data: {
+                content: '',
+                radio:'5'
+            },
+            methods: {
+                pushComment(id){
+                    console.log(id)
+                    request({
+                        url: '{{ request.path }}',
+                        method: 'post',
+                        data: {
+                            content: this.content,
+                            comment_choices: Number(this.radio),
+                            object_id: Number(id),
+                        }
+                    }).then(res => {
+                        if (res.status == 201){
+                            navbar.toastMessage('is-success', '评价成功！')
+                            setTimeout(function(){location.href="/order/"}, 2000)
+                        }else{
+                            navbar.toastMessage('is-danger', res.data.message)
+                        }
+                    })
+                }
+            },
+        })
+    </script>
+{% endblock %}
+    

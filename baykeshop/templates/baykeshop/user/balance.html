@@ -1,44 +1,40 @@
-{% extends 'baykeshop/user/userinfo.html' %}
+{% extends 'baykeshop/user/menmber.html' %}
 
-{% block title %}
-{{ request.user.username }} - 余额明细    
-{% endblock %}
+{% block menmber_title %}我的余额{% endblock %}
 
-{% block userinfo_content %}
-<div class="box is-radiusless">
-    <h1 class=" is-size-4">我的余额</h1>
-    <div class="dropdown-divider"></div>
-
+{% block menmber %}
+<div class="box is-radiusless is-shadowless">
     <div class="columns pl-6 pr-6 pt-3">
         <div class="column">
             <p class=" has-text-grey-light">账户可用余额</p>
-            <h1 class="is-size-4">{{ request.user.baykeuserinfo.balance }}</h1> 
+            <h1 class="is-size-4">¥ {{ request.user.baykeuserinfo.balance }}</h1> 
         </div>
         <div class="column">
             <p class=" has-text-grey-light">累计充值</p>
-            <h1 class=" is-size-4">{{ amount_add }}</h1>
+            <h1 class=" is-size-4">¥ {{ addplus }}</h1>
         </div>
         <div class="column">
             <p class=" has-text-grey-light">累计消费</p>
-            <h1 class=" is-size-4">{{ amount_minus }}</h1>
+            <h1 class=" is-size-4">¥ {{ minusplus }}</h1>
         </div>
     </div>
     <div class=" dropdown-divider"></div>
+
     <div class="table-container pl-4 pr-4">
         <table class="table is-fullwidth is-hoverable">
             <tbody>
-                {% for balance in qs %}
+                {% for balance in baykeuserbalancelog_set %}
                 <tr>
-                    <td class="{% if balance.change_status == 1 %}  has-text-success-dark {% else %} has-text-danger-dark {% endif %}">
-                        {{ balance.get_change_status_display }}
+                    <td class="{% if balance.change_status == '增加' %}  has-text-success-dark {% else %} has-text-danger-dark {% endif %}">
+                        {{ balance.change_status }}
                     </td>
-                    <td class="{% if balance.change_status == 1 %}  has-text-success-dark {% else %} has-text-danger-dark {% endif %}">
-                        {% if balance.change_status == 1 %}  + {% else %} - {% endif %}{{ balance.amount }}
+                    <td class="{% if balance.change_status == '增加' %}  has-text-success-dark {% else %} has-text-danger-dark {% endif %}">
+                        {% if balance.change_status == '增加' %}  + {% else %} - {% endif %}{{ balance.amount }}
                     </td>
-                    <td class="{% if balance.change_status == 1 %}  has-text-success-dark {% else %} has-text-danger-dark {% endif %}">
-                        {{ balance.get_change_way_display }}
+                    <td class="{% if balance.change_status == '增加' %}  has-text-success-dark {% else %} has-text-danger-dark {% endif %}">
+                        {{ balance.change_way }}
                     </td>
-                    <td class="{% if balance.change_status == 1 %}  has-text-success-dark {% else %} has-text-danger-dark {% endif %}">
+                    <td class="{% if balance.change_status == '增加' %}  has-text-success-dark {% else %} has-text-danger-dark {% endif %}">
                         {{ balance.add_date }}
                     </td>
                 </tr>
@@ -50,5 +46,4 @@
     </div>
 
 </div>
-
 {% endblock %}

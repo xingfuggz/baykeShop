@@ -14,12 +14,12 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
-from baykeshop.public.abstract import AbstractModel
+from baykeshop.models import _abs
 
 User = get_user_model()
 
 
-class BaykeUserInfo(AbstractModel):
+class BaykeUserInfo(_abs.BaseModelMixin):
     """ 一对一扩展的用户模型 """
     owner = models.OneToOneField(
         User,
@@ -52,7 +52,7 @@ class BaykeUserInfo(AbstractModel):
         return self.nickname or self.owner.username
     
 
-class BaykeUserBalanceLog(AbstractModel):
+class BaykeUserBalanceLog(_abs.BaseModelMixin):
     """ 用户余额变动表 """
     
     class BalanceChangeStatus(models.IntegerChoices):
@@ -66,7 +66,7 @@ class BaykeUserBalanceLog(AbstractModel):
         ADMIN = 2, _('管理员手动更改') 
         SHOP = 3, _('余额抵扣商品')
     
-    owner = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="用户")
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="用户")
     amount = models.DecimalField("金额", max_digits=15, decimal_places=2)
     change_status = models.PositiveSmallIntegerField(
         choices=BalanceChangeStatus.choices, 
@@ -86,7 +86,7 @@ class BaykeUserBalanceLog(AbstractModel):
         return f"{self.owner.username}-{self.amount}"
 
 
-class BaykeShopAddress(AbstractModel):
+class BaykeShopAddress(_abs.BaseModelMixin):
     """ 收货地址 """
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="用户")
     name = models.CharField("签收人", max_length=50)

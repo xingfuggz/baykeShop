@@ -1,8 +1,12 @@
 from django.urls import path
+
+from rest_framework.routers import DefaultRouter
+
 from baykeshop.module.cart import views
 
-urlpatterns = [
-    path("", views.BaykeShopingCartListView.as_view(), name="carts"),
-    path("add/", views.BaykeShopingCartCreateView.as_view(), name="add_cart"),
-    path("update/num/", views.BaykeShopingCartUpdateView.as_view(), name="update_cart")
-]
+
+router = DefaultRouter()
+
+router.register('', views.BaykeshopingCartViewSet, basename="carts")
+
+urlpatterns = router.urls

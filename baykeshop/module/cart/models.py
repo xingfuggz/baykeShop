@@ -12,20 +12,20 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
-from baykeshop.public.abstract import AbstractModel
-from baykeshop.models import BaykeShopSKU
+from baykeshop.models import _abs
+from baykeshop.models import product
 
 User = get_user_model()
 
 
-class BaykeShopingCart(AbstractModel):
+class BaykeShopingCart(_abs.BaseModelMixin):
     """ 购物车数据模型 """
-    owner = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="用户")
-    sku = models.ForeignKey(BaykeShopSKU, on_delete=models.PROTECT, verbose_name="商品sku")
-    num = models.PositiveIntegerField(default=0, verbose_name="数量")
+    owner = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name=_abs._("用户"))
+    sku = models.ForeignKey(product.BaykeProduct, on_delete=models.PROTECT, verbose_name=_abs._("商品"))
+    num = models.PositiveIntegerField(default=0, verbose_name=_abs._("数量"))
     
     class Meta:
-        verbose_name = '购物车'
+        verbose_name = _abs._('购物车')
         verbose_name_plural = verbose_name
         constraints = [
             models.UniqueConstraint(fields=['owner', 'sku'], name='unique_owner_sku')

@@ -1,5 +1,3 @@
-{% load flatpages %}
-
 <footer id="footer" class="footer has-background-black-ter">
     <nav class="container level is-mobile">
         <div class="level-item ">
@@ -57,59 +55,6 @@
             </div>
         </div>
     </nav>
-    <div class="dropdown-divider has-background-grey-dark"></div>
-    <div class="container">
-        <div class="level is-mobile is-align-items-baseline">
-            <div class="level-item is-flex-direction-column">
-                {% get_flatpages '/about/' as about_pages %}
-                <p class="menu-label">关于我们</p>
-                <ul class="menu-list">
-                    {% for page in about_pages %}
-                    <li><a class="{% if page.url in request.path %} is-active {% endif %}" href="/pages{{ page.url }}">{{ page.title }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div class="level-item is-flex-direction-column">
-                {% get_flatpages '/newbie/' as newbie_pages %}
-                <p class="menu-label">新手指南</p>
-                <ul class="menu-list">
-                    {% for page in newbie_pages %}
-                    <li><a class="{% if page.url in request.path %} is-active {% endif %}" href="/pages{{ page.url }}">{{ page.title }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-            
-            <div class="level-item is-flex-direction-column">
-                {% get_flatpages '/serve/' as serve_pages %}
-                <p class="menu-label">售后服务</p>
-                <ul class="menu-list">
-                    {% for page in serve_pages %}
-                    <li><a class="{% if page.url in request.path %} is-active {% endif %}" href="/pages{{ page.url }}">{{ page.title }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="level-item is-flex-direction-column">
-                {% get_flatpages '/faq/' as faq_pages %}
-                <p class=" menu-label">常见问题</p>
-                <ul class="menu-list">
-                    {% for page in faq_pages %}
-                    <li><a class="{% if page.url in request.path %} is-active {% endif %}" href="/pages{{ page.url }}">{{ page.title }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="level-item is-flex-direction-column">
-                {% get_flatpages '/faq/' as faq_pages %}
-                <p class=" menu-label">联系我们</p>
-                <ul class="menu-list">
-                    <li><a href="https://gitee.com/bayke/bayke-shop">源码下载</a></li>
-                    <!-- {% for page in faq_pages %}
-                    <li><a class="{% if page.url in request.path %} is-active {% endif %}" href="/pages{{ page.url }}">{{ page.title }}</a></li>
-                    {% endfor %} -->
-                </ul>
-            </div>
-        </div>
-    </div>
 
     <div class="container">
         <div class="dropdown-divider has-background-grey-dark"></div>

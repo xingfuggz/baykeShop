@@ -1,0 +1,112 @@
+{% extends 'baykeshop/base_site.html' %}
+
+{% load i18n static bayke_tags %}
+
+{% block title %}收银台{% endblock %}
+    
+{% block extrahead_script %}
+<script src="{% static 'baykeshop/js/axios.min.js' %}"></script>
+<script src="{% static 'baykeshop/js/request.js' %}"></script>
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="container">
+	<nav class="breadcrumb is-marginless mt-3 mb-3 is-small" aria-label="breadcrumbs">
+		<ul>
+			<li><a href="{% url 'baykeshop:home' %}">首页</a></li>
+			<li class="is-active"><a href="#" aria-current="page">订单支付</a></li>
+		</ul>
+	</nav>
+</div>
+{% endblock %}
+
+{% block container %}
+<div class="container">
+    {% if order.pay_status and order.pay_status != '待支付'  %}
+        {% include 'baykeshop/payment/notfiy.html' with order=order %}
+    {% else %}
+    <div class="box is-marginless is-radiusless has-background-primary-dark has-text-white-bis">
+        <h1 class="is-size-3">订单提交成功！去付款咯~</h1>
+        <p>剩余时间：01小时49分钟24秒</p>
+    </div>
+    <div class="box is-radiusless" style="line-height: 30px;">
+        <p>订单编号：{{ order.order_sn }}</p> 
+        <p>订单总额：{{ order.total_amount }}元</p>
+        <p>收货信息：{{ order.address }}</p>
+    </div>
+
+    <div class="box is-radiusless">
+        <h1 class=" is-size-4">订单商品</h1>
+        <div class="dropdown-divider"></div>
+        {% for sku in order.baykeordergoods_set %}
+        <div class="columns">
+            <div class="column is-2 is-flex is-justify-content-center">
+                <figure class="image is-128x128">
+                    <img src="{{ sku.product.pic }}" alt="{{ sku.product.goods.title }}">
+                </figure>
+            </div>
+            <div class="column is-flex is-flex-direction-column is-justify-content-center">
+                <h1 class=" has-text-weight-bold">{{ sku.product.goods.title }}</h1>
+                <div class="has-text-grey-light">
+                    {% for op in sku.product.options %}
+                    <span class="mr-3">{{ op.spec }}:{{ op.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="column is-2 is-flex is-justify-content-center is-align-items-center">
+                {{ sku.product.price }}x{{ sku.count }}
+            </div>
+            <!-- <div class="column is-2 is-flex is-justify-content-center is-align-items-center">
+                ¥{{ sku.product.totalPrice }}
+            </div> -->
+        </div>
+        <div class="dropdown-divider"></div>
+        {% endfor %}
+    </div>
+
+    <div class="box is-radiusless">
+        <h1 class=" is-size-4">支付方式</h1>
+        <div class="dropdown-divider"></div>
+        {% pay_methods request order.pay_methods %}
+        <div class="dropdown-divider"></div>
+        <div class="has-text-right">
+            <button class="button is-danger is-large pl-6 pr-6" id="nowPay-btn">立即支付</button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+{% block vue %}
+    <script>
+        var nowPayBtn = document.querySelector('#nowPay-btn')
+        nowPayBtn.addEventListener('click', function(){
+            let defaultPay = payMethod._data.defaultPay
+            if (defaultPay.pay_url && defaultPay.value == 2){
+                navbar.toastMessage('is-success', '正在跳转请稍后...')
+                location.href = defaultPay.pay_url
+            }else if (defaultPay.pay_url && defaultPay.value == 4){
+                request({
+                    url: defaultPay.pay_url,
+                    method: 'get',
+                }).then(res => {
+                    console.log(res)
+                    if (res.status == 200){
+                        navbar.toastMessage('is-success', '支付成功！')
+                        location.href = defaultPay.pay_url
+                    }else{
+                        navbar.toastMessage('is-danger', res.data.message) 
+                    }
+                })
+            }else{
+                navbar.toastMessage('is-danger', '暂不支持该支付方式！')
+            }
+        })
+    </script>
+{% endblock %}
+    
+
+
+
+    

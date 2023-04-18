@@ -1,89 +1,45 @@
-#!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-'''
-@文件    :views.py
-@说明    :文章视图
-@时间    :2023/03/24 15:04:52
-@作者    :幸福关中&轻编程
-@版本    :1.0
-@微信    :baywanyun
-'''
+from rest_framework import mixins
+from rest_framework import viewsets
+from rest_framework.generics import ListAPIView
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from django_filters.rest_framework import DjangoFilterBackend
 
-from django.views.generic import ListView, DetailView
-from django.views.generic.detail import SingleObjectMixin
-from baykeshop.models import BaykeArticle, BaykeArticleCategory, BaykeArticleTags
+from . import models
+from . import serializer
+from . import page
+from . import filters
 
+class ArticleMixin:
+    
+    def tags_serializer(self):
+        return serializer.BaykeArticleTagSerializer(models.BaykeArticleTag.objects.all(), many=True)
 
-class ArticleContext:
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['cates'] = self.get_cates()
-        context['tags'] = self.get_tags()
-        # context['archive'] = BaykeArticle.get_archive()
-        context['tags_classes'] = ['is-danger', 'is-info', 'is-success', 'is-primary', 'is-light', 'is-black']
-        return context
-    
-    def get_cates(self):
-        return BaykeArticleCategory.objects.all()
-    
-    def get_tags(self):
-        return BaykeArticleTags.objects.all()
-    
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        for qs in queryset:
-            qs.pv = self.get_stats(qs.id).pv
-            qs.uv = self.get_stats(qs.id).uv
-        return queryset
-    
-    def get_stats(self, object_id):
-        return BaykeArticle.get_stats(self.request, object_id)
-    
+    def cates_serializer(self):
+        return serializer.BaykeArticleCategorySerializer(models.BaykeArticleCategory.objects.all(), many=True)
+        
 
-class BaykeArticleListView(ArticleContext, ListView):
-    """ 文章列表 """
-
-    model = BaykeArticle
-    template_name = "baykeshop/article/article_list.html"
-    paginate_by = 15
+class BaykeArticleViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, ArticleMixin, viewsets.GenericViewSet):
+    """ 商城资讯列表 """
+    queryset = models.BaykeArticle.objects.all()
+    serializer_class = serializer.BaykeArticleSerializer
+    pagination_class = page.PageNumberPagination
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    filter_backends = [DjangoFilterBackend,]
+    filterset_class = filters.ArticleFilter
     
-
-class BaykeArticleDetailView(ArticleContext, DetailView):
-    """ 文章详情 """
-    model = BaykeArticle
-    template_name = "baykeshop/article/article_detail.html"
-    context_object_name = "article"
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        response.template_name = "baykeshop/article/list.html"
+        response.data['tags'] = self.tags_serializer().data
+        response.data['cates'] = self.cates_serializer().data
+        return response
     
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        obj.pv = self.get_stats(obj.id).pv
-        obj.uv = self.get_stats(obj.id).uv
-        return obj
-    
-
-class BaykeArticleCategoryListView(ArticleContext, SingleObjectMixin, ListView):
-    """ 分类文章列表 """
-
-    paginate_by = 15
-    template_name = "baykeshop/article/article_list.html"
-    
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object(queryset=self.get_cates())
-        return super().get(request, *args, **kwargs)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['cate'] = self.object
-        return context
-    
-    def get_queryset(self):
-        queryset = self.object.baykearticle_set.all()
-        for qs in queryset:
-            qs.pv = self.get_stats(qs.id).pv
-            qs.uv = self.get_stats(qs.id).uv
-        return queryset
-    
-    
-
-    
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+        response.template_name = "baykeshop/article/detail.html"
+        response.data['tags'] = self.tags_serializer().data
+        response.data['cates'] = self.cates_serializer().data
+        return response

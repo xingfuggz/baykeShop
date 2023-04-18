@@ -3,24 +3,22 @@ from django.utils.html import format_html, format_html_join
 from django.contrib import messages
 from django.utils.translation import ngettext
 
-from baykeshop.config.settings import bayke_settings
-from baykeshop.public.admin import BaseModelAdmin
+from baykeshop.conf import bayke_settings
+from baykeshop.module.admin.options import BaseModelAdmin
 from baykeshop.public.sites import bayke_site
-from baykeshop.models import (
-    BaykeShopOrderInfo, BaykeShopOrderSKU
-)
+from baykeshop.module.order.models import BaykeOrderInfo, BaykeOrderGoods
 
 ORDER_SKUS_STRING = """
     <div class='orderSKU'>
         <div><img src='{}' /></div>
         <div>
             <p>{}</p>
-            <span class='spec'>规格：{}</span>
+            <span class='spec'>{}</span>
         </div>
     </div>
 """
 
-@admin.register(BaykeShopOrderInfo, site=bayke_site)
+@admin.register(BaykeOrderInfo, site=bayke_site)
 class BaykeShopOrderInfoModelAdmin(BaseModelAdmin):
     
     list_display = (
@@ -74,9 +72,9 @@ class BaykeShopOrderInfoModelAdmin(BaseModelAdmin):
     
     @admin.display(description="订单商品")
     def dis_order_sku(self, obj):
-        order_skus = obj.baykeshopordersku_set.all()
+        order_skus = obj.baykeordergoods_set.all()
         order_skus_html = format_html_join('\n', ORDER_SKUS_STRING, 
-            ((u.sku.cover_pic.url, u.title, u.spec) for u in order_skus)
+            ((u.product.pic.url, u.title, ''.join([f"{op['spec']}:{op['name']}" for op in u.options])) for u in order_skus)
         )
         return order_skus_html
     
@@ -120,4 +118,3 @@ class BaykeShopOrderInfoModelAdmin(BaseModelAdmin):
     
     class Media:
         css = {'all': ['baykeadmin/css/ordersku.css']}
-        

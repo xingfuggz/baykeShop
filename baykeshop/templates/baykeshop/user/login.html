@@ -4,10 +4,10 @@
 
 {% block title %}登录{% endblock %}
 
-{% block bodyclass %}login{% endblock %}
 
-{% block content %}
-    <div class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center full-height">
+{% block container %}
+
+    <div class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center" style="min-height: 800px;">
         <div class="box p-6 login-box">
             <p class="subtitle has-text-centered">
             {% block login_title %}登录{% endblock %}
@@ -20,8 +20,7 @@
               {% if form.errors and not form.non_field_errors %}
               <article class="message is-danger">
                 <div class="message-body">
-                  {% if form.errors.items|length == 1 %}{% translate "Please correct the error below." %}{% else %}{%
-                  translate "Please correct the errors below." %}{% endif %}
+                  {% if form.errors.items|length == 1 %}{% translate "Please correct the error below." %}{% else %}{% translate "Please correct the errors below." %}{% endif %}
                 </div>
               </article>
               {% endif %}
@@ -70,7 +69,3 @@
         </div>
     </div>
 {% endblock %}
-    
-
-
-    

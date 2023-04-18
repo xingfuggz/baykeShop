@@ -3,13 +3,11 @@ from django.urls import path, include
 app_name = "baykeshop"
 
 urlpatterns = [
-    path("", include('baykeshop.public.urls')),
-    path("user/", include('baykeshop.module.user.urls')),
-    path("goods/", include('baykeshop.module.goods.urls')),
-    path("cart/", include('baykeshop.module.cart.urls')),
-    path("payment/", include('baykeshop.module.payment.urls')),
-    path("order/", include('baykeshop.module.order.urls')),
-    path("comments/", include('baykeshop.module.comments.urls')),
-    path("article/", include('baykeshop.module.article.urls')),
+    path("", include("baykeshop.public.urls")),
+    path('goods/', include('baykeshop.module.product.urls'), name='goods'),
+    path('cart/', include('baykeshop.module.cart.urls'), name='cart'),
+    path('user/', include('baykeshop.module.user.urls'), name='user'),
+    path('payment/', include('baykeshop.module.payment.urls'), name='payment'),
+    path('order/', include('baykeshop.module.order.urls'), name='order'),
+    path('article/', include('baykeshop.module.article.urls'), name='article'),
 ]
-

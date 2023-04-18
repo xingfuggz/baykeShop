@@ -1,148 +1,145 @@
-{% extends 'baykeshop/base_site.html' %}
+<div class="column" id="userinfo">
+    <!-- {{ username|json_script:"username-data" }} -->
+    {{ email|json_script:"email-data" }}
+    {{ baykeuserinfo|json_script:"baykeuserinfo-data" }}
+    <div class="columns is-align-items-center is-marginless">
+        <div class="column is-2 has-text-grey-light">用户名</div>
+        <div class="column">{{ request.user.username }}</div>
+    </div>
+    <div class="dropdown-divider is-marginless"></div>
 
-{% load static %}
+    <div class="columns is-align-items-center is-marginless">
+        <div class="column is-2 has-text-grey-light">手机号</div>
+        <div class="column is-flex is-justify-content-space-between is-align-items-center" id="phone">
+            <p v-if="!editphone">{$ baykeuserinfo.phone $}</p>
+            <div>
+                <b-input 
+                    v-if="editphone" 
+                    size="is-small" 
+                    v-model="baykeuserinfo.phone" 
+                    @blur="updateUserinfo('phone')">
+                </b-input>
+            </div> 
+            <button class="button is-primary is-small is-outlined" @click="clickUserinfo('phone')">修改</button>
+        </div>
+    </div> 
+    <div class="dropdown-divider is-marginless"></div>
 
-{% block title %}
-{{ request.user.username }} - 个人中心    
-{% endblock %}
-
-
-{% block extrastyle %}
-<script src="{% static 'baykeshop/js/axios.min.js' %}"></script>
-<script src="{% static 'baykeshop/js/request.js' %}"></script>
-{% endblock %}
-    
-
-{% block breadcrumb %}
-<div class="container">
-  <nav class="breadcrumb is-marginless mt-3 mb-3 is-small" aria-label="breadcrumbs">
-    <ul>
-      <li><a href="{% url 'baykeshop:home' %}">首页</a></li>
-      <li class="is-active"><a href="#" aria-current="page">个人中心</a></li>
-    </ul>
-  </nav>
-</div>
-{% endblock %}
-
-
-{% block content %}
-    <div class="container">
-        <div class="columns">
-            <div class="column is-2">
-                <div class="box is-radiusless is-marginless is-flex is-flex-direction-column is-align-items-center">
-                    <figure class="image is-64x64">
-                        <img class="is-rounded" src="{{ request.user.baykeuserinfo.avatar.url }}" >
-                    </figure>
-                    <p class="mt-2">
-                        {% if request.user.baykeuserinfo.nickname %}
-                            {{ request.user.baykeuserinfo.nickname }}
-                        {% else %}
-                            {{ request.user.username }}
-                        {% endif %}
-                    </p>
-                </div>
-                <div class="box is-radiusless">
-                    <aside class="menu">
-                        <p class="menu-label">
-                          账户管理
-                        </p>
-                        <ul class="menu-list">
-                          <li><a href="{% url 'baykeshop:userinfo' %}" class="{% if 'userinfo' in request.path %} is-active {% endif %}">个人信息</a></li>
-                          <li><a href="{% url 'baykeshop:balance' %}" class="{% if 'balance' in request.path %} is-active {% endif %}">我的余额</a></li>
-                          <li><a href="{% url 'baykeshop:addrs_list' %}" class="{% if 'address' in request.path %} is-active {% endif %}">地址管理</a></li>
-                        </ul>
-                        <p class="menu-label">
-                          订单管理
-                        </p>
-                        <ul class="menu-list">
-                          <li><a href="{% url 'baykeshop:order_list' %}" class="{% if 'order' in request.path %} is-active {% endif %}">我的订单</a></li>
-                        </ul>
-
-                    </aside>
-                </div>
+    <div class="columns is-align-items-center is-marginless">
+        <div class="column is-2 has-text-grey-light">邮箱</div>
+        <div class="column is-flex is-justify-content-space-between is-align-items-center">
+            <p v-if="!editemail">{$ email $}</p>
+            <div>
+                <b-input type="email"
+                    v-if="editemail"
+                    size="is-small"
+                    v-model="email"
+                    :has-counter="false"
+                    @blur="updateUserinfo('email')"
+                    maxlength="30">
+                </b-input>
             </div>
-            <div class="column">
-                {% block userinfo_content %}
-                    <div class="box is-radiusless">
-                        <h1 class="is-size-4">个人信息</h1>
-                        <div class="dropdown-divider"></div>
-
-                        <div class="pt-3">
-                            <div class="is-flex is-justify-content-space-between is-align-items-center">
-                                <div class="is-flex is-align-items-center">
-                                    <figure class=" image is-96x96">
-                                        <img class="is-rounded" src="{{ request.user.baykeuserinfo.avatar.url }}" >
-                                    </figure>
-                                    <div class="ml-4">
-                                        <h1 class=" is-size-4">
-                                            {% if request.user.baykeuserinfo.nickname %}
-                                                {{ request.user.baykeuserinfo.nickname }}
-                                            {% else %}
-                                                {{ request.user.username }}
-                                            {% endif %}
-                                        </h1>
-                                        <!-- <p>个性签名......</p> -->
-                                    </div>
-                                </div>
-                                <!-- <div><a href="" class="button is-light">修改头像</a></div> -->
-
-                                {% include 'baykeshop/user/update_avatar.html' %}
-
-                            </div>
-                            <div class="dropdown-divider"></div>
-
-                            <div class="columns pt-3 pb-3">
-                                <div class=" column is-2">个人信息</div>
-                                <div class="column">
-                                    <div class="columns is-align-items-center is-marginless">
-                                        <div class="column is-2 has-text-grey-light">用户名</div>
-                                        <div class="column">{{ request.user.username }}</div>
-                                    </div>
-                                    <div class="dropdown-divider is-marginless"></div>
-
-                                    <div class="columns is-align-items-center is-marginless">
-                                        <div class="column is-2 has-text-grey-light">手机号</div>
-                                        <div class="column is-flex is-justify-content-space-between is-align-items-center">
-                                            <p>{% if request.user.baykeuserinfo.phone %}{{ request.user.baykeuserinfo.phone }}{% else %}暂未添加...{% endif %}</p>
-                                        
-                                            {% include 'baykeshop/user/update_phone.html' %}
-                                            
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-divider is-marginless"></div>
-
-                                    <div class="columns is-align-items-center is-marginless">
-                                        <div class="column is-2 has-text-grey-light">邮箱</div>
-                                        <div class="column is-flex is-justify-content-space-between is-align-items-center">
-                                            <p>{{ request.user.email }}</p>
-                                            {% include 'baykeshop/user/update_email.html' %}
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-divider is-marginless"></div>
-
-                                    <div class="columns is-align-items-center is-marginless">
-                                        <div class="column is-2 has-text-grey-light">余额</div>
-                                        <div class="column is-flex is-justify-content-space-between is-align-items-center">
-                                            <p>¥ {{ request.user.baykeuserinfo.balance }}</p>
-                                            <!-- <p>
-                                                <button class=" button is-primary is-light is-small">
-                                                    <span class="icon"><i class="mdi mdi-credit-card-settings-outline"></i></span> 
-                                                    <span class="text">充值</span> 
-                                                </button>
-                                            </p> -->
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-divider is-marginless"></div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-                {% endblock %}
-            </div>
+            <button class="button is-primary is-small is-outlined" @click="clickUserinfo('email')">修改</button>
         </div>
     </div>
-{% endblock %}
+    <div class="dropdown-divider is-marginless"></div>
 
+    <div class="columns is-align-items-center is-marginless">
+        <div class="column is-2 has-text-grey-light">余额</div>
+        <div class="column is-flex is-justify-content-space-between is-align-items-center">
+            <p>¥ {{ request.user.baykeuserinfo.balance }}</p>
+            <!-- <p>
+                <button class=" button is-primary is-light is-small">
+                    <span class="icon"><i class="mdi mdi-credit-card-settings-outline"></i></span> 
+                    <span class="text">充值</span> 
+                </button>
+            </p> -->
+        </div>
+    </div>
+    <div class="dropdown-divider is-marginless"></div>
 
+    <div class="columns is-align-items-center is-marginless">
+        <div class="column is-2 has-text-grey-light">个人简介</div>
+        <div class="column is-flex is-justify-content-space-between is-align-items-center">
+            <p v-if="!editedesc">{$ baykeuserinfo.desc $}</p>
+            <div class=" is-flex-grow-1 mr-5">
+                <b-input type="textarea"
+                    v-if="editedesc"
+                    size="is-small"
+                    v-model="baykeuserinfo.desc"
+                    :has-counter="false"
+                    @blur="updateUserinfo('desc')"
+                    maxlength="150">
+                </b-input>
+            </div>
+            <button class="button is-primary is-small is-outlined" @click="clickUserinfo('desc')">修改</button>
+
+        </div>
+    </div>
+    <div class="dropdown-divider is-marginless"></div>
+</div>
+<script>
+    // var username = JSON.parse(document.getElementById('username-data').textContent);
+    var email = JSON.parse(document.getElementById('email-data').textContent);
+    var baykeuserinfo = JSON.parse(document.getElementById('baykeuserinfo-data').textContent);
+    var userinfo = new Vue({
+        el: '#userinfo',
+        delimiters: ['{$', '$}'],
+        data: {
+            email,
+            baykeuserinfo,
+            editphone: false,
+            editemail: false,
+            editedesc: false
+        },
+        methods: {
+            clickUserinfo(name){
+                if (name == 'phone'){
+                    this.editphone = true
+                }else if (name == 'email'){
+                    this.editemail = true
+                }else if (name == 'desc'){
+                    this.editedesc = true
+                }
+            },
+            updateUserinfo(name){
+                if (name == 'phone'){
+                    this.editphone = false
+                    console.log(this.baykeuserinfo.phone, '{{baykeuserinfo.phone}}')
+                    if (this.baykeuserinfo.phone !== '{{baykeuserinfo.phone}}'){
+                        this.patchClientUserinfo({baykeuserinfo:{phone:this.baykeuserinfo.phone}})
+                    }
+                }else if (name == 'email'){
+                    this.editemail = false
+                    if (this.email !== '{{ email }}'){
+                        this.patchClientUserinfo({email:this.email})
+                    }
+                }else if (name == 'desc'){
+                    this.editedesc = false
+                    if (this.baykeuserinfo.desc !== '{{ baykeuserinfo.desc }}'){
+                        this.patchClientUserinfo({baykeuserinfo:{desc:this.baykeuserinfo.desc}})
+                    }
+                }
+            },
+
+            patchClientUserinfo(data){
+                request({
+                    url: '{{ request.path }}',
+                    method: 'patch',
+                    data: data
+                }).then(res => {
+                    if (res.status == 200){
+                        navbar.toastMessage('is-success', '修改成功！')
+                    }else if (res.status == 400){
+                        if (!this.editphone){
+                            this.editphone = true
+                        }else if (!this.editemail){
+                            this.editemail = true
+                        }
+                        navbar.toastMessage('is-danger', res.data)
+                    }
+                })
+            }
+        },
+    })
+</script>

@@ -1,0 +1,27 @@
+{# <script src="https://unpkg.com/buefy/dist/components/carousel"></script> #}
+
+{{ banners|json_script:"carousel-data" }}
+
+<div id="carousel" class="container">
+    <template>
+        <b-carousel>
+            <b-carousel-item v-for="(carousel, i) in carousels" :key="i">
+                <section :class="`hero is-medium`">
+                    <a class="image" :href="carousel.target_url">
+                        <img width="100%" :src="`${carousel.img}`" :alt="carousel.desc"> 
+                    </a>
+                </section>
+            </b-carousel-item>
+        </b-carousel>
+    </template>
+</div>
+<script>
+    var value = JSON.parse(document.getElementById('carousel-data').textContent);
+    var carousel = new Vue({
+        el: '#carousel',
+        delimiters: ['{$', '$}'],
+        data: {
+            carousels: value
+        }
+    })
+</script>

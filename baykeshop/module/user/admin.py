@@ -7,11 +7,9 @@ from django.contrib.auth.admin import (
 )
 from django.core.cache import cache
 
-from baykeshop.models import (
-    BaykeUserInfo, BaykeUserBalanceLog, 
-    BaykePermission, BaykeMenu
-)
-from baykeshop.public.admin import BaseModelAdmin
+from baykeshop.module.admin.models import BaykePermission, BaykeMenu
+from baykeshop.module.user.models import BaykeUserInfo, BaykeUserBalanceLog
+from baykeshop.module.admin.options import BaseModelAdmin
 from baykeshop.public.sites import bayke_site
 from baykeshop.module.user import inline
 

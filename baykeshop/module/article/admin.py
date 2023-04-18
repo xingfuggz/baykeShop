@@ -1,11 +1,11 @@
 from django.contrib import admin
 
 from baykeshop.public.sites import bayke_site
-from baykeshop.public.admin import BaseModelAdmin
-from baykeshop.models import BaykeArticle, BaykeArticleCategory, BaykeArticleTags
+from baykeshop.module.admin.options import BaseModelAdmin
+from . import models
 
 
-@admin.register(BaykeArticleCategory, site=bayke_site)
+@admin.register(models.BaykeArticleCategory, site=bayke_site)
 class BaykeArticleCategoryAdmin(BaseModelAdmin):
     '''Admin View for BaykeArticleCategory'''
 
@@ -13,7 +13,7 @@ class BaykeArticleCategoryAdmin(BaseModelAdmin):
     search_fields = ('name', 'desc')
 
 
-@admin.register(BaykeArticle, site=bayke_site)
+@admin.register(models.BaykeArticle, site=bayke_site)
 class BaykeArticleAdmin(BaseModelAdmin):
     '''Admin View for BaykeArticleCategory'''
 
@@ -25,4 +25,4 @@ class BaykeArticleAdmin(BaseModelAdmin):
         return super().save_model(request, obj, form, change)
     
 
-bayke_site.register(BaykeArticleTags)
+bayke_site.register(models.BaykeArticleTag)

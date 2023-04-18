@@ -3,18 +3,46 @@
     .add-box:hover{border-color: rgb(251, 59, 59); transition: ease .5s;}
     .add-box .btn-default{position: absolute;top: 0;right: 0;}
     .active{border-color: rgb(251, 59, 59);}
+    .meng-box {display: none;}
+    .add-box:hover .meng-box{
+        display: block; 
+        position: absolute;
+        top:0; 
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.755);
+        transition: ease .5s;
+    }
 </style>
 
-<div class="box" id="address">
-    {{ address_list|json_script:"addr-data" }}
-
-    <h1 class="is-size-5">收货地址</h1>
-    <img width="100%" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAAAECAYAAACeNca/AAAAAXNSR0IArs4c6QAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAEsKADAAQAAAABAAAABAAAAAAdekyeAAABbUlEQVR4Ae2asW3DMBBFSWqGACkzRHprgyCbZASPEHiRjJC4TlYIkD4zWIyPd8WXzcZKw+KpkSCIBPHw+HWimNP5eHj5nae6vNv1pqPW4/fhfr5sW98e51TK9n5TPeanz6t+Ga+Thq9zwAd8cAL4oBzIB3zAB+qHRH0W04B6soHAB3xYvRj4fnMc5AP5sJoYrD8YjoHfF8XGNy2nvZ23Hqcy7bttS+7f7z7cubnUbnvGG6zg20DgAz4EAXxQEOQDPuCDEsAHpUE+4AM+KAF8UBrkAz7ggxLAB6UxQD4U272Sct7puG66Pq/O/bzefVy2aX//0z/6td1Xz19X/TJeJw1f54AP+OAE8EE5kA/4gA/UD/b3lPrMZgL1ZMsDfIhYxAd8CBUcBN+bxoF8CCnIB58WY9cPhd0r4esAq4kxktWJ3W2Bg914DQQ+4IMGBD7gAz4oAXxQGuQDPuCDEsAHpUE+4AM+KAF8UBqj58MfRyl5tp+pqv4AAAAASUVORK5CYII=">
-    <div class="columns is-multiline mt-1">
+<div id="address">
+    {{ address|json_script:"address-data" }}
+    <div class="columns is-multiline">
         <div class="column is-3" v-for="addr in addressData" :key="addr.id">
             <div class="add-box is-clickable is-flex is-flex-direction-column is-align-items-start is-justify-content-center is-relative pl-5 pr-5"
-                :class="{active: addr.is_default}"
-                @click="pickAddress(addr)">
+                :class="{active: addr.is_default}" @click="pickAddress(addr)">
+
+                {% if update or delete %}
+                <div class="meng-box">
+                    <div class=" buttons is-flex is-align-items-center is-justify-content-center" style="height:100%">
+                        {% if update %}
+                        <div class="button is-success is-light is-small" @click="updateAddress(addr)">
+                            <span class="icon"><i class="mdi mdi-book-edit-outline"></i></span>
+                            <span>编辑</span> 
+                        </div>
+                        {% endif %}
+
+                        {% if delete %}
+                        <div class="button is-danger is-light is-small" @click="delAddress(addr.id)">
+                            <span class="icon"><i class="mdi mdi-delete-alert-outline"></i></span>
+                            <span>删除</span> 
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
                 <span class="tag is-danger btn-default is-radiusless" v-if="addr.is_default">{$ text $}</span>
                 <h1 class="has-text-weight-bold">{$ addr.name $}</h1>
                 <p>{$ addr.phone $}</p>
@@ -28,7 +56,6 @@
                 <p class="mt-3 has-text-grey-light">添加新地址</p>
             </div>
         </div>
-        
     </div>
 
     <b-modal
@@ -37,8 +64,8 @@
         :can-cancel="false">
         <modal-form v-bind="formProps"></modal-form>
     </b-modal>
-
 </div>
+
 <script>
     const ModalForm = {
         props: ['id', 'name', 'phone', 'email', 'province', 'city', 'county', 'address', 'is_default'],
@@ -139,27 +166,25 @@
         methods: {
             // 保存地址
             save(){
+                let api = `{% url "baykeshop:address-list" %}`
+                let method = 'post'
+                if (this.formProps.id) {
+                    api = `{% url "baykeshop:address-list" %}${this.formProps.id}/`
+                    method = 'put'
+                }
                 // 数据库修改
-                const sendData = new FormData()
-                sendData.append('name', this.formProps.name)
-                sendData.append('phone', this.formProps.phone)
-                sendData.append('province', this.formProps.province)
-                sendData.append('city', this.formProps.city)
-                sendData.append('county', this.formProps.county)
-                sendData.append('address', this.formProps.address)
-                sendData.append('is_default', this.formProps.is_default)
                 request({
-                    method: 'post',
-                    url: `{% url "baykeshop:add_address" %}`,
+                    method: method,
+                    url: api,
                     headers: {'Accept': 'application/json'},
-                    data: sendData
+                    data: this.formProps
                 }).then(res => {
-                    if (res.data.code == 'ok') {
-                        navbar.toastMessage('is-success', res.data.message)
+                    if (res.status == 201 || res.status == 200) {
+                        navbar.toastMessage('is-success', '增加成功！')
                         this.$parent.close()
                         location.reload()
                     }else{
-                        navbar.toastMessage('is-danger', res.data.message)
+                        navbar.toastMessage('is-danger', '失败')
                     }
                 })
             },
@@ -168,8 +193,7 @@
 </script>
 
 <script>
-    var addrs = JSON.parse(document.getElementById('addr-data').textContent);
-
+    var addressData = JSON.parse(document.getElementById('address-data').textContent);
     var address = new Vue({
         el: '#address',
         delimiters: ['{$', '$}'],
@@ -177,27 +201,15 @@
             ModalForm
         },
         data: {
-            addressData: addrs,
+            addressData,
             text: "默认",
             isComponentModalActive: false,
-            formProps: {
-                'id': '',
-                'name': '',
-                'phone': '',
-                'email': '',
-                'province': '',
-                'city': '',
-                'county': '',
-                'address': '',
-                'is_default': false
-            }
+            formProps: {}
         },
-        created(){
-            // 选中默认地址
+        created() {
             this.addressData.forEach(element => {
                 if (element.is_default){
                     this.formProps = element
-                    this.text = "默认"
                 }
             })
         },
@@ -208,19 +220,47 @@
                 this.formProps = {}
             },
 
+            // 修改地址
+            updateAddress(addr){
+                this.isComponentModalActive = true
+                this.formProps = addr
+            },
+
+            // delAddress删除
+            delAddress(id){
+                this.$buefy.dialog.confirm({
+                    message: '是否确认删除该地址！',
+                    cancelText: '取消',
+                    onConfirm: () => {
+                        request({
+                            method: 'delete',
+                            url: `{% url "baykeshop:address-list" %}${id}/`,
+                            headers: {'Accept': 'application/json'},
+                        }).then(res => {
+                            console.log(res)
+                            if (res.status == 204 || res.status == 200) {
+                                navbar.toastMessage('is-success', '删除成功！')
+                                location.reload()
+                            }else{
+                                navbar.toastMessage('is-danger', '失败')
+                            }
+                        })
+                    }
+                })
+            },
+
             // 选择地址
             pickAddress(addr){
-                this.formProps = addr
+                this.formProps = addr;
                 this.addressData.forEach(element => {
-                    if (this.formProps.id == element.id){
-                        this.formProps.is_default = true
+                    if (addr.id == element.id){
+                        addr.is_default = true
                         this.text = "选择 ✔"
                     }else{
                         element.is_default = false
                     }
                 })
             },
-
         }
     })
 </script>

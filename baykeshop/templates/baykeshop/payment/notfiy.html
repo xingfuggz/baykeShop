@@ -1,0 +1,44 @@
+{% load static %}
+<div class="box is-radiusless is-marginless pl-6 pr-6" style="line-height: 30px;">
+    <div class="is-flex is-flex-direction-column is-align-items-center mb-4">
+        <figure class="image is-128x128">
+        <img src="{% static 'baykeshop/img/payok.svg' %}">
+        </figure>
+        <h1 class=" is-size-3 ">支付成功</h1> 
+    </div>
+    <div class=" dropdown-divider"></div>
+    <p>订单编号：{{ order.order_sn }}</p> 
+    <p>实际支付：{{ order.total_amount }}元</p>
+    <p>收货信息：{{ order.address }}</p>
+    <p>支付状态：{{ order.pay_status }}</p>
+    <p>支付方式：{{ order.pay_method }}</p>
+    <p>支付时间：{{ order.pay_time }}</p>
+    <div class=" dropdown-divider"></div>
+    {% for sku in order.baykeordergoods_set %}
+    <div class="columns">
+        <div class="column is-2 is-flex is-justify-content-center">
+            <figure class="image is-128x128">
+                <img src="{{ sku.product.pic }}" alt="{{ sku.goods.title }}">
+            </figure>
+        </div>
+        <div class="column is-flex is-flex-direction-column is-justify-content-center">
+            <h1 class=" has-text-weight-bold">{{ sku.product.goods.title }}</h1>
+            <div class="has-text-grey-light">
+                {% for op in sku.product.options %}
+                <span class="mr-3">{{ op.spec }}:{{ op.name }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="column is-2 is-flex is-justify-content-center is-align-items-center">
+            {{ sku.product.price }}x{{ sku.count }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="box is-radiusless">
+    <div class=" buttons is-justify-content-center">
+    <a class=" button is-success" href="">查看订单</a>
+    <a class=" button is-black" href="{% url 'baykeshop:home' %}">返回首页</a>
+    </div>
+</div>

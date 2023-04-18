@@ -1,8 +1,11 @@
-from django.urls import path
+from rest_framework.routers import DefaultRouter
+
 from baykeshop.module.order import views
 
-urlpatterns = [
-    path("list/", views.BaykeshopOrderInfoListView.as_view(), name="order_list"),
-    path("<int:slug>/", views.BaykeShopOrderInfoDetailView.as_view(), name="order_detail"),
-    path("detail/<int:slug>/", views.BaykeShopOrderInfoUserDetailView.as_view(), name="user_order_detail")
-]
+router = DefaultRouter()
+
+router.register('', views.BaykeOrderInfoViewset, basename="orders")
+
+router.register('confirm', views.BaykeOrderGoodsViewset, basename="confirm")
+
+urlpatterns = router.urls

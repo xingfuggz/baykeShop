@@ -15,17 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+
 from django.conf import settings
 from django.conf.urls.static import static
-
 from baykeshop.public.sites import bayke_site
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('baykeadmin/', bayke_site.urls),
-    path('', include('baykeshop.urls')),
-    path('pages/', include('django.contrib.flatpages.urls')),
+    path('', include('baykeshop.urls'))
 ]
 
 if settings.DEBUG:

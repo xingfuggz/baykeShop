@@ -1,0 +1,29 @@
+{% if datas.results %}
+<nav class="pagination" role="navigation" aria-label="pagination">
+  {% if datas.previous %}
+  <a class="pagination-previous" href="{{ datas.previous }}&{{ params }}">Previous</a>
+  {% endif %}
+    
+  {% if datas.next %}
+  <a class="pagination-next" href="{{ datas.next }}&{{ params }}">Next page</a>
+  {% endif %}
+    
+  <ul class="pagination-list">
+    {% for p in datas.pages %}
+    {% if p != '...' %}
+    <li>
+      <a href="?page={{ p }}&{{ params }}" class="pagination-link {% if datas.current == p %} is-current {% endif %}" aria-current="page" aria-label="Goto page {{ p }}">
+      {{ p }}
+      </a>
+    </li>
+    {% else %}
+    <li><span class="pagination-ellipsis">&hellip;</span></li>
+    {% endif %}
+    
+    {% endfor %}
+  </ul>
+</nav>
+{% else %}
+
+<h1 class=" has-text-danger has-text-centered">该分类暂未添加产品....</h1>
+{% endif %}

@@ -1,73 +1,49 @@
-from django.views.generic import CreateView, ListView, View
-from django.db.models import F
 from django.db.utils import IntegrityError
+from django.db.models import F
 from django.contrib import messages
-from django.urls import reverse_lazy
-from baykeshop.models import BaykeShopingCart, BaykeShopAddress
-from baykeshop.public.mixins import (
-    JsonableResponseMixin, JsonLoginRequiredMixin, JsonResponse,
-    LoginRequiredMixin
+from django.http.response import HttpResponseRedirect
+from django.urls import reverse
+
+from rest_framework import mixins
+from rest_framework import viewsets
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.renderers import JSONRenderer
+
+
+from baykeshop.public.renderers import TemplateHTMLRenderer
+from baykeshop.module.cart.serializers import (
+    BaykeShopingCartSerializer, CartBaykeShopingListSerializer
 )
+from baykeshop.module.cart.models import BaykeShopingCart
 
 
-class BaykeShopingCartCreateView(JsonLoginRequiredMixin, JsonableResponseMixin, CreateView):
-    """ 加入购物车 """
-    model = BaykeShopingCart
-    fields = ['sku', 'num']
-    success_url = reverse_lazy('baykeshop:carts')
+class BaykeshopingCartViewSet(viewsets.ModelViewSet):
     
-    def form_valid(self, form):
-        form.instance.owner = self.request.user
-        try:
-            self.object = form.save()
-            messages.add_message(self.request, messages.SUCCESS, f'已成功加入购物车！')
-        except IntegrityError:
-            carts = BaykeShopingCart.objects.filter(owner=self.request.user, sku=form.cleaned_data['sku'])
-            carts.update(num=F('num')+int(form.cleaned_data['num']))
-            self.object = carts.first()
-            messages.add_message(self.request, messages.SUCCESS, f'已成功加入购物车！')
-            return JsonResponse({'pk': self.object.id, 'code': 'ok', 'message': '已成功加入购物车！'}, json_dumps_params={'ensure_ascii': False})
-        return super().form_valid(form)
+    serializer_class = BaykeShopingCartSerializer
+    authentication_classes = [SessionAuthentication, JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
 
-
-class BaykeShopingCartListView(LoginRequiredMixin, ListView):
-    
-    template_name = "baykeshop/cart/carts.html"
-    context_object_name = "carts"
-    
     def get_queryset(self):
-        queryset = BaykeShopingCart.objects.filter(owner=self.request.user)
-        total = 0
-        carts = []
-        for cart in queryset:
-            cart_dict = {}
-            cart_dict['id'] = cart.id
-            cart_dict['title'] = cart.sku.spu.title
-            cart_dict['sku_id'] = cart.sku.id
-            cart_dict['cover_pic'] = cart.sku.cover_pic.url
-            cart_dict['options'] = list(cart.sku.options.values('name', 'spec__name'))
-            cart_dict['price'] = cart.sku.price.to_eng_string()
-            cart_dict['stock'] = cart.sku.stock
-            cart_dict['sales'] = cart.num
-            cart_dict['total_price'] = cart.num * cart.sku.price
-            carts.append(cart_dict)
-            total += cart.num * cart.sku.price
-        return carts
-
-
-class BaykeShopingCartUpdateView(JsonLoginRequiredMixin, View):
-    """ 修改购物车数量 """
+        return BaykeShopingCart.objects.filter(owner=self.request.user, sku__is_release=True)
     
-    def post(self, request, *args, **kwargs):
-        cleaned_data = request.POST
-        carts = BaykeShopingCart.objects.filter(owner=self.request.user, id=int(cleaned_data['id']))
-        # 修改
-        if carts.exists() and cleaned_data.get('actions') == 'update':
-            carts.update(num=int(cleaned_data['num']))
-            return JsonResponse({'code':'ok', 'message': '修改成功！'})
-        # 删除
-        elif carts.exists() and cleaned_data.get('actions') == 'delete':
-            carts.delete()
-            return JsonResponse({'code':'ok', 'message': '删除成功！'})
-        else:
-            return JsonResponse({'code':'err', 'message': '该购物不存在！'})
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return CartBaykeShopingListSerializer
+        return super().get_serializer_class()
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        response.template_name = "baykeshop/cart/list.html"
+        return response
+
+    def perform_create(self, serializer):
+        try:
+            super().perform_create(serializer)
+        except IntegrityError:
+            self.get_queryset().filter(
+                    sku__id=int(serializer.data['sku'])
+                ).update(num=F('num')+serializer.data['num'])
+            

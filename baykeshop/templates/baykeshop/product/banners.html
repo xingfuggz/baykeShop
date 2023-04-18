@@ -1,0 +1,49 @@
+<style>
+    [v-cloak] {
+        display: none !important;
+    }
+    .is-active .al img {
+        filter: grayscale(0%);
+       /* border: solid 1px rebeccapurple;*/
+    }
+    .carousel{border: solid 1px rgba(224, 224, 224, 0.232);}
+    .carousel-indicator{
+        align-items: center;
+        border-top: solid 1px rgba(224, 224, 224, 0.232);
+        padding: 0;
+        background-color: #fff;
+    }
+    .al img {
+        filter: grayscale(100%);
+    }
+    
+</style>
+
+<div id="banners">
+    {{ banners|json_script:"banners-data" }}
+    <b-carousel :indicator-inside="false">
+        <b-carousel-item v-for="(item, i) in bannersDatas" :key="i">
+            <b-image class="image" ratio="1by1" :src="getImgUrl(item.img)"></b-image>
+        </b-carousel-item>
+        <template #indicators="props">
+            <b-image class="al image" :src="getImgUrl(bannersDatas[props.i].img)"></b-image>
+        </template>
+    </b-carousel>
+</div>
+
+<script>
+    var bannersDatas = JSON.parse(document.getElementById('banners-data').textContent);
+    var banners = new Vue({
+        el: "#banners",
+        delimiters: ['{$', '$}'],
+        data: {
+            bannersDatas
+        },
+        methods: {
+            getImgUrl(value) {
+                return `${value}`
+            },
+        },
+    })
+
+</script>
