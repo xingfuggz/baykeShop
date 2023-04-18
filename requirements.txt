@@ -3,10 +3,16 @@ async-timeout==4.0.2
 cffi==1.15.1
 cryptography==39.0.2
 Django==4.1.7
+django-cors-headers==3.14.0
+django-filter==23.1
+djangorestframework==3.14.0
+djangorestframework-simplejwt==5.2.2
 mysqlclient==2.1.1
 Pillow==9.4.0
 pycparser==2.21
 pycryptodomex==3.17
+PyJWT==2.6.0
 pyOpenSSL==23.0.0
+pytz==2022.7.1
 redis==4.5.1
 sqlparse==0.4.3
