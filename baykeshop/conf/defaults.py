@@ -8,7 +8,7 @@ bayke_defaults = {
     "PC_LOGO": "BaykeShop",
     
     # 后台自定义菜单开关
-    "ADMIN_MENUS": False,
+    "ADMIN_MENUS": True,
     
     # 商品列表页分页数量
     "PAGE_SIZE": 16,

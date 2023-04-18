@@ -46,7 +46,7 @@
           <aside class="menu">
             <ul class="menu-list">
               <li>
-                <a class="{% if '/article/' == request.get_full_path %} is-active {% endif %}" 
+                <a class="{% if '/article/' == request.get_full_path or not request.query_params.category__name %} is-active {% endif %}" 
                    href="{% url 'baykeshop:article-list' %}">全部分类</a>
               </li>
               {% for cate in cates %}

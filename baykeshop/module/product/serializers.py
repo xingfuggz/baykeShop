@@ -1,7 +1,11 @@
+from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
 from baykeshop.models import product
 from baykeshop.public.serializers import BaykeGoodsSerializer
+from baykeshop.module.order.models import BaykeOrderGoods
+from baykeshop.module.comment.models import BaykeOrderInfoComments
+from baykeshop.module.comment.serializer import BaykeOrderInfoCommentsSerializer
 
 
 class BaykeCategorySerializer(serializers.ModelSerializer):
@@ -53,6 +57,7 @@ class BaykeGoodsDetailSerializer(serializers.ModelSerializer):
     baykegoodsbanners_set = BaykeGoodsBannersSerializer(many=True)
     specs = serializers.SerializerMethodField()
     hot_goods = serializers.SerializerMethodField()
+    comments = serializers.SerializerMethodField()
     
     class Meta:
         model = product.BaykeGoods
@@ -71,3 +76,11 @@ class BaykeGoodsDetailSerializer(serializers.ModelSerializer):
             if hot not in hots:
                 hots.append(hot)
         return hots[:5]
+    
+    def get_comments(self, obj):
+        """ 评价列表 """
+        content_type = ContentType.objects.get_for_model(BaykeOrderGoods)
+        product_ids = obj.baykeproduct_set.filter(is_release=True).values_list('id', flat=True)
+        order_goods_ids = BaykeOrderGoods.objects.filter(product__id__in=list(product_ids)).values_list('id', flat=True)
+        comments = BaykeOrderInfoComments.objects.filter(content_type=content_type, object_id__in=list(order_goods_ids))
+        return BaykeOrderInfoCommentsSerializer(comments, many=True).data

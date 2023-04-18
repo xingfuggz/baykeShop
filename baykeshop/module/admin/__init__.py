@@ -9,6 +9,7 @@ from baykeshop.module.product import admin as product_admin
 from baykeshop.module.user import admin as user_admin
 from baykeshop.module.order import admin as order_admin
 from baykeshop.module.article import admin as article_admin
+from baykeshop.module.comment import admin as comment_admin
 
 
 @admin.register(BaykeBanner, site=bayke_site)

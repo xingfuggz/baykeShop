@@ -25,14 +25,16 @@
     <div id="header">
         {% block header %}{% navbar_result %}{% endblock %}
     </div>
-    <div id="main">
+    <div id="main" class="mb-3">
         {% block breadcrumb %}{% endblock %}
         {% block banners %}{% endblock %}
         {% block container %}{% endblock %}
     </div>
 
     <div id="footer">
-        {% block footer %}asdasd{% endblock %}
+        {% block footer %}
+        {% include 'baykeshop/footer.html' %}
+        {% endblock %}
     </div> 
 
     {% block vue %}{% endblock %}

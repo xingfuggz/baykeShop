@@ -1,15 +1,17 @@
 body{
     font-size: 14px;
     display: flex; 
-    flex-direction: column;
-    height: 100vh;
+    flex-direction: column; 
+    min-height: 100vh;
+    background-color: rgba(236, 236, 236, 0.447);
 }
 .full-height{
     height: 100%;
 } 
 #main{
     flex: 1; 
-    background-color: rgba(236, 236, 236, 0.447);
+    height: 100%;
+    /* background-color: rgba(236, 236, 236, 0.447); */
 }
 
 #header-top, #header-top a, .usertools span{ 

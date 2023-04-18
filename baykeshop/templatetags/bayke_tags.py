@@ -1,5 +1,5 @@
 from django.template import Library
-from django.urls import reverse, NoReverseMatch
+from django.urls import reverse
 
 from baykeshop.conf import bayke_settings
 from baykeshop.models import admin, product, cart
@@ -144,13 +144,11 @@ def ordering_tag(request, order_field, show_name):
         'show_name': show_name
     }
 
-
 @register.inclusion_tag("baykeshop/product/banners.html")
 def spu_banners(banners):
     return {
         'banners': banners
-    }
-    
+    }    
 
 @register.inclusion_tag("baykeshop/user/address.html")
 def address_result(address:list, update=False, delete=False):
@@ -171,7 +169,7 @@ def pay_methods(request, methods):
     
 @register.inclusion_tag("baykeshop/order/action.html")
 def orderinfo_action(order):
-
+    """ 订单操作 """
     return {
         'ordergoods_count': sum([good['count'] for good in order['baykeordergoods_set']]),
         'is_commented':all([good['is_commented'] for good in order['baykeordergoods_set']]),
