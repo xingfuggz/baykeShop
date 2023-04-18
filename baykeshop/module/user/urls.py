@@ -12,7 +12,9 @@ urlpatterns = [
     path("register/", views.RegisterView.as_view(), name="register"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
     
-    path("token/", token.BaykeTokenObtainPairView.as_view(), name="token"),
+    path("token/", token.BaykeTokenObtainPairView.as_view(), name="token"), # 获取token
+    path("refresh/", token.TokenRefreshView.as_view(), name="refresh"),     # 刷新token
+    path("verify/", token.TokenVerifyView.as_view(), name="verify"),        # 验证token
 ]
 
 router.register('address', views.BaykeShopAddressViewset, basename="address")
