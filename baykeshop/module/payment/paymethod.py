@@ -68,7 +68,7 @@ class AlipayMethod(BasePayMethod):
             alipay_public_key_string=self.public_key_string,
             sign_type="RSA2",
             debug=settings.DEBUG,
-            verbose=settings.DEBUG,
+            verbose=True,
             config=AliPayConfig()
         )
         
@@ -86,7 +86,7 @@ class AlipayMethod(BasePayMethod):
     @property
     def redirct_url(self):
         redirct_url = self.alipay()._gateway
-        return f"{redirct_url}?{self.redirct_url_params}"
+        return "{payurl}?{data}".format(payurl=redirct_url, data=self.redirct_url_params)
    
     @property
     def notify_url(self):

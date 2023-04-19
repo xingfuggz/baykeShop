@@ -84,3 +84,4 @@ class BaykeGoodsDetailSerializer(serializers.ModelSerializer):
         order_goods_ids = BaykeOrderGoods.objects.filter(product__id__in=list(product_ids)).values_list('id', flat=True)
         comments = BaykeOrderInfoComments.objects.filter(content_type=content_type, object_id__in=list(order_goods_ids))
         return BaykeOrderInfoCommentsSerializer(comments, many=True).data
+    

@@ -111,7 +111,39 @@
                             </div>
                         </b-tab-item>
                         <b-tab-item label="商品评价">
-                            啊实打实
+                            <div class="is-flex is-justify-content-space-between p-2">
+                                <div class="">满意度：{{ goodsrate }}%</div>
+                                <div class="is-flex is-align-items-center">
+                                    <span> 评分：</span>
+                                    <b-rate 
+                                        :value="{{ avg_score }}" 
+                                        disabled 
+                                        custom-text="{{ avg_score }}分">
+                                    </b-rate>
+                                </div>
+                            </div>
+                            <div class=" dropdown-divider"></div>
+
+                            {% for comment in comments %}
+                            <article class="media">
+                                <figure class="media-left">
+                                    <p class="image is-32x32">
+                                        <img class="is-rounded" src="{{ comment.userinfo.baykeuserinfo.avatar }}">
+                                    </p>
+                                </figure>
+                                <div class="media-content">
+                                    <p>
+                                        {{ comment.userinfo.username }}
+                                        <b-rate size="is-small" :value="{{ comment.comment_choices }}" disabled custom-text="{{ comment.comment_choices }}分"></b-rate>
+                                    </p>
+                                    <p class=" is-size-7">{{ comment.add_date }}</p>
+                                    <p class=" has-text-grey-light">{{ comment.content }}</p>
+                                </div>
+                            </article>
+                        {% empty %}
+                        <p class=" has-text-centered has-text-danger mt-6">还没有任何评价内容哦！</p>
+                        {% endfor %}
+    
                         </b-tab-item>
                         <b-tab-item label="售后服务">
                             <div class="content">

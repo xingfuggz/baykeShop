@@ -90,7 +90,7 @@ class BaykeOrderInfoViewset(mixins.ListModelMixin,
     
     @action(detail=True, methods=['get'])
     def balance(self, request, order_sn=None):
-        """订单结算接口
+        """余额订单结算接口
         @api: /order/{order_sn}/balance/
         @method: get
         @params: {}

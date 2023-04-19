@@ -76,6 +76,24 @@ class BaykeGoodsDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = "baykeshop/product/detail.html"
 
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+        rates = [comment['comment_choices'] for comment in response.data['comments']]    
+        rate_3_count = self.get_list_item_count(rates, 3)
+        rate_5_count = self.get_list_item_count(rates, 5)
+        # 好评率
+        goodratings = (rate_3_count+rate_5_count) / len(rates)
+        # 平均分
+        avg_score = sum(rates) / len(rates)
+        response.data['goodsrate'] = goodratings * 100
+        response.data['avg_score'] = avg_score
+        return response
+    
+    def get_list_item_count(self, iters, item):
+        return len([i for i in iters if i == item])
+        
+    
+    
 
 class BaykeCacheGoodsAPIview(APIView):
     """ 缓存商品接口 """
