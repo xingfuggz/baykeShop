@@ -1,0 +1,147 @@
+{{ specs|json_script:"specs-data" }}
+{{ skus|json_script:"skus-data" }}
+
+<style>
+[v-cloak]{
+    display: none !important;
+ }
+</style>
+
+<div id="skuSpec" v-cloak>
+    <section class="hero is-link is-bold is-small">
+        <div class="hero-body">
+            <div class="is-flex is-justify-content-space-between is-align-items-center">
+                <p class="is-size-3 has-text-weight-bold">￥{% verbatim %}{{ sku.price }}{% endverbatim %}</p>
+                <p class="">销量：{% verbatim %}{{ sku.num }}{% endverbatim %}</p>
+            </div>
+        </div>
+    </section>
+    <div class="box is-radiusless">
+        <div class="buttons mb-1" v-for="values, key, index in specs" :key="key">
+            <span>{% verbatim %}{{ key }}：{% endverbatim %}</span>
+            <button v-for="value, i in values" :key="i" @click="specsChange(value, index)" class="button is-medium is-responsive"
+                :class="{ 'is-link is-light': value === specs_list[index] }">
+                {% verbatim %}{{ value }}{% endverbatim %}
+            </button>
+        </div>
+        <div class="buttons mt-5">
+            <span>数量：</span>
+            <div class="field has-addons">
+                <p class="control">
+                    <button class="button is-light is-medium" :disabled="!sku.stock || count == 1" @click="count--">
+                        <span class="icon"><i class="mdi mdi-minus"></i></span>
+                    </button>
+                </p>
+                <p class="control">
+                    <input type="number" class="input is-medium" v-model="count" min="1" :max="sku.stock" step="1"></input>
+                </p>
+                <p class="control">
+                  <button class="button is-light is-medium" :disabled="!sku.stock || count == sku.stock" @click="count++">
+                    <span class="icon"><i class="mdi mdi-plus"></i></span>
+                  </button>
+                </p>
+            </div>
+            <span class="has-text-grey">(库存 {% verbatim %}{{ sku.stock }}{% endverbatim %})</span>
+        </div>
+        <div class="buttons mt-5">
+            <button class="button is-link is-large is-fullwidth1" :disabled="!sku.stock" @click="addCart(sku.id, count)">
+                加入购物车
+            </button>
+            <button class="button is-link is-light is-large is-fullwidth1" :disabled="!sku.stock" @click="noyBuy">
+                立即购买
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    const { createApp, ref, computed, reactive, watch } = Vue
+    createApp({
+        setup() {
+            // 获取规格sku数据
+            const sku = reactive({
+                id: 0,
+                price: 0,
+                stock: 0,
+                // num: 0
+            })
+            const count = ref(1)
+            // 选中的规格
+            const specs_list = ref([])
+            // 获取规格
+            const specs = computed(() => {
+                return JSON.parse(document.getElementById('specs-data').textContent);
+            })
+            // 获取skus
+            const skus = computed(() => {
+                return JSON.parse(document.getElementById('skus-data').textContent);
+            })
+            return { specs, skus, specs_list, sku, count }
+      },
+      methods: {
+        // 规格选择
+        specsChange(value, index) {
+            this.specs_list[index] = this.specs_list[index] == value ? '' : value
+            // 过滤空值,多个删除中间控制后边的会自动向前进一个位置
+            this.specs_list = this.specs_list.filter(item => item)
+        },
+
+        noyBuy() {
+            // 跳转到结算页
+            window.location.href = "{% url 'order:order-cash' %}?sku_ids=" + this.sku.id + '&count=' + this.count
+        },
+
+        async addCart(sku_id, count) {
+            // 添加购物车
+            const csrftoken = Cookies.get('csrftoken');
+            const formData = new FormData();
+            formData.append('sku_id', sku_id);
+            formData.append('num', count);
+            const { isFetching, error, data } = await window.VueUse.useFetch(
+                "{% url 'shop:cart-add' %}", { 
+                    method: 'POST', 
+                    headers: {'X-CSRFToken': csrftoken}, 
+                    credentials: "same-origin",
+                    body: formData
+                }, 
+            )
+            const result = JSON.parse(data.value)
+            if (result.code == 401) {
+                Qmsg.info(result.msg, {
+                    onClose: function () {
+                        window.location.href = "{% url 'user:login' %}?next={{ next_url }}"
+                    }
+                });
+            }else if (result.code == 200) {
+                Qmsg.success(result.msg, {
+                    timeout: 1000,
+                    onClose: function () {
+                        window.location.reload()
+                    }
+                })
+            }
+        }
+      },
+      mounted() {
+        // 初始化规格列表
+        this.specs_list = Object.keys(this.skus)[0].split(',')
+      },
+      watch: {
+        // 监听规格列表的变化
+        specs_list: {
+            handler(newValue, oldValue){
+                let specs_list_str = newValue.join(',')
+                let item_sku = this.skus[specs_list_str]
+                if (item_sku) {
+                    this.sku = item_sku
+                } else {
+                    this.sku.stock = 0
+                    this.sku.id = 0
+                    console.log('没有找到sku')
+                }
+            },
+            immediate: true,
+            deep: true
+        }
+      }
+    }).mount('#skuSpec')
+</script>

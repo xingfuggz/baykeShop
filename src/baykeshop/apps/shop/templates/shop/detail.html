@@ -1,0 +1,134 @@
+{% extends "shop/base.html" %}
+
+{% load i18n static bayke shop %}
+
+{% block title %}
+  {{ object.name }}
+{% endblock %}
+
+{% block extrastyle %}
+<style>
+    .tab-content {display: none;}
+    .tab-content.is-active {display: block;}
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.tabs ul li');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetTab = this.getAttribute('data-tab');
+
+            // 移除所有 active 类
+            tabs.forEach(t => t.classList.remove('is-active'));
+            tabContents.forEach(content => content.classList.remove('is-active'));
+
+            // 添加 active 类到当前选中的 tab 和对应的内容
+            this.classList.add('is-active');
+            document.getElementById(`tab-${targetTab}`).classList.add('is-active');
+        });
+    });
+});
+</script>
+{% endblock %}
+
+{% block section %}
+<section class="section">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-3">
+                <div class="box1">
+                    {% comment %} 轮播图模版 {% endcomment %}
+                    {% gallery_template object %}
+                </div>
+            </div>
+            <div class="column">
+                <h1 class="is-size-3">{{ object.name }}</h1>
+                {% comment %} 判断是否为多规格 {% endcomment %}
+                {% has_specs object as has_specs %}
+                {% if not has_specs %}
+                    {% comment %} 单规格模版 {% endcomment %}
+                    {% sku_template object.baykeshopsku_set.first request %}
+                {% else %}
+                    {% comment %} 多规格模版 {% endcomment %}
+                    {% specs_template object request %}
+                {% endif %}
+                <div class="box is-radiusless mt-5">
+                    <div class="tabs">
+                        <ul>
+                            <li class="is-active" data-tab="details">
+                                <a class="is-size-5">
+                                    <span class="icon is-small">
+                                        <i class="mdi mdi-content-copy" aria-hidden="true"></i>
+                                    </span>
+                                    <span>产品详情</span>
+                                </a>
+                            </li>
+                            <li data-tab="comments">
+                                <a class="is-size-5">
+                                    <span class="icon is-small">
+                                        <i class="mdi mdi-comment-check-outline" aria-hidden="true"></i>
+                                    </span>
+                                    <span>累计评论({{ comment_count }})</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="tab-details" class="tab-content is-active">
+                        <div class="content ql-editor" style="padding: 0;">
+                            {{ object.content|safe }}
+                        </div>
+                    </div>
+                    <div id="tab-comments" class="tab-content px-5 pb-5">
+                        <!-- 评论内容 -->
+                        <div class="is-flex is-justify-content-space-between py-2 px-3">
+                            <div class="has-text-weight-bold has-text-grey">满意度：{{ comment_rate }}%</div>
+                            <div class="has-text-weight-bold has-text-grey">评分：{{ comment_avg_score }}</div>
+                        </div>
+                        <div class="dropdown-divider has-background-light"></div>
+                        {% for comment in comments %}
+                            <article class="media">
+                                <figure class="media-left">
+                                    <p class="image is-32x32">
+                                        <img class="is-rounded" src="{% if comment.user.profile.avatar %}{{ comment.user.profile.avatar.url }}{% endif %}">
+                                    </p>
+                                </figure>
+                                <div class="media-content">
+                                    <p>
+                                        {{ comment.user.username }}
+                                        ({{ comment.score }}分)
+                                    </p>
+                                    <p class=" is-size-7">{{ comment.create_time|timesince }}前</p>
+                                    <p class=" has-text-grey-light">{{ comment.content }}</p>
+                                    
+                                    {% if comment.reply %}
+                                    <div class="box is-shadowless has-background-light">
+                                        <span class="has-text-danger-dark">商家回复：</span> {{ comment.reply }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                            </article>
+                        {% endfor %}
+                        <div class="dropdown-divider has-background-light"></div>
+                        {% paginator_template comments request %}
+                    </div>
+                </div>
+            </div>
+            <div class="column is-2">
+                {% spu_filter_list is_recommend=True as recommend_spu_list %}
+                <div class="box is-shadowless" style="border: 1px solid #eee;">
+                    <h1 class="has-text-centered is-size-5 has-text-weight-bold">优品推荐</h1>
+                    <hr class="my-2">
+                    {% for spu in recommend_spu_list|slice:4 %}
+                        {% include "shop/spu.html" with spu=spu %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

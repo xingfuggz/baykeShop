@@ -1,0 +1,23 @@
+<form action="{% url 'shop:spu-list' %}" method="get">
+    <div class="field has-addons">
+        <div class="control has-icons-left">
+            <input class="input is-large" name="keyword" type="search" value="{{ keyword }}" placeholder="请输入商品关键字搜索">
+            <span class="icon is-small is-left">
+                <i class="mdi mdi-search-web"></i>
+            </span>
+            {% if not is_valid %}
+                {% for field,error in form.errors.items %}
+                <p class="help is-danger">
+                    {{ error }}
+                </p>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="control">
+            <button class="button is-link is-large">
+                搜索
+            </button>
+        </div>
+        
+    </div>
+</form>

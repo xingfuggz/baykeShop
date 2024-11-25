@@ -1,0 +1,152 @@
+{% load i18n shop cart bayke %}
+<header>
+    <div id="head-top" class="has-background-black-ter has-text-white-ter">
+        <div class="container">
+            <div class="is-flex is-align-items-center">
+                <div>欢迎光临本店！</div>
+                <div class="ml-auto">
+                    {% if request.user.is_authenticated %}
+                    <div class="dropdown is-hoverable" style="z-index: 100;">
+                        <div class="dropdown-trigger">
+                          <button class="button is-ghost has-text-grey-light" aria-haspopup="true" aria-controls="dropdown-menu4" style="height: 40px;">
+                            <span class="icon is-small">
+                                <i class="mdi mdi-account-badge" aria-hidden="true"></i>
+                            </span>
+                            <span>{{ request.user.username }}</span>
+                            <span class="icon is-small">
+                                <i class="mdi mdi-chevron-down" aria-hidden="true"></i>
+                            </span>
+                          </button>
+                        </div>
+                        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+                            <div class="dropdown-content">
+                                <a class="dropdown-item" href="{% url 'user:account' %}">
+                                    <span class="icon">
+                                        <i class="mdi mdi-account-badge-outline"></i>
+                                    </span>
+                                    {% translate '个人中心' %}
+                                </a>
+                                <a class="dropdown-item" href="{% url 'order:order-list' %}">
+                                    <span class="icon">
+                                        <i class="mdi mdi-list-box-outline"></i>
+                                    </span>
+                                    {% translate '我的订单' %}
+                                </a>
+                                <hr class="dropdown-divider" />
+                                <a class="dropdown-item" href="{% url 'user:logout' %}">
+                                    <span class="icon">
+                                        <i class="mdi mdi-logout"></i>
+                                    </span>
+                                    {% translate '退出' %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a class="button is-ghost has-text-grey-light" style="height: 40px;"
+                        href="{% url 'user:login' %}">
+                        <span class="icon">
+                            <i class="mdi mdi-18px mdi-login"></i>
+                        </span>
+                        <span>登录</span>
+                    </a><span class="has-text-grey-light">|</span>
+                    <a class="button is-ghost has-text-grey-light" style="height: 40px;"
+                        href="{% url 'user:register' %}">
+                        <span class="icon">
+                            <i class="mdi mdi-18px mdi-account-box-plus-outline"></i>
+                        </span>
+                        <span>注册</span>
+                    </a>
+                    {% endif %}
+                    <a class="button is-light is-radiusless is-shadowless" 
+                        href="{% url 'shop:cart-list' %}" style="height: 40px; width: 120px;">
+                        <span class="icon">
+                            <i class="mdi mdi-cart-heart"></i>
+                        </span>
+                        <span>购物车({% cart_count request.user %})</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav class="navbar is-spaced has-shadow" role="navigation" aria-label="main navigation">
+        <div class="container">
+        <div class="navbar-brand">
+            {% config 'logo' as logo %}
+            {% if logo %}
+            <img src="{{ logo.url }}" alt="{% config 'site_title' %}" width="150" height="auto">
+            {% else %}
+            <a class="navbar-item is-size-3 has-text-weight-bold" href="{% url 'shop:index' %}">
+                BaykeShop
+            </a>
+            {% endif %}
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
+                data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="{% url 'shop:index' %}">
+                    首页
+                </a>
+                <a class="navbar-item" href="{% url 'shop:spu-list' %}">
+                    全部商品
+                </a>
+                <a class="navbar-item" href="{% url 'article:article_list' %}">
+                    商城资讯
+                </a>
+                {% nav_categorys as nav_categorys %}
+                {% for cate in nav_categorys|slice:4 %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link" href="{% url 'shop:category-spu-list' cate.id %}">
+                        {{ cate.name }}
+                    </a>
+                    <div class="navbar-dropdown">
+                        {% for child in cate.baykeshopcategory_set.all %}
+                        <a class="navbar-item" href="{% url 'shop:category-spu-list' child.id %}">
+                            {{ child.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    {% search_form request %}
+                </div>
+            </div>
+        </div>
+        </div>
+    </nav>
+</header>
+<style>
+    #head-top{
+        height: 40px;
+        line-height: 40px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+        $navbarBurgers.forEach( el => {
+            el.addEventListener('click', () => {
+
+            // Get the target from the "data-target" attribute
+            const target = el.dataset.target;
+            const $target = document.getElementById(target);
+
+            // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+            el.classList.toggle('is-active');
+            $target.classList.toggle('is-active');
+
+            });
+        });
+    });
+</script>

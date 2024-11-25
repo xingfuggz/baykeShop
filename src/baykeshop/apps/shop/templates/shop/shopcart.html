@@ -1,0 +1,15 @@
+{% extends 'shop/base.html' %}
+
+{% load i18n %}
+
+{% block title %} {% translate '我的购物车' %} {% endblock %}
+
+{% block section %}
+<section class="section">
+    <div class="container">
+        {% include 'shop/carttag.html' with cart_list=page_obj %}
+    </div>
+</section>
+{% endblock %}
+    
+    

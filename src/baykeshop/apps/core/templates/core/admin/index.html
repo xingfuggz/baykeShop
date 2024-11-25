@@ -1,0 +1,215 @@
+{% extends 'admin/base_site.html' %}
+{% load static bayke %}
+
+{% block content_title %}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'core/css/grid.css' %}">
+<link rel="stylesheet" href="{% static "core/css/materialdesignicons.min.css" %}">
+<!-- 数据统计 -->
+<div class="grid">
+    <div class="cell">
+        <div class="box has-background-light is-align-items-center is-shadowless1">
+            <div class="is-flex is-justify-content-space-between">
+                <div>销售额</div>
+                <div>
+                    <span class="tag is-link is-light">今日</span>
+                </div>
+            </div>
+            <div>
+                <div class="is-size-3">{{ orders_today_amount }}</div>
+                <div>
+                    <span>昨日 {{ orders_yesterday_amount }}</span> 
+                    <span>日环比 {{ orders_amount_ratio }}%</span>
+                    
+                    {% if orders_amount_ratio > 0 %}
+                    <span class="is-size-7 has-text-danger">▲</span>
+                    {% else %}
+                    <span class="is-size-7 has-text-success">▼</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="has-background-primary-95 my-2" style="height: 1px;"></div>
+            <div class="is-flex is-justify-content-space-between has-text-grey">
+                <div>本月销售额</div>
+                <div>
+                    <span>{{ orders_month_amount }}元</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="cell">
+        <div class="box has-background-light is-align-items-center is-shadowless1">
+            <div class="is-flex is-justify-content-space-between">
+                <div>用户访问量</div>
+                <div>
+                    <span class="tag is-link is-light">今日</span>
+                </div>
+            </div>
+            <div>
+                <div class="is-size-3">{{ visits_today_pv_count }}</div>
+                <div>
+                    <span>昨日 {{ visits_yesterday_pv_count }}</span> 
+                    <span>日环比 {{ visits_pv_ratio }}%</span>
+                    {% if visits_pv_ratio > 0 %}
+                    <span class="is-size-7 has-text-danger">▲</span>
+                    {% else %}
+                    <span class="is-size-7 has-text-success">▼</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="has-background-primary-95 my-2" style="height: 1px;"></div>
+            <div class="is-flex is-justify-content-space-between has-text-grey">
+                <div>本月访问量</div>
+                <div>
+                    <span>{{ visits_month_pv_count }}PV</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="cell">
+        <div class="box has-background-light is-align-items-center is-shadowless1">
+            <div class="is-flex is-justify-content-space-between">
+                <div>订单量</div>
+                <div>
+                    <span class="tag is-link is-light">今日</span>
+                </div>
+            </div>
+            <div>
+                <div class="is-size-3">{{ orders_today_count }}</div>
+                <div>
+                    <span>昨日 {{ orders_yesterday_count }}</span> 
+                    <span>日环比 {{ orders_count_ratio }}%</span>
+                    {% if orders_count_ratio > 0 %}
+                    <span class="is-size-7 has-text-danger">▲</span>
+                    {% else %}
+                    <span class="is-size-7 has-text-success">▼</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="has-background-primary-95 my-2" style="height: 1px;"></div>
+            <div class="is-flex is-justify-content-space-between has-text-grey">
+                <div>本月订单量</div>
+                <div>
+                    <span>{{ orders_month_count }}单</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="cell">
+        <div class="box has-background-light is-align-items-center is-shadowless1">
+            <div class="is-flex is-justify-content-space-between">
+                <div>新增用户</div>
+                <div>
+                    <span class="tag is-link is-light">今日</span>
+                </div>
+            </div>
+            <div>
+                <div class="is-size-3">{{ users_today_count }}</div>
+                <div>
+                    <span>昨日 {{ users_yesterday_count }}</span> 
+                    <span>日环比 {{ users_today_ratio }}%</span>
+                    {% if users_today_ratio > 0 %}
+                    <span class="is-size-7 has-text-danger">▲</span>
+                    {% else %}
+                    <span class="is-size-7 has-text-success">▼</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="has-background-primary-95 my-2" style="height: 1px;"></div>
+            <div class="is-flex is-justify-content-space-between has-text-grey">
+                <div>本月新增用户</div>
+                <div>
+                    <span>{{ users_month_count }}人</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 快捷入口 -->
+ <div class="grid">
+    <div class="cell">
+        <a class="box py-5 is-clickable" href="{% url 'bayke_admin:auth_user_changelist' %}">
+            <div class="is-flex is-flex-direction-column is-align-items-center">
+                <span class="icon has-text-primary">
+                    <i class="mdi mdi-36px mdi-account-box-edit-outline"></i>
+                </span>
+                <span class="mt-3">用户管理</span>
+            </div>
+        </a>
+    </div>
+    <div class="cell">
+        <a class="box py-5 is-clickable" href="{% url 'bayke_admin:sites_site_change' 1 %}">
+            <div class="is-flex is-flex-direction-column is-align-items-center">
+                <span class="icon has-text-info">
+                    <i class="mdi mdi-36px mdi-cog-outline"></i>
+                </span>
+                <span class="mt-3">系统设置</span>
+            </div>
+        </a>
+    </div>
+    <div class="cell">
+        <a class="box py-5 is-clickable" href="{% url 'bayke_admin:shop_baykeshopspu_changelist' %}">
+            <div class="is-flex is-flex-direction-column is-align-items-center">
+                <span class="icon has-text-link">
+                    <i class="mdi mdi-36px mdi-shopping-outline"></i>
+                </span>
+                <span class="mt-3">商品</span>
+            </div>
+        </a>
+    </div>
+    <div class="cell">
+        <a class="box py-5 is-clickable" href="{% url 'bayke_admin:order_baykeshoporder_changelist' %}">
+            <div class="is-flex is-flex-direction-column is-align-items-center">
+                <span class="icon has-text-success">
+                    <i class="mdi mdi-36px mdi-list-box-outline"></i>
+                </span>
+                <span class="mt-3">订单管理</span>
+            </div>
+        </a>
+    </div>
+    <div class="cell">
+        <a class="box py-5 is-clickable" href="{% url 'bayke_admin:article_baykearticle_changelist' %}">
+            <div class="is-flex is-flex-direction-column is-align-items-center">
+                <span class="icon has-text-warning">
+                    <i class="mdi mdi-36px mdi-book-open-outline"></i>
+                </span>
+                <span class="mt-3">内容管理</span>
+            </div>
+        </a>
+    </div>
+    <div class="cell">
+        <a class="box py-5 is-clickable" href="{% url 'bayke_admin:shop_baykeshopbrand_changelist' %}">
+            <div class="is-flex is-flex-direction-column is-align-items-center">
+                <span class="icon has-text-danger">
+                    <i class="mdi mdi-36px mdi-bank-outline"></i>
+                </span>
+                <span class="mt-3">品牌管理</span>
+            </div>
+        </a>
+    </div>
+ </div>
+
+<!-- 数据分析图表 -->
+<div class="">
+<div class="box pt-6">
+    {{ orders_chart_30days|safe}}
+</div>
+</div>
+
+
+<div class="is-flex is-justify-content-space-between box mt-5 py-6">
+    <div style="width: 60%;">
+        {{ users_chart|safe }}
+    </div>
+    <div style="width: 35%;">
+        {{ user_percentage_chart|safe }}
+    </div>
+</div>
+
+<div class="has-text-centered">
+    {% site_config_value 'COPYRIGHT' as COPYRIGHT %}
+    {{ COPYRIGHT|safe }}
+</div>
+{% endblock %}

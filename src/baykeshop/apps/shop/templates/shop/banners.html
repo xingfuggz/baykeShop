@@ -1,0 +1,11 @@
+{% load static %}
+<swiper-container navigation="true" pagination="true" loop="true" autoplay="true">
+    {% for item in banners %}
+    <swiper-slide>
+        <a href="{{ item.target }}" _target="blank">
+            <img src="{{ item.image.url }}" alt="{{ item.desc }}">
+        </a>
+    </swiper-slide>
+    {% endfor %}
+</swiper-container>
+<script src="{% static 'core/js/swiper/swiper-element-bundle.min.js' %}"></script>

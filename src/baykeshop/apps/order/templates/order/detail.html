@@ -1,0 +1,113 @@
+{% extends 'user/account.html' %}
+{% load i18n bayke %}
+{% block title %}{% translate '我的订单' %}-{{ order.order_sn }} {% endblock %}
+
+{% block profile_header %}
+<h1 class="is-size-4">
+    <span class="icon"><i class="mdi mdi-shopping"></i></span>
+    {% translate '我的订单' %}
+</h1>
+{% endblock %}
+
+{% block profile_content %}
+<div id="orderDetailContent">
+    <div class="p-6 box has-background-light">
+        <h1 class="is-size-4">
+            <span class="icon">
+                <i class="mdi mdi-information"></i>
+            </span>
+            {% translate '订单信息' %}
+        </h1>
+        <hr class="my-2 has-background-white">
+        <ul>
+            <li>{% translate '订单号' %}: {{ order.order_sn }}</li>
+            <li>{% translate '订单状态' %}: {{ order.get_status_display }}</li>
+            <li>{% translate '订单金额' %}: {{ order.total_price }}</li>
+            <li>{% translate '支付方式' %}: {{ order.get_pay_type_display }}</li>
+            <li>{% translate '下单时间' %}: {{ order.create_time }}</li>
+            <li>{% translate '支付时间' %}: {{ order.pay_time|default:"~" }}</li>
+        </ul>
+    </div>
+    <div class="p-6 box has-background-light">
+        <h1 class="is-size-4">
+            <span class="icon">
+                <i class="mdi mdi-information"></i>
+            </span>
+            {% translate '收货信息' %}
+        </h1>
+        <hr class="my-2 has-background-white">
+        <ul>
+            <li>{% translate '签收人' %}: {{ order.receiver }}</li>
+            <li>{% translate '联系电话' %}: {{ order.phone }}</li>
+            <li>{% translate '收货地址' %}: {{ order.address }}</li>
+            <li>{% translate '备注' %}: {{ order.remark|default:"~" }}</li>
+        </ul>
+    </div>
+    <div class="p-6 box has-background-light">
+        <h1 class="is-size-4">
+            <span class="icon">
+                <i class="mdi mdi-information"></i>
+            </span>
+            {% translate '订单商品' %}
+        </h1>
+        <hr class="my-2 has-background-white">
+        {% for item in order.baykeshoporderitem_set.all %}
+        <div class="fixed-grid has-5-cols m-0">
+            <div class="grid">
+                <div class="cell is-col-span-3 px-3">
+                    <div class="is-flex is-align-items-center">
+                        <figure class="image is-96x96">
+                            <img src="{{ item.sku.spu.image.url }}" alt="{{ item.sku.spu.name }}">
+                        </figure>
+                        <div class="ml-3">
+                            <h1 class="is-size-5 has-text-weight-bold">{{ item.sku.spu.name }}</h1>
+                            {% for spec in item.sku.combination.specs.all %}
+                                <span class="has-text-grey">{{ spec.spec.name }}:</span>
+                                <span>{{ spec.value }}</span>&nbsp;
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="is-flex is-align-items-center is-justify-content-center" style="height: 100%;">
+                        <span>￥{{ item.sku.price }}*{{ item.quantity }}</span> 
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="is-flex is-align-items-center is-justify-content-center" style="height: 100%;">
+                        <span class="has-text-weight-bold">￥{{ item.total_price }}</span> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="my-2 has-background-white">
+        {% endfor %}
+        <div class="has-text-right">
+            <h1 class="is-size-5">共{{ order.baykeshoporderitem_set.count }}件商品，总金额<span>￥{{ order.total_price }}</span></h1>
+            <div class="buttons is-justify-content-end mt-3">
+                {% if order.status == 0 %}
+                <a class="button is-link" href="{% url 'order:order-pay' order.order_sn %}">
+                    <span class="icon"><i class="mdi mdi-cash"></i></span>
+                    <span>{% translate '立即支付' %}</span>
+                </a>
+                {% elif order.status == 2 %}
+                <a class="button is-link" href="">
+                    <span class="icon"><i class="mdi mdi-truck-delivery"></i></span>
+                    <span>{% translate '确认收货' %}</span>
+                </a>
+                {% elif order.status == 3 %}
+                <a class="button is-link" href="">
+                    <span class="icon"><i class="mdi mdi-comment-account-outline"></i></span>
+                    <span>{% translate '评价' %}</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    #orderDetailContent ul li{
+        line-height: 30px;
+    }
+</style>
+{% endblock %}

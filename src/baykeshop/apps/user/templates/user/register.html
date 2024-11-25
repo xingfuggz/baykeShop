@@ -1,0 +1,22 @@
+{% extends "user/login.html" %}
+
+{% load i18n %}
+
+{% block auth_title %}
+<h1 class="title has-text-centered has-text-grey-dark">{% translate '注册' %}</h1>
+{% endblock %}
+
+{% block auth_form_extra %}
+<div class="field">
+    <div class="is-flex is-justify-content-end">
+        <a class="has-text-grey" href="{% url 'user:login' %}">
+            <span class="icon">
+                <i class="mdi mdi-login"></i>
+            </span>
+            {% translate '已有账号,去登录' %}
+        </a>
+    </div>
+</div>
+<input type="hidden" name="next" value="{{ next }}">
+{% endblock %}
+{% block auth_single %}{% endblock %}

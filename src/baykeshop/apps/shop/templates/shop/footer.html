@@ -1,0 +1,73 @@
+{% load i18n bayke %}
+<footer class="footer has-background-black-ter has-text-grey-light">
+    <div class="container">
+        <div class="fixed-grid has-5-cols-desktop has-1-cols-mobile">
+            <div class="grid">
+                <div class="cell">
+                    <div class="is-flex is-justify-content-center">
+                        <span class="icon is-large has-text-grey-light mr-1" style="font-size: 3em;">
+                            <i class="mdi mdi-basket-plus"></i>
+                        </span>
+                        <div class="has-text-grey-light">
+                            <p class="heading is-size-6">轻松购物</p>
+                            <p class="title has-text-grey-light is-size-5">品种齐全</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="is-flex is-justify-content-center">
+                        <span class="icon is-large has-text-grey-light mr-1" style="font-size: 3em;">
+                            <i class="mdi mdi-shield-car"></i>
+                        </span>
+                        <div class="has-text-grey-light">
+                            <p class="heading is-size-6">多仓直发</p>
+                            <p class="title has-text-grey-light is-size-5">极速配送</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="is-flex is-justify-content-center">
+                        <span class="icon is-large has-text-grey-light mr-1" style="font-size: 3em;">
+                            <i class="mdi mdi-ballot"></i>
+                        </span>
+                        <div class="has-text-grey-light">
+                            <p class="heading is-size-6">精致服务</p>
+                            <p class="title has-text-grey-light is-size-5">正品行货</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="is-flex is-justify-content-center">
+                        <span class="icon is-large has-text-grey-light mr-1" style="font-size: 3em;">
+                            <i class="mdi mdi-wallet-giftcard"></i>
+                        </span>
+                        <div class="has-text-grey-light">
+                            <p class="heading is-size-6">畅选无忧</p>
+                            <p class="title has-text-grey-light is-size-5">天天低价</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="is-flex is-justify-content-center">
+                        <span class="icon is-large has-text-grey-light mr-1" style="font-size: 3em;">
+                            <i class="mdi mdi-hand-heart"></i>
+                        </span>
+                        <div class="has-text-grey-light">
+                            <p class="heading is-size-6">极速退换</p>
+                            <p class="title has-text-grey-light is-size-5">无忧售后</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="dropdown-divider has-background-grey-dark"></div>
+        <div class="has-text-centered">
+            {% site_config_value 'COPYRIGHT' as COPYRIGHT %}
+            <p class="is-size-5">{{ COPYRIGHT|safe }}</p>
+            <p class="has-text-grey-light mt-3">
+                <a class="has-text-grey-light" href=""><span>陕ICP备123456789</span></a>
+                / <a class="has-text-grey-light" href="{% url 'sitemap' %}">SiteMap</a> 
+            </p>
+        </div>
+    </div>
+</footer>

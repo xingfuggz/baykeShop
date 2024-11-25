@@ -1,0 +1,95 @@
+{% include 'django/forms/widgets/textarea.html' %}
+<div>
+    {{ widget.modules|json_script:'editor-modules' }}
+    <div id="editor-{{ widget.name }}"></div>
+</div>
+
+<style>
+    .ql-editor {
+        min-height: 300px;
+        /* margin-bottom: 30px; */
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 获取编辑器内容
+        var textareaID = 'id_{{ widget.name }}'
+        var content = document.querySelector('textarea[id="' + textareaID + '"]')
+        content.setAttribute('hidden', 'true')
+
+        // 编辑器模块配置
+        const modules = JSON.parse(document.getElementById('editor-modules').textContent);
+        // 初始化编辑器
+        const options = {
+            debug: 'info',
+            modules: modules,
+            placeholder: '{{ widget.placeholder }}',
+            theme: '{{ widget.theme }}',
+        };
+
+        const quill = new Quill('#editor-{{ widget.name }}', options);
+        // 设置编辑器初始内容
+        quill.root.innerHTML = content.value;
+        // 监听编辑器内容变化
+        quill.on('text-change', function (delta, oldDelta, source) {
+            content.value = quill.root.innerHTML;
+        });
+
+        // 上传图片
+        quill.getModule('toolbar').addHandler('image', function (value) {
+            if (value) {
+                // 弹出文件选择框
+                var input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+                input.click();
+
+                // 选择文件后上传
+                input.onchange = function () {
+                    var file = input.files[0];
+                    var formData = new FormData();
+                    formData.append('file', file);
+
+                    console.log(file);
+                    django.jQuery.ajax({
+                        url: "{% url 'core:upload-image' %}",
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                        beforeSend: function (xhr, settings) {
+                            xhr.setRequestHeader("X-CSRFToken", django.jQuery('[name=csrfmiddlewaretoken]').val());
+                        },
+                        success: function (data) {
+                            // 插入图片
+                            var range = quill.getSelection();
+                            quill.insertEmbed(range.index, 'image', data.url)
+                            quill.setSelection(range.index + 1);
+                            console.log(data);
+                        }, error: function (xhr, status, error) {
+                            console.log(xhr.responseText);
+                        }
+                    })
+
+                    // 上传图片
+                    // fetch('', {
+                    //     method: 'POST',
+                    //     body: formData
+                    // })
+                    // .then(response => response.json())
+                    // .then(data => {
+                    //     // 插入图片
+                    //     var range = quill.getSelection();
+                    //     quill.insertEmbed(range.index, 'image', data)
+                    // })
+                }
+            }
+        });
+
+        
+    });
+
+
+</script>

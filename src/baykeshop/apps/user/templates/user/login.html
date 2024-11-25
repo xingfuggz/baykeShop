@@ -1,0 +1,156 @@
+{% extends "user/base.html" %}
+
+{% load i18n bayke %}
+
+{% block body %}
+<section class="hero is-link is-fullheight is-bold">
+    <div class="hero-head">
+        <nav class="navbar">
+            <div class="container is-fluid">
+                <div class="navbar-brand">
+                    <a class="navbar-item" href="{% url 'shop:spu-list' %}">
+                        <span class="icon is-small">
+                            <i class="mdi mdi-arrow-left-box" style="font-size: 2rem;"></i>
+                        </span>
+                        <h1 class="has-text-weight-bold">{% translate '回到首页' %}</h1>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="hero-body">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-5">
+                    <div class="box p-6">
+                        <div class="has-text-centered">
+                            {% block auth_title %}
+                            <h1 class="title has-text-centered has-text-grey-dark">{% translate '登录' %}</h1>
+                            {% endblock %}
+                            <h1 class="has-text-grey-dark is-size-4 has-text-weight-bold">{% config 'site_title' %}</h1> 
+                        </div>
+                        <div class="dropdown-divider has-background-light mb-4"></div>
+
+                        {% block auth_errors %}
+                        {% if form.errors and not form.non_field_errors %}
+                        <div class="notification is-danger is-light">
+                        <button class="delete"></button>
+                        {% blocktranslate count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if user.is_authenticated %}
+                        <div class="notification is-warning is-light">
+                            <button class="delete"></button>
+                        {% blocktranslate trimmed %}
+                            You are authenticated as {{ username }}, but are not authorized to
+                            access this page. Would you like to login to a different account?
+                        {% endblocktranslate %}
+                        </div>
+                        {% endif %}
+                        {% endblock %}
+                        {% block auth_form %}
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            {{ form.as_bulma }}
+                            {% comment %}
+                            {% for field in form %}
+                                <div class="field">
+                                    <label class="label" id="{{ field.id_for_label }}">
+                                        {% if field.field.required %}
+                                            <span class="has-text-danger">*</span>
+                                        {% endif %}
+                                        {{ field.label }}:
+                                    </label>
+                                    <div class="control has-icons-left has-icons-right">
+                                        {{ field }}
+                                        {% block auth_input_icon %}
+                                        {% if field.html_name == 'username' %}
+                                        <span class="icon is-small is-left">
+                                            <i class="mdi mdi-account-outline"></i>
+                                        </span>
+                                        <span class="icon is-small is-right">
+                                            <i class="mdi mdi-check"></i>
+                                        </span>
+                                        {% elif field.html_name == 'password' %}
+                                        <span class="icon is-small is-left">
+                                            <i class="mdi mdi-lock"></i>
+                                        </span>
+                                        {% endif %}
+                                        {% endblock %}
+                                        
+                                        {% if not field.errors %}
+                                        <p class="help is-light">{{ field.help_text }}</p>
+                                        {% endif %}
+                                        {% if field.errors %}
+                                            {% for error in field.errors %}
+                                            <p class="help is-danger">{{ error }}</p>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            {% endcomment %}
+                            {% block auth_form_extra %}
+                            <div class="field">
+                                <div class="is-flex is-justify-content-space-between">
+                                    <a class="has-text-grey" href="{% url 'user:register' %}">
+                                    {% comment %} <span class="icon">
+                                        <i class="mdi mdi-login"></i>
+                                    </span> {% endcomment %}
+                                    {% translate '还没有账号,去注册' %}
+                                    </a>
+                                    <!-- <a class="has-text-grey" href="">{% translate '忘记密码?' %}</a> -->
+                                    {% url 'admin_password_reset' as password_reset_url %}
+                                    {% if password_reset_url %}
+                                    <div class="password-reset-link">
+                                        <a href="{{ password_reset_url }}">{% translate 'Forgotten your password or username?' %}</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endblock %}
+                            
+
+                            <div class="field">
+                                <button class="button is-link is-fullwidth is-large" type="submit">
+                                    {{ title }}
+                                </button>
+                            </div>
+                            {% block auth_single %}               
+                            {% comment %}
+                            <div class="field">
+                                <div class="is-flex is-justify-content-start is-align-items-center">
+                                    <div class="buttons">
+                                        <a class="button is-link is-light" href="">
+                                            <span class="icon">
+                                                <i class="mdi mdi-github"></i>
+                                            </span>
+                                            <span>{% translate '使用GitHub登录' %}</span>
+                                        </a>
+                                        <a class="button is-link is-light" href="">
+                                            <span class="icon">
+                                                <i class="mdi mdi-google"></i>
+                                            </span>
+                                            <span>{% translate '使用Google登录' %}</span>
+                                        </a>
+                                        <a class="button is-link is-light" href="">
+                                            <span class="icon">
+                                                <i class="mdi mdi-twitter"></i>
+                                            </span>
+                                            <span>{% translate '使用Twitter登录' %}</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endcomment %}
+                            {% endblock %}
+                        </form>
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

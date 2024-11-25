@@ -1,0 +1,33 @@
+{% extends 'shop/base.html' %}
+
+{% load i18n static shop %}
+
+{% block title %}{% endblock %}
+
+{% block section %}
+<div class="container">
+    {% banners_template %}
+</div>
+
+{% for floor in floors %}
+<section class="section">
+    <div class="container">
+        <div class="is-flex is-align-items-center is-justify-content-space-between p-3">
+            <h1 class="is-size-4 has-text-weight-bold">{{ floor.name }}</h1>
+            <a class="has-text-grey" href="{% url 'shop:category-spu-list' floor.id %}" target="_blank" rel="noopener noreferrer">更多>></a>
+        </div>
+        <div class="fixed-grid has-5-cols-fullhd has-5-cols-widescreen has-5-cols-desktop has-5-cols-tablet has-2-cols-mobile">
+            <div class="grid">
+                {% for spu in floor.spu_list|slice:10 %}
+                <div class="cell">
+                    {% include "shop/spu.html" with spu=spu %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endfor %}
+{% endblock %}
+    
+    

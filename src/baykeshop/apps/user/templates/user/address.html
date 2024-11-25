@@ -1,0 +1,18 @@
+{% extends "user/account.html" %}
+
+{% load i18n static %}
+
+{% block profile_header %}
+    <h1 class="is-size-4">
+        <span class="icon"><i class="mdi mdi-flag-triangle"></i></span>
+        {% translate '收货地址' %}
+    </h1>
+    <a class="button is-link is-outlined is-pulled-right" href="{% url 'user:address-create' %}">
+        <span class="icon"><i class="mdi mdi-plus"></i></span>
+        <span>{% translate '添加地址' %}</span>
+    </a>
+{% endblock %}
+
+{% block profile_content %}
+{% include 'user/address_tag.html' with address_list=address_list%}
+{% endblock %}

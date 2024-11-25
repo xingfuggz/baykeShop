@@ -1,0 +1,165 @@
+{% extends 'order/base.html' %}
+
+{% load i18n static order %}
+
+{% block title %}{% translate '确认订单' %}{% endblock %}
+
+{% block section %}
+    <section class="section">
+        <div class="container">
+            <div class="box p-6">
+                <h1 class="title is-4">
+                    <span class="icon">
+                        <i class="mdi mdi-map-marker-outline"></i>
+                    </span>
+                    {% translate '收货地址' %}
+                </h1>
+                <hr>
+                {% address_template user %}
+            </div>
+            <div class="box p-6">
+                <h1 class="title is-4">
+                    <span class="icon">
+                        <i class="mdi mdi-list-box-outline"></i>
+                    </span>
+                    {% translate '结算商品' %}
+                </h1>
+                <hr>
+                
+                {% if sku_queryset %}
+                {% for sku in sku_queryset %}
+                <div class="fixed-grid has-5-cols">
+                    <div class="grid">
+                        <div class="cell is-col-span-3 px-6">
+                            <div class="is-flex is-align-items-center">
+                                <figure class="image is-96x96">
+                                    <img src="{{ sku.spu.image.url }}" alt="{{ sku.spu.name }}">
+                                </figure>
+                                <div class="ml-3">
+                                    <h1 class="is-size-5 has-text-weight-bold">{{ sku.spu.name }}</h1>
+                                    {% for spec in sku.combination.specs.all %}
+                                        <span class="has-text-grey">{{ spec.spec.name }}:</span>
+                                        <span>{{ spec.value }}</span>&nbsp;
+                                    {% endfor %}
+                                </div>
+                                    
+                            </div>
+                        </div>
+                        <div class="cell">
+                            <div class="is-flex is-align-items-center is-justify-content-center" style="height: 100%;">
+                                <span>￥{{ sku.price }}*{{ request.GET.count }}</span> 
+                            </div>
+                        </div>
+                        <div class="cell">
+                            <div class="is-flex is-align-items-center is-justify-content-center" style="height: 100%;">
+                                <span class="has-text-weight-bold">￥{{ sku.total_price }}</span> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% elif cart_queryset %}
+                {% for cart in cart_queryset %}
+                <div class="fixed-grid has-5-cols">
+                    <div class="grid">
+                        <div class="cell is-col-span-3 px-6">
+                            <div class="is-flex is-align-items-center">
+                                <figure class="image is-96x96">
+                                    <img src="{{ cart.sku.spu.image.url }}" alt="{{ cart.sku.spu.name }}">
+                                </figure>
+                                <div class="ml-3">
+                                    <h1 class="is-size-5 has-text-weight-bold">{{ cart.sku.spu.name }}</h1>
+                                    {% for spec in cart.sku.combination.specs.all %}
+                                        <span class="has-text-grey">{{ spec.spec.name }}:</span>
+                                        <span>{{ spec.value }}</span>&nbsp;
+                                    {% endfor %}
+                                </div>
+                                    
+                            </div>
+                        </div>
+                        <div class="cell">
+                            <div class="is-flex is-align-items-center is-justify-content-center" style="height: 100%;">
+                                <span>￥{{ cart.sku.price }}*{{ cart.num }}</span> 
+                            </div>
+                        </div>
+                        <div class="cell">
+                            <div class="is-flex is-align-items-center is-justify-content-center" style="height: 100%;">
+                                <span class="has-text-weight-bold">￥{{ cart.total_price }}</span> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+                <hr>
+                <div class="has-text-right px-6">
+                    <div class="is-size-4 has-text-weight-bold has-text-link">
+                        <span class="">{{ nums }}{% translate '件商品，总价' %}:</span>
+                        <span class="is-size-3">￥{{ total_price }}</span>
+                    </div>
+                    <div class="mt-3">
+                        <button class="button is-link is-large" id="create-order-btn">
+                            <span class="icon">
+                                <i class="mdi mdi-cart-arrow-right"></i>
+                            </span>
+                            <span>{% translate '去支付' %}</span> 
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const createOrderBtn = document.getElementById('create-order-btn')
+        createOrderBtn.addEventListener('click', async function () {
+            // 跳转到结算页
+            const csrftoken = Cookies.get('csrftoken');
+            const formData = new FormData();
+            source = '{{ source }}'
+            count = '{{ request.GET.count }}'
+            sku_ids = '{{ request.GET.sku_ids }}'
+            address = userAddress.$options.methods.getFullAddress(userAddress.selectedAddress)
+            phone = userAddress.selectedAddress.phone
+            receiver = userAddress.selectedAddress.name
+            formData.append('sku_ids', sku_ids)
+            formData.append('source', source)
+            formData.append('phone', phone)
+            formData.append('count', Number(count))
+            formData.append('address', address)
+            formData.append('receiver', receiver)
+            const { isFetching, error, data } = await window.VueUse.useFetch(
+                "{% url 'order:order-create' %}", { 
+                    method: 'POST', 
+                    headers: {'X-CSRFToken': csrftoken}, 
+                    credentials: "same-origin",
+                    body: formData
+                },
+            )
+            const result = JSON.parse(data.value)
+            message_box(result)
+        })
+
+        // 消息提示
+        function message_box(result) {
+            // 400参数错误
+            if (result.code == 400) {
+                Qmsg.error(result.msg)
+                return
+            }
+            // 200删除成功
+            if (result.code == 201) {
+                Qmsg.success(result.msg, {
+                    timeout: 1000,
+                    onClose: function () {
+                        window.location.href = result.data.payurl
+                    }
+                })
+                return
+            }
+        }
+    </script>
+{% endblock %}
+
+
+    

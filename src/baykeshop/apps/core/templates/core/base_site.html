@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}
+
+{% load bayke %}
+
+{% block title %}{% config 'site_title' %}{% endblock %}
+{% block description %}{% config 'description' %}{% endblock %}
+{% block keywords %}{% config 'keywords' %}{% endblock %}
+
+{% block body %}
+    {% block header %}{% endblock %}
+    {% block section %}{% endblock %}
+    {% block footer %}{% endblock %}
+{% endblock %}
+    

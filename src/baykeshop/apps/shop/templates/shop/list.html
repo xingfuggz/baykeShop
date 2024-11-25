@@ -1,0 +1,25 @@
+{% extends "shop/base.html" %}
+
+{% load i18n static bayke shop %}
+
+{% block title %}
+  {% translate '商品列表' %}
+{% endblock %}
+
+{% block section %}
+<section class="section">
+    <div class="container">
+      {% filter_template %}
+      <div class="fixed-grid has-5-cols-fullhd has-5-cols-widescreen has-5-cols-desktop has-4-cols-tablet has-2-cols-mobile">
+        <div class="grid">
+          {% for spu in page_obj %}
+            <div class="cell">
+              {% include "shop/spu.html" with spu=spu %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% paginator_template page_obj request %}
+    </div>
+</section>
+{% endblock %}

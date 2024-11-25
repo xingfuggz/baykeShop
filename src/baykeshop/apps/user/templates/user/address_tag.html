@@ -1,0 +1,84 @@
+{% load i18n %}
+<div class="">
+    <div class="columns is-multiline">
+        {% for address in address_list %}
+        <div class="column is-3">
+            <div class="card is-shadowless" style="border: solid 1px #e6e6e6;">
+                <div class="card-content" style="height: 110px;">
+                    <h1 class="has-text-weight-bold">
+                        <span class="is-size-5">{{ address.name }}</span>
+                        {% if address.is_default %}
+                            <span class="tag is-link is-light"> {% translate '默认' %} </span>
+                        {% endif %}
+                    </h1>
+                    <p class="has-text-grey">{{ address.phone }}</p>
+                    <p class="has-text-grey">{{ address.get_full_address }}</p>
+                </div>
+                <footer class="card-footer">
+                    <a class="card-footer-item has-text-grey" href="{% url 'user:address-update' address.id %}">
+                        <span class="icon"><i class="mdi mdi-pencil"></i></span>
+                        {% translate '修改' %}
+                    </a>
+                    <a class="card-footer-item has-text-grey" 
+                        id="delete-address" 
+                        data-url="{% url 'user:address-delete' address.id %}">
+                        <span class="icon"><i class="mdi mdi-delete"></i></span>
+                        {% translate '删除' %}
+                    </a>
+                </footer>
+            </div>
+        </div>
+        {% empty %}
+        <div class="is-flex is-align-items-center is-flex-direction-column py-6" style="width: 100%;">
+            <span class="icon is-large has-text-info-light">
+                <i class="mdi mdi-24px mdi-account-alert"></i>
+            </span>
+            <div class="has-text-centered">
+                <p class="is-size-4">{% translate '暂无收货地址' %}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<dialog id="delete-address-dialog">
+    <div class="">
+        <p>{% translate '确定要删除该地址吗？' %}</p>
+        <div class="is-flex is-justify-content-end mt-5">
+            <button class="button mr-3" onclick="delete_address_dialog.close()">{% translate '取消' %}</button>
+            <button class="button is-link" aria-label="close">{% translate '确定' %}</button>
+        </div>
+    </div>
+</dialog>
+
+<script>
+    const delete_address = document.querySelectorAll('#delete-address');
+    const delete_address_dialog = document.querySelector('#delete-address-dialog');
+    delete_address.forEach(item => {
+        item.addEventListener('click', function(e){
+                e.preventDefault();
+                const url = item.getAttribute('data-url');
+                delete_address_dialog.showModal();
+                delete_address_dialog.querySelector('button[aria-label="close"]').addEventListener('click', async function(){
+                const csrftoken = Cookies.get('csrftoken');
+                const { isFetching, error, data } = await window.VueUse.useFetch(url, { 
+                        method: 'POST',
+                        headers: {'X-CSRFToken': csrftoken}, 
+                        credentials: "same-origin"
+                    }, 
+                )
+                window.location.reload()
+            })
+        })
+    })
+</script>
+<style>
+    #delete-address-dialog{
+        /* width: 100%; */
+        border-radius: 10px;
+        box-shadow: 0 0 10px #ccc;
+        background: #fff;
+        padding: 20px;
+        border: solid 1px #ccc;
+    }
+</style>

@@ -1,0 +1,345 @@
+{% load i18n %}
+<style>
+    #cartList table td {
+        vertical-align: middle !important;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
+</style>
+<div class="box p-6" id="cartList">
+    <table class="table is-striped is-fullwidth is-hoverable">
+        <thead>
+            <tr>
+                <th><input type="checkbox" class="checkbox" value="all" /></th>
+                <th>{% translate 'ID' %}</th>
+                <th>{% translate '商品' %}</th>
+                <th>{% translate '规格' %}</th>
+                <th>{% translate '单价' %}</th>
+                <th>{% translate '数量' %}</th>
+                <th>{% translate '小计' %}</th>
+                <th>{% translate '操作' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cart in cart_list %}
+            <tr>
+                <td>
+                    <input type="checkbox" class="checkbox" value="{{ cart.sku.id }}" />
+                </td>
+                <td>{{ cart.id }}</td>
+                <td>
+                    <div class="is-flex is-align-items-center">
+                        <figure class="image is-48x48">
+                            <img src="{{ cart.sku.spu.image.url }}" alt="{{ cart.sku.spu.name }}"></img>
+                        </figure>
+                        <span class="ml-3">{{ cart.sku.spu.name }}</span>
+                    </div>
+                </td>
+                <td>
+                    {% for spec in cart.sku.combination.specs.all %}
+                    <span class="has-text-grey">{{ spec.spec.name }}：</span>{{ spec.value }}<br>
+                    {% empty %}
+                    ~
+                    {% endfor %}
+                </td>
+                <td>{{ cart.sku.price }}</td>
+                <td>
+                    <div class="buttons">
+                        <div class="field has-addons">
+                            <p class="control">
+                                <button class="button is-light is-small" data-minus="minus">
+                                    <span class="icon"><i class="mdi mdi-minus"></i></span>
+                                </button>
+                            </p>
+                            <p class="control">
+                                <input type="number" class="input is-small" min="1" max="{{ cart.sku.stock }}" step="1"
+                                    value="{{ cart.num }}" data-skuid="{{ cart.sku.id }}"></input>
+                            </p>
+                            <p class="control">
+                                <button class="button is-light is-small" data-minus="add">
+                                    <span class="icon"><i class="mdi mdi-plus"></i></span>
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    ￥<span data-total="{{ cart.total_price }}">{{ cart.total_price }}</span>
+                </td>
+                <td>
+                    <button class="button is-danger is-light is-small" data-skuid="{{ cart.sku.id }}">
+                        <span class="icon">
+                            <i class="mdi mdi-delete-outline"></i>
+                        </span>
+                        <span>{% translate '删除' %}</span>
+                    </button>
+                    <a class="button is-info is-light is-small" href="{% url 'shop:spu-detail' cart.sku.spu.id %}">
+                        <span class="icon">
+                            <i class="mdi mdi-eye"></i>
+                        </span>
+                        <span>{% translate '查看' %}</span>
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8">
+                    <div class="has-text-centered py-6">
+                        <div class="is-size-3">{% translate '购物车空空如也' %}</div>
+                        <a class="button is-link is-light mt-5 is-small" href="{% url 'shop:spu-list' %}">
+                            <i class="mdi mdi-cart-off mdi-24px"></i>
+                                {% translate '随便逛逛' %}
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="8">
+                    <div class="is-flex is-justify-content-space-between is-align-items-center">
+                        <div class="is-flex1 is-align-items-center1">
+                            <span class="is-size-4">{% translate '总计' %}</span>
+                            <span class="is-size-3 has-text-weight-bold has-text-danger">￥
+                                <span id="total-price">{{ cart_total_price }}</span> 
+                            </span>
+                            <span class="is-size-4 ml-3">{% translate '共' %}
+                                <span id="total-num">{{ cart_list|length }}</span>
+                                {% translate '件商品' %}
+                            </span>
+                        </div>
+                        <div class="is-flex is-align-items-center">
+                                
+                            <button class="button is-link is-large ml-5" id="nowBuy" {% if not cart_list %}disabled{% endif %}>
+                                <span class="icon">
+                                    <i class="mdi mdi-cart-check"></i>
+                                </span>
+                                <span>{% translate '去结算' %}</span>
+                            </button>
+                            <a class="button is-link is-large is-outlined ml-5" href="{% url 'shop:spu-list' %}">
+                                <span class="icon">
+                                    <i class="mdi mdi-cart-plus"></i>
+                                </span>
+                                <span>{% translate '继续购物' %}</span>
+                            </a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    const carts_total = document.querySelectorAll('#cartList tbody tr td span[data-total]')
+    const carts_checkbox = document.querySelectorAll('#cartList input[type=checkbox]')
+    const all = document.querySelector('#cartList input[value=all]')
+    const totalPrice = document.querySelector('#total-price')
+    const totalNum = document.querySelector('#cartList tfoot #total-num')
+    const nowBuy = document.querySelector('#nowBuy')
+    var sku_ids = []
+
+    /**
+     * 监听全选
+     * 全选状态，则全选，否则取消
+     * 全选时默认将除过第一行的value也就是sku_id添加到数组sku_ids中
+     * 否则清空数组
+     */
+    all.addEventListener('click', function () {
+        // 全选
+        if (all.checked) {
+            carts_checkbox.forEach(function (cart, i) {
+                cart.checked = true
+            })
+            sku_ids = getSkuids()
+        } else {
+            carts_checkbox.forEach(function (cart) {
+                cart.checked = false
+            })
+            sku_ids = []
+        }
+    })
+    /**
+     * 循环监听每一个购物车复选框
+     */
+    carts_checkbox.forEach(function (cart, i) {
+        // 默认选中
+        cart.checked = true
+        // value添加到数组sku_ids
+        if (cart.checked && i !== 0) {
+            sku_ids.push(cart.value)
+        }
+        // 监听取消
+        cart.addEventListener('click', function () {
+            // 更新总价
+            if (!cart.checked) {
+                all.checked = false
+            }
+        })
+        // 监听选中
+        cart.addEventListener('change', function () {
+            const checked = document.querySelectorAll('#cartList input[type=checkbox]:checked')
+            if (checked.length == carts_checkbox.length - 1) {
+                all.checked = true
+            }
+            // 更新总数
+            totalNum.innerHTML = checked.length > carts_total.length ? checked.length - 1 : checked.length
+            // 更新总价
+            totalPrice.innerHTML = all.checked ? allTotalPrice() : singleTotalPrice(carts_total[i-1], cart.checked)
+            if (i !== 0){
+                if (cart.checked) {
+                    sku_ids.push(cart.value)
+                } else {
+                    sku_ids.splice(sku_ids.indexOf(cart.value), 1)
+                }
+            }
+        })
+    })
+
+    // 监听数量修改
+    const buttons = document.querySelectorAll('#cartList tbody .buttons')
+    buttons.forEach(function (button) {
+        const input = button.querySelector('input[type=number]')
+        const add = button.querySelector('.button[data-minus=add]')
+        const minus = button.querySelector('.button[data-minus=minus]')
+        // 监听加法点击
+        add.addEventListener('click', function () {
+            // 禁用加法事件
+            if (input.value == input.getAttribute('max')) {
+                add.disabled = true
+                return
+            }
+            input.value++
+            input.dispatchEvent(new Event('change'))
+        })
+        // 监听减法点击
+        minus.addEventListener('click', function () {
+            // 禁用减法事件
+            if (input.value == 1) {
+                minus.disabled = true
+                return
+            }
+            input.value--
+            input.dispatchEvent(new Event('change'))
+        })
+        // 监听表单数量修改
+        input.addEventListener('change', async function () {
+            const skuid = input.getAttribute('data-skuid')
+            const num = input.value
+            const csrftoken = Cookies.get('csrftoken');
+            const formData = new FormData();
+            formData.append('num', num);
+            formData.append('sku_id', skuid);
+            var loadingMsg = Qmsg.loading('正在修改数量...');
+            const { isFetching, error, data } = await window.VueUse.useFetch(
+                "{% url 'shop:cart-change' %}", {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrftoken },
+                credentials: "same-origin",
+                body: formData
+            },
+            )
+            if (!isFetching.value) loadingMsg.close()
+            const result = JSON.parse(data.value)
+            message_box(result)
+        })
+    })
+
+    // 删除
+    const dels = document.querySelectorAll('#cartList .button[data-skuid]')
+    dels.forEach(function (del) {
+        del.addEventListener('click', async function () {
+            const skuid = del.getAttribute('data-skuid')
+            const csrftoken = Cookies.get('csrftoken');
+            const formData = new FormData();
+            formData.append('sku_id', skuid);
+            formData.append('num', 1);
+            var loadingMsg = Qmsg.loading('正在删除...');
+            const { isFetching, error, data } = await window.VueUse.useFetch(
+                "{% url 'shop:cart-del' %}", {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrftoken },
+                credentials: "same-origin",
+                body: formData
+            },
+            )
+            if (!isFetching.value) loadingMsg.close()
+            const result = JSON.parse(data.value)
+            message_box(result)
+        })
+    })
+
+    // 消息提示
+    function message_box(result) {
+        // 400参数错误
+        if (result.code == 400) {
+            Qmsg.error(result.msg)
+            return
+        }
+        // 401未登录
+        if (result.code == 401) {
+            Qmsg.info(result.msg, {
+                onClose: function () {
+                    window.location.href = "{% url 'user:login' %}?next={{ next_url }}"
+                }
+            });
+            return
+        }
+        // 200删除成功
+        if (result.code == 200) {
+            Qmsg.success(result.msg, {
+                timeout: 1000,
+                onClose: function () {
+                    window.location.reload()
+                }
+            })
+            return
+        }
+    }
+    
+    // 全部选中总价计算
+    function allTotalPrice() {
+        let total = 0
+        carts_total.forEach(item => {
+            total += parseFloat(item.getAttribute('data-total'))
+        })
+        return total
+    }
+    // 单个选中总价计算
+    function singleTotalPrice(obj, checked=false) {
+        let total = 0
+        if (!checked && obj) {
+            total = parseFloat(totalPrice.innerText) - parseFloat(obj.getAttribute('data-total'))
+        } else if (checked && obj) {
+            total = parseFloat(totalPrice.innerText) + parseFloat(obj.getAttribute('data-total'))
+        }
+        return total
+    }
+
+    // 获取所有的skuids
+    function getSkuids() {
+        let skuids = []
+        carts_checkbox.forEach((item, i) => {
+            if (item.checked && i !== 0) {
+                skuids.push(item.value)
+            }
+        })
+        return skuids
+    }
+    
+    // 跳转到结算页面
+    nowBuy.addEventListener('click', function () {
+        let sku_ids_str = sku_ids.join(',')
+        window.location.href = "{% url 'order:order-cash' %}?sku_ids=" + sku_ids_str + "&source=cart"
+    })
+</script>

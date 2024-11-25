@@ -1,0 +1,163 @@
+{% extends "user/base.html" %}
+
+{% load i18n static %}
+
+{% block extrastyle %}
+<style>
+    .userinfo li {
+        border-bottom: 1px #ddd dashed;
+        padding: 15px 0;
+        vertical-align: middle;
+    }
+
+    .userinfo li span {
+        display: inline-block;
+        width: 90px;
+        text-align: right;
+        padding-right: 10px;
+        color: #777676;
+    }
+</style>
+{% endblock %}
+
+{% block section %}
+<section class="section">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-2">
+                <div class="box1">
+                    <div class="box is-shadowless1 has-background-light">
+                        <div class="is-flex is-flex-direction-column is-align-items-center">
+                            <figure class="image is-64x64 has-background-info-light" style="border-radius: 50%;">
+                                {% if user.profile and user.profile.avatar %}
+                                <img class="is-rounded" src="{{ user.profile.avatar.url }}" style="border-radius: 50%;">
+                                {% else %}
+                                <img src="{% static 'core/images/logo.png' %}">
+                                {% endif %}
+                            </figure>
+                            <p class="title is-4 mt-2">{{ user.username }}</p>
+                        </div>
+                    </div>
+                    <div class="box is-shadowless1 has-background-light1">
+                        <aside class="menu">
+                            <ul class="menu-list">
+                                <li>
+                                    <div class="has-text-weight-bold">
+                                        <span class="icon">
+                                            <i class="mdi mdi-account-circle"></i>
+                                        </span>
+                                        {% translate '个人信息' %}
+                                    </div>
+                                    <ul class="menu-list">
+                                        <li>
+                                            <a class="{% if '/account/' in request.path %} is-active {% elif '/change-profile/' in request.path %} is-active {% endif %}"
+                                                href="{% url 'user:account' %}">
+                                                {% translate '账户信息' %}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="{% if '/change-password/' in request.path %} is-active {% endif %}" href="{% url 'user:change-password' %}">
+                                                {% translate '修改密码' %}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="{% if '/address/' in request.path %} is-active {% endif %}" href="{% url 'user:address-list' %}">
+                                                {% translate '收货地址' %}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <div class="has-text-weight-bold">
+                                        <span class="icon">
+                                            <i class="mdi mdi-shopping"></i>
+                                        </span>
+                                        {% translate '我的订单' %}
+                                    </div>
+                                    <ul class="menu-list">
+                                        <li>
+                                            <a class="{% if '/order/' in request.path %} is-active {% endif %}" href="{% url 'order:order-list' %}">
+                                                {% translate '全部订单' %}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="box p-6">
+                    <div class="is-flex is-justify-content-space-between">
+                        {% block profile_header %}
+                            <h1 class="is-size-4">
+                                <span class="icon"><i class="mdi mdi-account-box-outline"></i></span>
+                                {{ title }}
+                            </h1>
+                            <div>
+                                <a class="button is-link is-outlined" href="{% url 'user:change-profile' %}">
+                                    <span class="icon"><i class="mdi mdi-pencil"></i></span>
+                                    <span>{% translate '编辑信息' %}</span>
+                                </a>
+                            </div>
+                        {% endblock %}
+                    </div>
+                    <hr class="my-2">
+                    {% block profile_content %}
+                        <ul class="mt-4 userinfo">
+                            <li class="is-flex is-align-items-center">
+                                <span>{% translate '头像' %}: </span>
+                                <figure class="image is-64x64 is-relative has-background-light">
+                                    {% if user.profile and user.profile.avatar %}
+                                    <img class="is-rounded" src="{{ user.profile.avatar.url }}">
+                                    {% else %}
+                                    <img src="{% static 'core/images/logo.png' %}">
+                                    {% endif %}
+                                </figure>
+                            </li>
+                            <li>
+                                <span>{% translate '昵称' %}:</span>
+                                {{ user.profile.nickname|default:'~' }}
+                            </li>
+                            <li>
+                                <span>{% translate '性别' %}: </span>
+                                
+                                {% if user.profile.sex == 'female' %}
+                                    {% translate '女' %}
+                                {% elif user.profile.sex == 'male' %}
+                                    {% translate '男' %}
+                                {% else %}
+                                    {% translate '保密' %}
+                                {% endif %}
+                            </li>
+                            <li>
+                                <span>{% translate '手机' %}:</span>
+                                {{ user.profile.phone|default:'~' }}
+                            </li>
+                            <li>
+                                <span>{% translate '邮箱' %}:</span>
+                                {{ user.email|default:'~' }}
+                            </li>
+                            <li>
+                                <span>{% translate '注册时间' %}:</span>
+                                {{ user.date_joined }}
+                            </li>
+                            <li>
+                                <span>{% translate '上次登录时间' %}: </span>
+                                {{ user.last_login }}
+                            </li>
+                        </ul>
+                        <div class="has-text-right mt-4">
+                            <a class="button is-danger is-light" href="{% url 'user:logout' %}">
+                                <span class="icon"><i class="mdi mdi-exit-to-app"></i></span>
+                                <span>{% translate '退出登录' %}</span>
+                            </a>
+                        </div>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

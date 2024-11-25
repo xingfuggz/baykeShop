@@ -1,0 +1,39 @@
+{% load i18n static bayke %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}{% config 'site_title' %}</title>
+    <meta name="description" content="{% block description %}{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}{% endblock %}">
+    <link rel="shortcut icon" href="{% static 'core/images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% block stylesheet %}{% static "core/css/bulma.css" %}{% endblock %}">
+    <link rel="stylesheet" href="{% static "core/css/materialdesignicons.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'core/css/message.min.css' %}" />
+    {% block extrahead %}{% endblock %}
+    {% block script_vue %}
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="{% static 'core/js/vueuse/shared.index.iife.min.js' %}"></script>
+    <script src="{% static 'core/js/vueuse/core.index.iife.min.js' %}"></script>
+    <script src="{% static 'core/js/js.cookie.min.js' %}"></script>
+    <script src="{% static 'core/js/message.min.js' %}"></script>
+    {% endblock %}
+        
+    {% block extrastyle %}{% endblock %}
+    {% block blockbots %}<meta name="robots" content="INDEX,FOLLOW">{% endblock %}
+</head>
+<body>
+    {% block body %}{% endblock %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+                const $notification = $delete.parentNode;
+                $delete.addEventListener('click', () => {
+                    $notification.parentNode.removeChild($notification);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+{% extends "core/base_site.html" %}
+{% load i18n static article %}
+
+{% block title %}
+  {{ object.name|default:'我的网站' }}
+{% endblock %}
+
+{% block header %}
+    {% include 'shop/header.html' %}
+{% endblock %}
+    
+{% block section %}
+<section class="section">
+    <div class="{% block classname_container %}container{% endblock %}">
+        <div class="columns">
+            <div class="column is-9">
+                {% block content %}{% endblock %}
+            </div>
+            <div class="column is-3">
+                {% block aside %}
+                    {% block aside_category %}
+                    <div class="box p-6">
+                        <h1 class="has-text-weight-bold is-size-4">
+                            <span class="icon">
+                                <i class="mdi mdi-folder-check"></i>
+                            </span>
+                            {% translate '文章分类' %}
+                        </h1>
+                        <hr class="my-2">
+                        <aside class="menu p-3">
+                            {% article_category_list as article_category_list %}
+                            {% for category in article_category_list %}
+                            <p class="menu-label">{{ category.name }}</p>
+                            <ul class="menu-list">
+                                {% for child in category.baykearticlecategory_set.all %}
+                                <li>
+                                    <a class="{% if child.id == object.id or child.id == object.category.id %}is-active{% endif %}" 
+                                        href="{% url 'article:article_category' child.id %}">{{ child.name }}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% endfor %}
+                        </aside>
+                    </div>
+                    {% endblock %}
+
+                    {% block aside_tag %}
+                    <div class="box p-6">
+                        <h1 class="has-text-weight-bold is-size-4">
+                            <span class="icon">
+                                <i class="mdi mdi-tag-multiple"></i>
+                            </span>
+                            {% translate '文章标签' %}
+                        </h1>
+                        <hr class="my-2">
+                        <aside class="p-3">
+                            {% article_tag_list as article_tag_list %}
+                            <div class="tags">
+                                {% for tag in article_tag_list %}
+                                    <a class="tag is-light" href="{% url 'article:article_tag' tag.id %}">{{ tag.name }}</a>
+                                {% endfor %}
+                            </div>
+                        </aside>
+                    </div>
+                    {% endblock %}
+
+                    {% block aside_archive %}
+                    <div class="box p-6">
+                        <h1 class="has-text-weight-bold is-size-4">
+                            <span class="icon">
+                                <i class="mdi mdi-calendar-month"></i>
+                            </span>
+                            {% translate '文章归档' %}
+                        </h1>
+                        <hr class="my-2">
+                        <aside class="menu p-3">
+                            <ul class="menu-list">
+                                {% for archive in archive_list|slice:":6" %}
+                                <li>
+                                    <a class="{% if month.month == archive.month %}is-active{% endif %}" href="{% url 'article:archive_list' archive.year archive.month %}">
+                                        {{ archive|date }}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </aside>
+                    </div>
+                    {% endblock %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

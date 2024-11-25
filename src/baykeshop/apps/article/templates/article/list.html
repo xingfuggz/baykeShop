@@ -1,0 +1,86 @@
+{% extends 'article/base.html' %}
+
+{% load i18n bayke %}
+
+{% block title %}
+  {{ title|default:'商城资讯' }}
+{% endblock %}
+
+{% block content %}
+{% for object in page_obj %}
+<div class="box">
+<article class="media">
+    {% if object.image %}
+    <figure class="media-left">
+        <p class="image is-64x64">
+            <img src="{{ object.image.url }}" />
+        </p>
+    </figure>
+    {% endif %}
+    <div class="media-content">
+        <div class="content">
+            <h1 class="is-size-3 is-flex is-justify-content-space-between">
+                <a href="{% url 'article:article_detail' object.pk %}">{{ object.title }}</a>
+                {% if not object.is_original %}
+                <div class="tags">
+                    <span class="ml-2 tag is-primary is-light">原创</span>
+                </div>
+                {% endif %}
+            </h1>
+            <div class="is-flex pb-3">
+                <a class="has-text-grey" href="{% url 'article:article_category' object.category.id %}">
+                    <span class="icon is-small"><i class="mdi mdi-comment-text-multiple-outline"></i></span>
+                    {{ object.category.name }}
+                </a>
+                <a class="has-text-grey ml-2">
+                    <span class="icon is-small"><i class="mdi mdi-eye-outline"></i></span>
+                    {% visit_count object 'pv' %}
+                </a>
+                
+                {% if object.author %}
+                <a class="ml-2 has-text-grey" href="{% url 'article:article_author' object.author.id %}">
+                    <span class="icon is-small"><i class="mdi mdi-account-circle-outline"></i></span>
+                    {{ object.author.username }}
+                </a>
+                {% endif %}
+                {% if object.tags.exists %}
+                <div class="tags ml-2 is-small">
+                    <span class="icon is-small"><i class="mdi mdi-tag-multiple-outline"></i></span>
+                    {% for tag in object.tags.all %}
+                        <a class="tag is-light is-small" href="{% url 'article:article_tag' tag.id %}">
+                            <span>{{ tag.name }}</span> 
+                        </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <p class="has-text-grey">{{ object.desc }}</p>
+        </div>
+        <nav class="level is-mobile">
+            <div class="level-left">
+                <a class="level-item has-text-grey-light">
+                    <span class="icon is-small"><i class="mdi mdi-clock-time-five-outline"></i></span>
+                    <span class="ml-2">{{ object.create_time|timesince }}</span>
+                </a>
+            </div>
+            <div class="level-right">
+                <a class="level-item has-text-grey-light">
+                    <span class="icon is-small"><i class="mdi mdi-eye-outline"></i></span>
+                    <span class="ml-2">3000</span>
+                </a>
+                <a class="level-item has-text-grey-light">
+                    <span class="icon is-small"><i class="mdi mdi-comment-text-multiple-outline"></i></span>
+                    <span class="ml-2">100</span>
+                </a>
+                {% comment %} <a class="level-item has-text-grey-light">
+                    <span class="icon is-small"><i class="mdi mdi-heart-outline"></i></span>
+                    <span>50</span>
+                </a> {% endcomment %}
+            </div>
+        </nav>
+    </div>
+</article>
+</div>
+{% endfor %}
+{% include "core/pagination.html" with page_obj=page_obj %}
+{% endblock %}

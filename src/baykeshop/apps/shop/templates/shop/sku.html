@@ -1,0 +1,96 @@
+<style>
+    [v-cloak]{
+        display: none !important;
+     }
+</style>
+{{ sku_data|json_script:"sku-data" }}
+<section class="hero is-link is-bold is-small">
+  <div class="hero-body">
+    <div class="is-flex is-justify-content-space-between is-align-items-center">
+      <p class="is-size-3 has-text-weight-bold">
+        ￥{{ sku.price }}
+      </p>
+      <p class="">销量：{{ sku.num }}</p>
+    </div>
+  </div>
+</section>
+<div id="skuSingle" class="box is-radiusless m-0" v-cloak>
+    <div class="buttons mt-5">
+        <span>数量：</span>
+        <div class="field has-addons">
+            <p class="control">
+                <button class="button is-light is-medium" :disabled="!sku.stock || count == 1" @click="count--">
+                    <span class="icon"><i class="mdi mdi-minus"></i></span>
+                </button>
+            </p>
+            <p class="control">
+                <input type="number" class="input is-medium" v-model="count" min="1" :max="sku.stock" step="1"></input>
+            </p>
+            <p class="control">
+              <button class="button is-light is-medium" :disabled="!sku.stock || count == sku.stock" @click="count++">
+                <span class="icon"><i class="mdi mdi-plus"></i></span>
+              </button>
+            </p>
+        </div>
+        <span class="has-text-grey">(库存 {% verbatim %}{{ sku.stock }}{% endverbatim %})</span>
+    </div>
+    <div class="buttons mt-5">
+        <button class="button is-link is-large is-fullwidth1" :disabled="!sku.stock" @click="addCart">
+            加入购物车
+        </button>
+        <button class="button is-link is-light is-large is-fullwidth1" :disabled="!sku.stock" @click="noyBuy">
+            立即购买
+        </button>
+    </div>
+</div>
+
+<script>
+    const { createApp, ref, computed, reactive, watch } = Vue
+    createApp({
+        setup() {
+            const count = ref(1)
+            // 获取sku
+            const sku = computed(() => {
+                return JSON.parse(document.getElementById('sku-data').textContent);
+            })
+            return { sku, count }
+      },
+      methods: {
+        async addCart() {
+            // 添加购物车
+            const csrftoken = Cookies.get('csrftoken');
+            const formData = new FormData();
+            formData.append('sku_id', this.sku.id);
+            formData.append('num', this.count);
+            const { isFetching, error, data } = await window.VueUse.useFetch(
+                "{% url 'shop:cart-add' %}", {
+                    method: 'POST', 
+                    headers: {'X-CSRFToken': csrftoken}, 
+                    credentials: "same-origin",
+                    body: formData
+                }, 
+            )
+            const result = JSON.parse(data.value)
+            if (result.code == 401) {
+                Qmsg.info(result.msg, {
+                    onClose: function () {
+                        window.location.href = "{% url 'user:login' %}?next={{ next_url }}"
+                    }
+                });
+            }else if (result.code == 200) {
+                Qmsg.success(result.msg, {
+                    timeout: 1000,
+                    onClose: function () {
+                        window.location.reload()
+                    }
+                })
+            }
+        },
+        noyBuy() {
+            // 跳转到结算页
+            window.location.href = "{% url 'order:order-cash' %}?sku_ids=" + this.sku.id + '&count=' + this.count
+        }
+      },
+     
+    }).mount('#skuSingle')
+</script>

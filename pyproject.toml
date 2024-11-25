@@ -1,0 +1,31 @@
+[project]
+name = "baykeshop"
+version = "1.3.5-alpha"
+description = "BaykeShop开源商城系统"
+readme = "README.md"
+authors = [
+    { name = "轻编程", email = "2539909370@qq.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "alipay-sdk-python>=3.7.322",
+    "django>=5.1.2",
+    "pillow>=11.0.0",
+    "pyecharts>=2.0.7",
+]
+
+[project.urls]
+"Homepage" = "https://gitee.com/xingfugz/bayke-shop"
+"Bug Tracker" = "https://gitee.com/xingfugz/bayke-shop/issues"
+
+
+[tool.hatch.build]
+package-dir = { "baykeshop" = "src/baykeshop" }
+packages = [
+    "src/baykeshop"
+]
+
+# 声明构建后端
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -1,0 +1,82 @@
+{% load bulma %}
+{% if errors %}
+<div class="notification is-danger is-light">
+    <button class="delete"></button>
+{{ errors }}
+</div>
+{% endif %}
+{% if errors and not fields %}
+  <div>{% for field in hidden_fields %}{{ field }}{% endfor %}</div>
+{% endif %}
+{% for field, errors in fields %}
+<div class="field {% if field.field.has_addons %} has-addons {% endif %}">
+    {% if not field|is_boolean and has_label %}
+    <label class="label" id="{{ field.id_for_label }}">
+        {% if field.field.required %}
+            <span class="has-text-danger">*</span>
+        {% endif %}
+        {{ field.label }}：
+    </label>
+    {% endif %}
+    <div class="control {% if is_icon %} has-icons-left has-icons-right{% endif %}">
+        {% if field|is_select %}
+            <div class="select">
+                {{ field }}
+            </div>
+            {% if is_icon and has_icons_left %}
+                <span class="icon is-small is-left">
+                    <i class="{{ field.field.icon_left }}"></i>
+                </span>
+            {% endif %}
+        {% elif field|is_image %}
+        <div class="file has-name">
+            <label class="file-label">
+                <input class="file-input" type="file" name="{{ field.name }}" accept="image/*" {% include "django/forms/widgets/attrs.html" %} />
+                <span class="file-cta">
+                    <span class="file-icon">
+                        <i class="mdi mdi-file-upload-outline"></i>
+                    </span>
+                    <span class="file-label"> 选择文件… </span>
+              </span>
+              <span class="file-name">{{ field.field.widget.initial_text }}：{{ field.value }}</span>
+            </label>
+        </div>
+        {% elif field|is_boolean %}
+        <label class="checkbox">
+            {% if field.field.required %}
+                <span class="has-text-danger">*</span>
+            {% endif %}
+            {{ field }}
+            {{ field.label }}
+        </label>
+        {% else %}
+            {{ field|add_class:'input' }}
+            {% if is_icon %}
+                {% if has_icons_left %}
+                <span class="icon is-small is-left">
+                    <i class="{{ field.field.icon_left }}"></i>
+                </span>
+                {% endif %}
+                {% if has_icons_right %}
+                <span class="icon is-small is-right">
+                    <i class="{{ field.field.icon_right }}"></i>
+                </span>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+    <p class="help is-danger">{{ errors|join:", " }}</p>
+    {% if not errors %}
+        <p class="help">{{ field.help_text }}</p>
+    {% endif %}
+    {% if forloop.last %}
+        {% for field in hidden_fields %}{{ field }}{% endfor %}
+    {% endif %}
+</div>
+{% endfor %}
+
+{% if not fields and not errors %}
+  {% for field in hidden_fields %}{{ field }}{% endfor %}
+{% endif %}
+
+

@@ -1,0 +1,16 @@
+{% load i18n order %}
+<a class="box" href="{% url 'shop:spu-detail' spu.id %}">
+    <figure class="image is-1by1">
+        <img src="{{ spu.image.url }}" alt="{{ spu.name  }}" />
+    </figure>
+    <h1 class="has-text-weight-bold is-size-5 py-2">
+        {{ spu.name|truncatechars:15 }}
+    </h1>
+    <div class="">
+        <span class="is-size-4 has-text-danger has-text-weight-bold">￥{{ spu.price|floatformat:"-2g" }}</span>
+        <div class="is-flex is-justify-content-space-between has-text-grey">
+            <span>{{ spu.num }}{% translate '人付款' %}</span>
+            <span>{% comment_rate spu %}{% translate '分' %}</span>
+        </div>
+    </div>
+</a>

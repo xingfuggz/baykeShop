@@ -1,0 +1,144 @@
+{% extends 'order/base.html' %}
+{% load i18n order %}
+{% block title %} {% translate '订单支付' %} {% endblock %}
+
+{% block section %}
+<section class="section">
+    <div class="container">
+        <div class="box p-6">
+            <h1 class="title is-4">
+                <span class="icon">
+                    <i class="mdi mdi-bank-plus"></i>
+                </span>
+                {% translate '支付方式' %}
+            </h1>
+            <hr>
+            {% paytype_template %}
+        </div>
+        <div class="box p-6 m-0">
+            <h1 class="title is-4">
+                <span class="icon">
+                    <i class="mdi mdi-all-inclusive-box-outline"></i>
+                </span>
+                {% translate '订单概况' %}
+            </h1>
+            <hr>
+            <div class="orderDetail px-3">
+                <div class="notification is-success is-light">
+                    <span class="icon">
+                        <i class="mdi mdi-alert-circle"></i>
+                    </span>
+                    <span class="has-text-weight-bold">{% translate '温馨提示' %}：</span> 
+                    每一次决定都是对未来的一次投资，把握当下，尽快下单，享受你的选择。
+                </div>
+                <ul>
+                    <li><span class="has-text-weight-bold">{% translate '订单号' %}：</span>{{ order.order_sn }}</li>
+                    <li><span class="has-text-weight-bold">{% translate '订单日期' %}：</span>{{ order.create_time }}</li>
+                    <li><span class="has-text-weight-bold">{% translate '支付状态' %}：</span>{{ order.get_status_display }}</li>
+                    <li><span class="has-text-weight-bold">{% translate '订单总额' %}：</span>￥{{ order.total_price }}</li>
+                    <li> 
+                        <span class="has-text-weight-bold">{% translate '订单商品' %}：</span>
+                        <div class="box is-shadowless has-background-light">
+                            <ol class="px-6">
+                                {% for item in order.baykeshoporderitem_set.all %}
+                                    <li>{{ item.sku.spu.name }} ({{ item.price }}x {{ item.quantity }})
+                                        {% for spec in item.sku.combination.specs.all %}
+                                        <span>[{{ spec.spec.name }}:{{ spec.value }}]</span>
+                                        {% endfor %}
+                                    </li>
+                                {% endfor %} 
+                            </ol>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="box p-6">
+            <div class="is-flex is-flex-direction-column is-align-items-end">
+                <p class="is-size-4 has-text-grey">{% translate '订单总额' %}：
+                    <span>￥{{ order.total_price }}</span>
+                </p>
+                <p class="is-size-4 has-text-link">{% translate '实际支付' %}：
+                    <span>￥{{ order.pay_price }}</span> 
+                </p>
+            </div>
+            <hr>
+            <div class="is-flex is-justify-content-space-between">
+                    <a class="button is-light is-large" href="{% url 'order:order-list' %}">
+                        <span class="icon">
+                            <i class="mdi mdi-arrow-left"></i>
+                        </span>
+                        <span>{% translate '返回订单列表' %}</span> 
+                    </a>
+                    <button class="button is-link is-large" id="pay-button">
+                        <span class="icon">
+                            <i class="mdi mdi-cash-check"></i>
+                        </span>
+                        <span>{% translate '立即支付' %}</span> 
+                    </button>
+            </div>
+        </div>
+    </div>
+</section>
+<style>
+    .orderDetail ul li {
+        line-height: 30px;
+    }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const pay_button = document.querySelector('#pay-button');
+    pay_button.addEventListener('click', async function() {
+        const formData = new FormData();
+        formData.append('pay_type', payType.selectedPayTypeID)
+        const csrfToken = Cookies.get('csrftoken');
+        var loadingMsg = Qmsg.loading('正在提交订单，请稍等...')
+        const { isFetching, error, data } = await window.VueUse.useFetch(
+            "{% url 'order:order-pay' order.order_sn %}", {
+                method: 'POST',
+                body: formData,
+                credentials: "same-origin",
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            }
+        )
+        if (!!isFetching) {loadingMsg.close();}
+        const result = JSON.parse(data.value)
+        if (payType.selectedPayTypeID == 0 && result.code == 200) {
+            console.log('支付宝支付', result.data)
+            // createSuperLabel(result.data, '{{ order.id }}alipay')
+            window.location.href = result.data
+            return;
+        }else if (payType.selectedPayTypeID == 1 && result.code == 200) {
+            console.log('微信支付')
+            Qmsg.warning('微信支付暂未开放，请使用支付宝支付')
+            return;
+        } else if (payType.selectedPayTypeID == 2 && result.code == 200) {
+            Qmsg.success(result.msg, {
+                onClose:function(){
+                    window.location.href = "{% url 'order:order-list' %}"
+                }
+            })
+        } else {
+            Qmsg.error(result.msg)
+        }
+    });
+});
+
+
+function createSuperLabel(url, id) {      
+    let a = document.createElement("a");           
+    a.setAttribute("href", url);      
+    a.setAttribute("target", "_blank");      
+    a.setAttribute("id", id);       
+      // 防止反复添加      
+    if(!document.getElementById(id)) {                               
+        document.body.appendChild(a);      
+    }      
+    a.click();
+    window.location.reload()
+}
+</script>
+{% endblock %}

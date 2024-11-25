@@ -1,0 +1,28 @@
+{% extends "user/account.html" %}
+
+{% load i18n bulma %}
+{% block extrastyle %}{% endblock %}
+
+{% block profile_header %}
+    <h1 class="is-size-4">
+        <span class="icon"><i class="mdi mdi-flag-triangle"></i></span>
+        {% translate '编辑收货地址' %}
+    </h1>
+{% endblock %}
+
+{% block profile_content %}
+<div class="p-6">
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_bulma }}
+        <div class="field is-grouped is-grouped-right">
+            <div class="control">
+                <button class="button is-link" type="submit">
+                    <span class="icon"><i class="mdi mdi-content-save-all-outline"></i></span>
+                    <span>{% translate '保存' %}</span> 
+                </button> 
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
