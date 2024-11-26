@@ -1,0 +1,34 @@
+{% load i18n static %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BaykeShop{% endblock %}</title>
+    <link rel="stylesheet" href="{% block stylesheet %}{% static "baykeshop/css/bulma.css" %}{% endblock %}"></link>
+    {% block dark-mode-vars %}{% endblock %}
+    {% block extrastyle %}{% endblock %}
+    {% if LANGUAGE_BIDI %}<link rel="stylesheet" href="{% block stylesheet_rtl %}{% endblock %}">{% endif %}
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="{% static 'baykeshop/js/js.cookie.min.js' %}"></script>
+    <script src="{% static 'baykeshop/js/message.min.js' %}"></script>
+    <script src="{% static 'admin/js/vendor/jquery/jquery.min.js' %}"></script>
+    {% block extrahead %}{% endblock %}
+    {% block blockbots %}{% endblock %}
+    <script>
+        const bayke = {
+            vue: Vue,
+            message: Qmsg,
+            cookie: Cookies,
+            csrftoken: Cookies.get('csrftoken')
+        }
+    </script>
+</head>
+<body>
+    <header>{% block header %}{% endblock %}</header>
+    <main>{% block main %}{% endblock %}</main>
+    <footer>{% block footer %}{% endblock %}</footer>
+    {% block extrajs %}{% endblock %}
+    {% block javascript %}{% endblock %}
+</body>
+</html>
