@@ -16,3 +16,7 @@ class BaseCategoryModel(BaseModel):
     class Meta:
         abstract = True
         ordering = ['order']
+
+    @classmethod
+    def get_queryset(cls):
+        return cls.objects.filter(is_show=True)

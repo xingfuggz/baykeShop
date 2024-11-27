@@ -38,9 +38,9 @@ class BaykeShopBrand(BaseModel):
 
 class BaykeShopGoods(BaseGoodsModel):
     """商品"""
-    category = models.ForeignKey(
-        BaykeShopCategory, 
-        on_delete=models.CASCADE, 
+    category = models.ManyToManyField(
+        BaykeShopCategory,
+        blank=True,
         verbose_name=_('商品分类')
     )
     brand = models.ForeignKey(
@@ -87,3 +87,16 @@ class BaykeShopCarts(BaseCartsModel):
     
     def __str__(self):
         return f'{self.user.username} - {self.sku.goods.name}'
+    
+
+class BaykeShopSpec(BaseCategoryModel):
+    """商品规格"""
+
+    class Meta:
+        verbose_name = _('规格模版')
+        verbose_name_plural = _('规格模版')
+        ordering = ['-created_time']
+    
+    def __str__(self):
+        if not self.parent: return self.name
+        return f"{self.parent.name}:{self.name}"

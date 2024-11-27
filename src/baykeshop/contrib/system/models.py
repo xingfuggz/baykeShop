@@ -17,7 +17,7 @@ class BaykeDictModel(BaseModel):
     value = models.TextField(
         verbose_name=_('值'), 
         help_text=_('''
-            布尔值：True/False; 
+            布尔值：true/false; 
             键值对：key1:value1一行一对;
             list:value1,value2一行一个值;
             json:{"key1":"value1"}

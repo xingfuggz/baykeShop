@@ -2,16 +2,13 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 # Register your models here.
 from baykeshop.sites import admin as bayke_admin
-
+from .forms import BaykeShopGoodsSKUForm
 from .models import *
 
-admin.site.register([BaykeShopOrdersGoods])
 
-
-class BaykeShopCategoryInline(admin.TabularInline):
+class BaykeShopCategoryInline(bayke_admin.TabularInline):
     model = BaykeShopCategory
     extra = 1
-
 
 @admin.register(BaykeShopCategory)
 class BaykeShopCategoryAdmin(bayke_admin.ModelAdmin):
@@ -36,34 +33,38 @@ class BaykeShopCategoryAdmin(bayke_admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_inline_instances(self, request, obj=None):
-        if obj.parent:
+        if obj and obj.parent:
             return []
         return super().get_inline_instances(request, obj)
 
 
-class BaykeShopGoodsSKUInline(admin.TabularInline):
+class BaykeShopGoodsSKUInline(bayke_admin.StackedInline):
     model = BaykeShopGoodsSKU
-    extra = 1
+    extra = 0
+    form = BaykeShopGoodsSKUForm
 
 
 @admin.register(BaykeShopGoods)
 class BaykeShopGoodsAdmin(bayke_admin.ModelAdmin):
-    list_display = ('id', 'name', 'category', 'brand', 'created_time', 'updated_time')
+    list_display = ('id', 'name', 'brand', 'created_time', 'updated_time')
     list_filter = ('category', 'brand')
     search_fields = ('name', 'category__name', 'brand__name')
-    inlines = [
-        BaykeShopGoodsSKUInline,
-        # BaykeShopGoodsSpecificationAdmin,
-        # BaykeShopGoodsImageAdmin,
-    ]
+    inlines = [BaykeShopGoodsSKUInline]
     fieldsets = (
         (_('基本信息'), {
-            'fields': ('name', 'category', 'brand', 'image', 'images', 'is_multi',)
+            'fields': ('name', 'category', 'brand', 'image', 'images',)
         }),
-        (_('商品详情'), {
+        (_('S商品详情'), {
+            'classes': ('collapse',),
             'fields': ('keywords', 'description', 'detail',)
         }),
     )
+    filter_horizontal = ("category", )
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == 'category':
+            kwargs['queryset'] = BaykeShopCategory.objects.filter(parent__isnull=False)
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 
 @admin.register(BaykeShopBrand)
@@ -136,3 +137,37 @@ class BaykeShopOrdersAdmin(bayke_admin.ModelAdmin):
         if obj and obj.status >= BaykeShopOrders.ORDER_STATUS.SHIPPED:
             readonly_fields = list(readonly_fields) + ['pay_price',]
         return readonly_fields
+
+
+# 规格值
+class BaykeShopSpecInline(bayke_admin.TabularInline):
+    model = BaykeShopSpec
+    extra = 1
+    verbose_name = _('规格值')
+    verbose_name_plural = _('规格值')
+
+
+@admin.register(BaykeShopSpec)
+class BaykeShopSpecAdmin(bayke_admin.ModelAdmin):
+    '''Admin View for BaykeShopSpec'''
+    list_display = ('id', 'name', 'parent', 'order', 'is_show', 'created_time')
+    list_display_links = ('id', 'name')
+    search_fields = ('name',)
+
+    fieldsets = (
+        (_('规格名称'), {
+            'fields': ('name', 'order', 'is_show')
+        }),
+    )
+    readonly_fields = ('parent',)
+    inlines = [BaykeShopSpecInline]
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'parent':
+            kwargs['queryset'] = BaykeShopSpec.objects.filter(parent__isnull=False)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_inline_instances(self, request, obj=None):
+        if obj and obj.parent:
+            return []
+        return super().get_inline_instances(request, obj)

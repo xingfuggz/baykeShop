@@ -3,12 +3,12 @@ from baykeshop.forms import ModelForm
 
 class TabularInline(admin.TabularInline):
     '''Tabular Inline View for '''
-    pass
+    form = ModelForm
 
 
 class StackedInline(admin.StackedInline):
     '''Stacked Inline View for '''
-    pass
+    form = ModelForm
 
 
 class ModelAdmin(admin.ModelAdmin):
