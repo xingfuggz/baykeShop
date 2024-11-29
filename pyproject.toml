@@ -1,6 +1,6 @@
 [project]
 name = "baykeshop"
-version = "1.3.5-alpha"
+version = "1.3.5-alpha1"
 description = "BaykeShop开源商城系统"
 readme = "README.md"
 authors = [
