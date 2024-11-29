@@ -4,9 +4,22 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 
-from .base import BaseModel
+from .base import BaseModel, BaseManager
 
 User = get_user_model()
+
+
+class BaykeShopOrdersGoodsManager(BaseManager):
+    """订单商品管理器"""
+    def get_queryset(self):
+        return super().get_queryset().select_related('sku').alias(
+            total_price=models.ExpressionWrapper(
+                models.F('quantity') * models.F('price'),
+                output_field=models.DecimalField()
+            )
+        ).annotate(
+            total_price=models.F('total_price')
+        )
 
 
 class BaseOrdersModel(BaseModel):
@@ -87,6 +100,8 @@ class BaseOrdersGoodsModel(BaseModel):
     name = models.CharField(max_length=50, verbose_name=_('商品名称'), blank=True, default='')
     detail = models.TextField(blank=True, null=True, verbose_name=_('商品详情'))
     image = models.ImageField(upload_to='goods', blank=True, null=True, verbose_name=_('商品主图'))
+
+    objects = BaykeShopOrdersGoodsManager()
 
     class Meta:
         abstract = True

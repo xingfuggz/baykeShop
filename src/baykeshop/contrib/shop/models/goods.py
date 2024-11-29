@@ -5,6 +5,7 @@ from baykeshop.db import (
     BaseModel, BaseGoodsModel, BaseGoodsSKUModel, BaseCategoryModel,
     BaseCartsModel
 )
+from .managers import BaykeShopGoodsManager, BaykeShopCartsManager
 
 
 class BaykeShopCategory(BaseCategoryModel):
@@ -51,6 +52,8 @@ class BaykeShopGoods(BaseGoodsModel):
         null=True
     )
 
+    objects = BaykeShopGoodsManager()
+
     class Meta:
         verbose_name = _('商品')
         verbose_name_plural = _('商品')
@@ -76,6 +79,8 @@ class BaykeShopGoodsSKU(BaseGoodsSKUModel):
 class BaykeShopCarts(BaseCartsModel):
     """购物车"""
     sku = models.ForeignKey(BaykeShopGoodsSKU, on_delete=models.CASCADE, verbose_name=_('商品'))
+
+    objects = BaykeShopCartsManager()
 
     class Meta:
         verbose_name = _('购物车')

@@ -3,10 +3,13 @@ from django.utils.translation import gettext_lazy as _
 
 from baykeshop.db import BaseOrdersModel, BaseOrdersGoodsModel
 from .goods import BaykeShopGoodsSKU
+from .managers import BaykeShopOrdersManager
 
 
 class BaykeShopOrders(BaseOrdersModel):
     """订单表"""
+
+    objects = BaykeShopOrdersManager()
 
     class Meta(BaseOrdersModel.Meta):
         verbose_name = _('订单')

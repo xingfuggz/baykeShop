@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 # Register your models here.
 from baykeshop.sites import admin as bayke_admin
-from .forms import BaykeShopGoodsSKUForm
+from .forms import BaykeShopGoodsSKUForm, BaykeShopGoodsForm
 from .models import *
 
 
@@ -42,11 +42,13 @@ class BaykeShopGoodsSKUInline(bayke_admin.StackedInline):
     model = BaykeShopGoodsSKU
     extra = 0
     form = BaykeShopGoodsSKUForm
+    readonly_fields = ('sales',)
 
 
 @admin.register(BaykeShopGoods)
 class BaykeShopGoodsAdmin(bayke_admin.ModelAdmin):
     list_display = ('id', 'name', 'brand', 'created_time', 'updated_time')
+    list_display_links = ('id', 'name')
     list_filter = ('category', 'brand')
     search_fields = ('name', 'category__name', 'brand__name')
     inlines = [BaykeShopGoodsSKUInline]
@@ -60,6 +62,7 @@ class BaykeShopGoodsAdmin(bayke_admin.ModelAdmin):
         }),
     )
     filter_horizontal = ("category", )
+    form = BaykeShopGoodsForm
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == 'category':

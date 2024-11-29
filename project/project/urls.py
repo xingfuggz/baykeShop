@@ -15,8 +15,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('gallery/', include('baykeshop.contrib.gallery.urls')),
+    # 开发时媒体文件
+    *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
+    # 开发时静态文件
+    *static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 ]

@@ -3,7 +3,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.contrib.admin import widgets
 from baykeshop.forms import ModelForm
-from .models import BaykeShopGoodsSKU, BaykeShopSpec
+from .models import BaykeShopGoods, BaykeShopGoodsSKU, BaykeShopSpec
 
 
 class MyFilteredSelectMultiple(widgets.FilteredSelectMultiple):
@@ -65,4 +65,17 @@ class BaykeShopGoodsSKUForm(ModelForm):
         return json.dumps([], ensure_ascii=False)
 
     
-    
+from baykeshop.contrib.gallery.widgets import GalleryWidget  
+class BaykeShopGoodsForm(ModelForm):
+    """商品表单"""
+
+    images = forms.JSONField(
+        label=_('商品图片'),
+        help_text=_('最多可上传5张图片，图片大小不超过5M'),
+        required=False,
+        widget=GalleryWidget(attrs={'max_images': 5})
+    )
+
+    class Meta:
+        model = BaykeShopGoods
+        fields = '__all__'

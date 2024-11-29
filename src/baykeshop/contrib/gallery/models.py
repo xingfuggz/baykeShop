@@ -21,6 +21,7 @@ class BaykeGallery(BaseModel):
     """图库"""
     category = models.ForeignKey(BaykeGalleryCategory, on_delete=models.CASCADE, verbose_name=_('图库分类'))
     image = models.ImageField(upload_to='gallery', verbose_name=_('图片'))
+    name = models.CharField(max_length=50, verbose_name=_('图片名称'), blank=True, default='')
 
     class Meta:
         verbose_name = _('图库')

@@ -29,8 +29,9 @@ class BaseManager(models.Manager):
     def all_hard_delete(self):
         return super().all().delete()
     
-    def truncate_queryset(self):
-        return super().all().annotate(date=TruncDate('created_time'))
+    def truncdate_queryset(self):
+        queryset = self.get_queryset().annotate(date=TruncDate('created_time'))
+        return queryset
 
 
 class BaseModel(models.Model):
