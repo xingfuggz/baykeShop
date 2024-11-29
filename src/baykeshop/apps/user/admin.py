@@ -39,10 +39,11 @@ class BaykeUserAdmin(UserAdmin):
 
     @admin.display(description=_('头像'))
     def avatar(self, obj):
-        img = format_html('<img src="{}" width="40px" height="40px" />', obj.profile.avatar.url)
-        url = img if obj.profile.avatar else ''
-        return url
-
+        if obj.profile.avatar:
+            return format_html('<img src="{}" width="40px" height="40px" />', obj.profile.avatar.url)
+        else: 
+            return ''
+        
 
 @admin.register(Group, site=bayke_site)
 class BaykeGroupAdmin(GroupAdmin):
