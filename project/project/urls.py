@@ -22,7 +22,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('gallery/', include('baykeshop.contrib.gallery.urls')),
     # 开发时媒体文件
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
     # 开发时静态文件

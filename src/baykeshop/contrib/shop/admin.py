@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 # Register your models here.
 from baykeshop.sites import admin as bayke_admin
-from .forms import BaykeShopGoodsSKUForm, BaykeShopGoodsForm
+from .forms import BaykeShopGoodsSKUForm
 from .models import *
 
 
@@ -62,7 +62,6 @@ class BaykeShopGoodsAdmin(bayke_admin.ModelAdmin):
         }),
     )
     filter_horizontal = ("category", )
-    form = BaykeShopGoodsForm
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == 'category':
