@@ -3,7 +3,7 @@ import json
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from .validators import (
+from baykeshop.contrib.system.validators import (
     validate_dict_value, is_bool, is_dict, is_json, is_list
 )
 
@@ -37,10 +37,10 @@ class BaykeDictModel(BaseModel):
         return self.name
     
     @classmethod
-    def get_key_value(cls, key, site_id=1):
+    def get_key_value(cls, key):
         """ 获取字典值 """
         try:
-            obj = cls.objects.get(key=key, site__id=site_id)
+            obj = cls.current_site.get(key=key)
             if is_bool(obj.value):
                 _v = json.loads(obj.value.lower())
                 return _v
@@ -59,7 +59,3 @@ class BaykeDictModel(BaseModel):
                 return json.loads(obj.value)
         except cls.DoesNotExist:
             return None
-    
-    def save(self, *args, **kwargs):
-        self.get_key_value('a')
-        super().save(*args, **kwargs)

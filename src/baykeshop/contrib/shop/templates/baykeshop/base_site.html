@@ -1,2 +1,11 @@
 {% extends 'baykeshop/base.html' %}
 
+{% block title %}{{ title|default:"BaykeShop" }}{% endblock %}
+
+{% block header %}
+{% include 'baykeshop/includes/header.html' %}
+{% endblock %}
+
+{% block footer %}
+{% include 'baykeshop/includes/footer.html' %}
+{% endblock %}

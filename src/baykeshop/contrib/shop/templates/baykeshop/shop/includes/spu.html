@@ -1,0 +1,16 @@
+{% load i18n %}
+<a class="bk-box" href="{% url 'shop:detail' spu.id %}">
+    <figure class="bk-image bk-is-1by1">
+        <img src="{{ MEDIA_URL }}{{ spu.image_url }}" alt="{{ spu.name  }}" />
+    </figure>
+    <h1 class="py-2">
+        {{ spu.name|truncatechars:15 }}
+    </h1>
+    <div class="">
+        <span class="bk-is-size-4 bk-has-text-danger bk-has-text-weight-bold">￥{{ spu.price|floatformat:"-2g" }}</span>
+        <div class="bk-is-flex bk-is-justify-content-space-between bk-has-text-grey">
+            <span>10{% translate '人付款' %}</span>
+            <span>4.8{% translate '分' %}</span>
+        </div>
+    </div>
+</a>

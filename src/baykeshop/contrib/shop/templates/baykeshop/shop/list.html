@@ -1,0 +1,24 @@
+{% extends 'baykeshop/base_site.html' %}
+
+{% load i18n baykeshop %}
+
+{% block main %}
+    <section class="bk-section">
+        <div class="bk-container">
+            {% filters_template request %}
+            <div class="bk-fixed-grid bk-has-5-cols-fullhd bk-has-5-cols-widescreen bk-has-5-cols-desktop bk-has-4-cols-tablet bk-has-2-cols-mobile">
+                <div class="bk-grid">
+                    {% for spu in page_obj %}
+                        <div class="bk-cell">
+                        {% include "baykeshop/shop/includes/spu.html" with spu=spu %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% paginator_template page_obj request %}
+        </div>
+    </section>
+{% endblock %}
+    
+
+

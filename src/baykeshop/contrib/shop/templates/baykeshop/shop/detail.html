@@ -1,0 +1,38 @@
+{% extends 'baykeshop/base_site.html' %}
+{% load i18n static baykeshop %}
+
+{% block main %}
+<section class="bk-section">
+    <div class="bk-container">
+        <div class="bk-columns bk-is-multiline">
+            <div class="bk-column bk-is-3">
+                轮播图
+            </div>
+            <div class="bk-column bk-is-7">
+                <h1 class="bk-is-size-3">{{ spu.name }}</h1>
+                {% sku_template spu %}
+                <div class="bk-box mt-3 bk-is-radiusless">
+                    <div class="bk-tabs">
+                        <ul>
+                            <li class="bk-is-active">
+                                <a href="#tab-1">{% translate '商品详情' %}</a>
+                            </li>
+                            <li class="">
+                                <a href="#tab-2">{% translate '商品评价' %}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="bk-column bk-is-2">
+                <div class="bk-box bk-is-shadowless" style="border: 1px solid #eee;">
+                    <h1 class="has-text-centered is-size-5 has-text-weight-bold">优品推荐</h1>
+                    <hr class="my-2">
+                    推荐商品
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+    

@@ -1,0 +1,30 @@
+{% load i18n baykeshop %}
+<nav class="bk-pagination bk-is-centered" role="navigation" aria-label="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&{{ urlencode }}" class="bk-pagination-previous">
+            {% translate '上一页' %}
+        </a>
+    {% endif %}
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&{{ urlencode }}" class="bk-pagination-next">
+            {% translate '下一页' %}
+        </a>
+    {% endif %}
+    <ul class="bk-pagination-list">
+        {% paginator_range page_obj as paginator_range  %}
+        {% for page in paginator_range %}
+            {% if page == page_obj.paginator.ELLIPSIS %}
+                <li><span class="bk-pagination-ellipsis">&hellip;</span></li>
+            {% else %}
+                <li>
+                    <a href="?page={{ page }}&{{ urlencode }}" 
+                        class="bk-pagination-link {% if page == page_obj.number %}bk-is-current{% endif %}" 
+                        aria-label="Page {{ page }}"
+                        aria-current="page">
+                        {{ page }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</nav>

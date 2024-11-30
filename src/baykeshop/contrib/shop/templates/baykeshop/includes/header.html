@@ -1,0 +1,153 @@
+{% load i18n %}
+<header>
+    <div id="head-top" class="bk-has-background-black-ter bk-has-text-white-ter">
+        <div class="bk-container">
+            <div class="bk-is-flex bk-is-align-items-center">
+                <div>欢迎光临本店！</div>
+                <div class="ml-auto">
+                    {% if request.user.is_authenticated %}
+                    <div class="bk-dropdown bk-is-hoverable" style="z-index: 100;">
+                        <div class="bk-dropdown-trigger">
+                          <button class="bk-button bk-is-ghost bk-has-text-grey-light" aria-haspopup="true" aria-controls="dropdown-menu4" style="height: 40px;">
+                            <span class="bk-icon bk-is-small">
+                                <i class="mdi mdi-account-badge" aria-hidden="true"></i>
+                            </span>
+                            <span>{{ request.user.username }}</span>
+                            <span class="bk-icon bk-is-small">
+                                <i class="mdi mdi-chevron-down" aria-hidden="true"></i>
+                            </span>
+                          </button>
+                        </div>
+                        <div class="bk-dropdown-menu" id="dropdown-menu4" role="menu">
+                            <div class="bk-dropdown-content">
+                                <a class="bk-dropdown-item" href="">
+                                    <span class="bk-icon">
+                                        <i class="mdi mdi-account-badge-outline"></i>
+                                    </span>
+                                    {% translate '个人中心' %}
+                                </a>
+                                <a class="bk-dropdown-item" href="">
+                                    <span class="bk-icon">
+                                        <i class="mdi mdi-list-box-outline"></i>
+                                    </span>
+                                    {% translate '我的订单' %}
+                                </a>
+                                <hr class="bk-dropdown-divider" />
+                                <a class="bk-dropdown-item" href="">
+                                    <span class="bk-icon">
+                                        <i class="mdi mdi-logout"></i>
+                                    </span>
+                                    {% translate '退出' %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a class="bk-button bk-is-ghost bk-has-text-grey-light" style="height: 40px;"
+                        href="">
+                        <span class="bk-icon">
+                            <i class="mdi mdi-18px mdi-login"></i>
+                        </span>
+                        <span>登录</span>
+                    </a><span class="bk-has-text-grey-light">|</span>
+                    <a class="bk-button bk-is-ghost bk-has-text-grey-light" style="height: 40px;"
+                        href="">
+                        <span class="bk-icon">
+                            <i class="mdi mdi-18px mdi-account-box-plus-outline"></i>
+                        </span>
+                        <span>注册</span>
+                    </a>
+                    {% endif %}
+                    <a class="bk-button bk-is-light bk-is-radiusless bk-is-shadowless" 
+                        href="" style="height: 40px; width: 120px;">
+                        <span class="bk-icon">
+                            <i class="mdi mdi-cart-heart"></i>
+                        </span>
+                        <span>购物车(0)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav class="bk-navbar bk-is-spaced bk-has-shadow" role="navigation" aria-label="main navigation">
+        <div class="bk-container">
+        <div class="bk-navbar-brand">
+            {% if logo %}
+            <img src="{{ logo.url }}" alt="" width="150" height="auto">
+            {% else %}
+            <a class="bk-navbar-item bk-is-size-3 bk-has-text-weight-bold" href="">
+                BaykeShop
+            </a>
+            {% endif %}
+            <a role="bk-button" class="bk-navbar-burger" aria-label="menu" aria-expanded="false"
+                data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="navbarBasicExample" class="bk-navbar-menu">
+            <div class="bk-navbar-start">
+                <a class="bk-navbar-item" href="">
+                    首页
+                </a>
+                <a class="bk-navbar-item" href="{% url 'shop:list' %}">
+                    全部商品
+                </a>
+                <a class="bk-navbar-item" href="">
+                    商城资讯
+                </a>
+                {% comment %}
+                {% nav_categorys as nav_categorys %}
+                {% for cate in nav_categorys|slice:4 %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link" href="{% url 'shop:category-spu-list' cate.id %}">
+                        {{ cate.name }}
+                    </a>
+                    <div class="navbar-dropdown">
+                        {% for child in cate.baykeshopcategory_set.all %}
+                        <a class="navbar-item" href="{% url 'shop:category-spu-list' child.id %}">
+                            {{ child.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+                {% endcomment %}
+            </div>
+
+            <div class="bk-navbar-end">
+                <div class="bk-navbar-item">
+                    搜索
+                </div>
+            </div>
+        </div>
+        </div>
+    </nav>
+</header>
+<style>
+    #head-top{
+        height: 40px;
+        line-height: 40px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.bk-navbar-burger'), 0);
+        $navbarBurgers.forEach( el => {
+            el.addEventListener('click', () => {
+
+            // Get the target from the "data-target" attribute
+            const target = el.dataset.target;
+            const $target = document.getElementById(target);
+
+            // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+            el.classList.toggle('bk-is-active');
+            $target.classList.toggle('bk-is-active');
+
+            });
+        });
+    });
+</script>

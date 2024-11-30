@@ -1,0 +1,129 @@
+{% load i18n static baykeshop %}
+<div class="bk-box">
+    <div class="bk-is-flex bk-is-align-items-center">
+        <a href="{% url 'shop:list' %}" 
+            class="pr-2 {% if category_id is None and not request.GET %} bk-has-text-link bk-has-text-weight-bold {% else %} bk-has-text-grey-dark {% endif %}">
+            <span class="bk-icon bk-is-small">
+                <i class="mdi mdi-view-dashboard-outline"></i>
+            </span>
+            {% translate '全部商品' %}
+        </a>
+        {% parent_category_queryset as category_list %}
+        {% for cate in category_list %}
+            <a href="{% url 'shop:category' cate.id %}?{{ filter_params }}"
+                class="pr-2 {% if category_id == cate.id or object.parent.id == cate.id %} bk-has-text-link bk-has-text-weight-bold {% else %} bk-has-text-grey-dark {% endif %}">
+                {{ cate.name }}
+            </a>
+        {% endfor %}
+    </div>
+    <hr class="my-2" />
+    <div class="bk-is-flex bk-is-align-items-center mb-2">
+        <span class="bk-icon">
+            <i class="mdi mdi-tag-multiple-outline"></i>
+        </span>
+        <span class="bk-has-text-grey">{% translate '品牌' %}:</span>
+        {% brand_queryset as brand_list %}
+        {% for brand in brand_list %}
+        <a href="?brand_id={{ brand.id }}" 
+            class="px-2 {% if brand_id == brand.id %} bk-has-text-link bk-has-text-weight-bold {% else %} bk-has-text-grey-dark {% endif %}">
+            {{ brand.name }}
+        </a>
+        {% endfor %}
+    </div>
+    <div class="bk-is-flex bk-is-align-items-center mb-2">
+        <span class="bk-icon">
+            <i class="mdi mdi-shape-plus-outline"></i>
+        </span>
+        <span class="bk-has-text-grey pr-2">{% translate '分类' %}:</span>
+        {% child_category_queryset category_id as child_category_list %}
+        {% for child in child_category_list %}
+            <a href="{% url 'shop:category' child.id %}?{{ filter_params }}" 
+                class="pr-2 {% if category_id == child.id %} bk-has-text-link bk-has-text-weight-bold {% else %} bk-has-text-grey-dark {% endif %}">
+                {{ child.name }}
+            </a>
+        {% endfor %}
+    </div>
+    <div class="bk-is-flex bk-is-align-items-center">
+        <span class="bk-icon">
+            <i class="mdi mdi-sort-alphabetical-variant"></i>
+        </span>
+        <span class="bk-has-text-grey pr-2">{% translate '排序' %}:</span>
+        {% sort_template request filter_params 'price' name="价格" %}
+        {% sort_template request filter_params 'sales' name="销量" %}
+        {% sort_template request filter_params 'created_time' name="时间" %}
+    </div>
+    
+    {% comment %}
+    <div class="bk-is-flex bk-is-align-items-center">
+        <span class="bk-icon bk-is-small">
+            <i class="mdi mdi-sort"></i>
+        </span>
+        <span class="bk-has-text-grey pr-2">{% translate '排序' %}:</span>
+        {% if sort == 'price' %}
+        <a href="?sort=-price&{{ filter_params }}" 
+            class="pr-2 {% if sort == 'price' %} has-text-link has-text-weight-bold {% else %} has-text-grey-dark {% endif %}">
+            {% translate '价格' %}
+            {% if sort == 'price' %}
+            <span class="icon is-small">
+                <i class="mdi mdi-sort-descending"></i>
+            </span>
+            {% endif %}
+        </a>
+        {% else %}
+        <a href="?sort=price&{{ filter_params }}" 
+            class="px-2 {% if sort == '-price' %} bk-has-text-link bk-has-text-weight-bold {% else %} bk-has-text-grey-dark {% endif %}">
+            {% translate '价格' %}
+            {% if sort == '-price' %}
+            <span class="bk-icon bk-is-small">
+                <i class="mdi mdi-sort-ascending"></i>
+            </span>
+            {% endif %}
+        </a>
+        {% endif %}
+        
+        {% if sort == 'num' %}
+        <a href="?sort=-num&{{ filter_params }}" 
+            class="px-2 {% if sort == 'num' %} bk-has-text-link bk-has-text-weight-bold {% else %} has-text-grey-dark {% endif %}">
+            {% translate '销量' %}
+            {% if sort == 'num' %}
+            <span class="icon is-small">
+                <i class="mdi mdi-sort-descending"></i>
+            </span>
+            {% endif %}
+        </a>
+        {% else %}
+        <a href="?sort=num&{{ filter_params }}" 
+            class="px-2 {% if sort == '-num' %} bk-has-text-link bk-has-text-weight-bold {% else %} bk-has-text-grey-dark {% endif %}">
+            {% translate '销量' %}
+            {% if sort == '-num' %}
+            <span class="bk-icon bk-is-small">
+                <i class="mdi mdi-sort-ascending"></i>
+            </span>
+            {% endif %}
+        </a>
+        {% endif %}
+
+        {% if sort == 'create_time' %}
+        <a href="?sort=-create_time&{{ filter_params }}" 
+            class="px-2 {% if sort == 'create_time' %} bk-has-text-link bk-has-text-weight-bold {% else %} bk-has-text-grey-dark {% endif %}">
+            {% translate '上架时间' %}
+            {% if sort == 'create_time' %}
+            <span class="icon is-small">
+                <i class="mdi mdi-sort-descending"></i>
+            </span>
+            {% endif %}
+        </a>
+        {% else %}
+        <a href="?sort=create_time&{{ filter_params }}" 
+            class="px-2 {% if sort == '-create_time' %} bk-has-text-link bk-has-text-weight-bold {% else %} bk-has-text-grey-dark {% endif %}">
+            {% translate '上架时间' %}
+            {% if sort == '-create_time' %}
+            <span class="bk-icon bk-is-small">
+                <i class="mdi mdi-sort-ascending"></i>
+            </span>
+            {% endif %}
+        </a>
+        {% endif %}
+    </div>
+    {% endcomment %}
+</div>

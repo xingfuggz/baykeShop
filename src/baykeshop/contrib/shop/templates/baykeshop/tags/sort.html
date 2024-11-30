@@ -1,0 +1,15 @@
+<a href="?sort={{ sort_field }}&{{ filter_params }}" 
+    class="pr-3 {% if is_active  %} bk-has-text-link {% else %}  bk-has-text-black  {% endif %}">
+   {{ name }}
+   {% if is_active %}
+        {% if is_desc %}
+        <span class="bk-icon bk-is-small">
+            <i class="mdi mdi-sort-descending"></i>
+        </span>
+        {% elif is_asc %}
+        <span class="bk-icon bk-is-small">
+            <i class="mdi mdi-sort-ascending"></i>
+        </span> 
+        {% endif %}
+   {% endif %}
+</a>

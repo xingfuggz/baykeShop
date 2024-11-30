@@ -4,15 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}BaykeShop{% endblock %}</title>
-    <link rel="stylesheet" href="{% block stylesheet %}{% static "baykeshop/css/bulma.css" %}{% endblock %}"></link>
+    <title>{% block title %}BaykeShop{% endblock %} - BaykeShop</title>
+    <link rel="stylesheet" href="{% block stylesheet %}{% static "baykeshop/css/bayke.css" %}{% endblock %}"></link>
+    <link rel="stylesheet" href="{% static 'baykeshop/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'baykeshop/css/message.min.css' %}">
     {% block dark-mode-vars %}{% endblock %}
     {% block extrastyle %}{% endblock %}
     {% if LANGUAGE_BIDI %}<link rel="stylesheet" href="{% block stylesheet_rtl %}{% endblock %}">{% endif %}
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="{% static 'baykeshop/js/vue.global.js' %}"></script>
     <script src="{% static 'baykeshop/js/js.cookie.min.js' %}"></script>
     <script src="{% static 'baykeshop/js/message.min.js' %}"></script>
     <script src="{% static 'admin/js/vendor/jquery/jquery.min.js' %}"></script>
+
     {% block extrahead %}{% endblock %}
     {% block blockbots %}{% endblock %}
     <script>

@@ -50,7 +50,7 @@ class BaseOrdersModel(BaseModel):
         
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('用户'))
     order_sn = models.CharField(max_length=50, verbose_name=_('订单号'))
-    total_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('总价'))
+    # total_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('总价'))
     status = models.IntegerField(choices=ORDER_STATUS.choices, default=ORDER_STATUS.UNPAID, verbose_name=_('订单状态'))
     pay_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('实际支付金额'))
     # 收货人

@@ -41,7 +41,7 @@ class BaykeShopOrdersGoods(BaseOrdersGoodsModel):
         self.name = self.sku.goods.name
         self.price = self.sku.price
         self.detail = self.sku.goods.detail
-        self.image = self.sku.goods.image
+        # self.image = self.sku.goods.image
         self.sku_sn = self.sku.sku_sn
         self.specs = self.sku.specs
         super().save(*args, **kwargs)

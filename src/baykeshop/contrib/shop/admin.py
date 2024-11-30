@@ -45,16 +45,21 @@ class BaykeShopGoodsSKUInline(bayke_admin.StackedInline):
     readonly_fields = ('sales',)
 
 
+class BaykeShopGoodsImagesInline(bayke_admin.TabularInline):
+    model = BaykeShopGoodsImages
+    extra = 0
+    
+
 @admin.register(BaykeShopGoods)
 class BaykeShopGoodsAdmin(bayke_admin.ModelAdmin):
     list_display = ('id', 'name', 'brand', 'created_time', 'updated_time')
     list_display_links = ('id', 'name')
     list_filter = ('category', 'brand')
     search_fields = ('name', 'category__name', 'brand__name')
-    inlines = [BaykeShopGoodsSKUInline]
+    inlines = [BaykeShopGoodsSKUInline, BaykeShopGoodsImagesInline]
     fieldsets = (
         (_('基本信息'), {
-            'fields': ('name', 'category', 'brand', 'image', 'images',)
+            'fields': ('name', 'category', 'brand',)
         }),
         (_('S商品详情'), {
             'classes': ('collapse',),
@@ -96,14 +101,13 @@ class BaykeShopOrdersGoodsInline(bayke_admin.TabularInline):
 class BaykeShopOrdersAdmin(bayke_admin.ModelAdmin):
     list_display = (
         'id', 'user', 'order_sn', 'status', 'pay_type', 
-        'total_price', 'pay_price', 'is_verify', 'is_comment',
-        'created_time', 'pay_time'
+        'pay_price', 'is_verify', 'is_comment', 'created_time', 'pay_time'
     )
     list_display_links = ('id', 'user', 'order_sn')
     search_fields = ('id', 'user__username', 'user__nickname')
     list_filter = ('status', 'pay_type', 'is_verify', 'is_comment')
     readonly_fields = (
-        'order_sn', 'total_price', 'user', 'pay_type', 'is_comment',
+        'order_sn', 'user', 'pay_type', 'is_comment',
         'pay_sn', 'pay_time', 'is_verify', 'verify_time'
     )
     inlines = [

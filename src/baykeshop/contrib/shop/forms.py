@@ -3,7 +3,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.contrib.admin import widgets
 from baykeshop.forms import ModelForm
-from .models import BaykeShopGoodsSKU, BaykeShopSpec
+from .models import BaykeShopGoodsSKU, BaykeShopSpec, BaykeShopGoods
 
 
 class MyFilteredSelectMultiple(widgets.FilteredSelectMultiple):

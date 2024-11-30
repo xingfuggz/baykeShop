@@ -61,6 +61,9 @@ class BaykeShopGoods(BaseGoodsModel):
     
     def __str__(self):
         return self.name
+    
+    def has_many_sku(self):
+        return self.baykeshopgoodssku_set.count() > 1
 
 
 class BaykeShopGoodsSKU(BaseGoodsSKUModel):
@@ -105,3 +108,22 @@ class BaykeShopSpec(BaseCategoryModel):
     def __str__(self):
         if not self.parent: return self.name
         return f"{self.parent.name}:{self.name}"
+
+
+class BaykeShopGoodsImages(BaseModel):
+    """商品图片"""
+    goods = models.ForeignKey(BaykeShopGoods, on_delete=models.CASCADE, verbose_name=_('商品'))
+    image = models.ImageField(
+        upload_to='goods/images', 
+        verbose_name=_('商品图片'), 
+        help_text="_(建议尺寸: 800*800，排在第一个的图片会作为商品主图)"
+    )
+    order = models.IntegerField(default=0, verbose_name=_('排序'))
+
+    class Meta:
+        verbose_name = _('商品图片')
+        verbose_name_plural = _('商品图片')
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.goods.name} - {self.image.url}"

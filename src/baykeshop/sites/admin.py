@@ -16,16 +16,16 @@ class ModelAdmin(admin.ModelAdmin):
     """自定义ModelAdmin"""
     form = ModelForm
 
-    class Media:
-        css = {
-            "all": (
-                "/static/baykeshop/css/bayke.css",
-                "/static/baykeshop/css/materialdesignicons.min.css",
-            )
-        }
-        js = (
-            '/static/baykeshop/js/vue.global.js',
-        )
+    # class Media:
+    #     css = {
+    #         "all": (
+    #             "/static/baykeshop/css/bayke.css",
+    #             "/static/baykeshop/css/materialdesignicons.min.css",
+    #         )
+    #     }
+    #     js = (
+    #         '/static/baykeshop/js/vue.global.js',
+    #     )
 
 
 

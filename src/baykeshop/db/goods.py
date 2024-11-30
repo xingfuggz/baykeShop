@@ -9,11 +9,6 @@ User = get_user_model()
 
 class BaseGoodsModel(BaseModel):
     """商品表"""
-
-    class SpecType(models.IntegerChoices):
-        """商品规格类型"""
-        ONE = 1, _('单规格')
-        MULTI = 2, _('多规格')
     
     class Status(models.IntegerChoices):
         """商品状态"""
@@ -30,13 +25,6 @@ class BaseGoodsModel(BaseModel):
     keywords = models.CharField(max_length=255, blank=True, null=True, verbose_name=_('商品关键字'))
     description = models.TextField(blank=True, null=True, verbose_name=_('商品描述'))
     detail = models.TextField(blank=True, null=True, verbose_name=_('商品详情'))
-    image = models.ImageField(upload_to='goods', blank=True, null=True, verbose_name=_('商品主图'))
-    images = models.JSONField(blank=True, null=True, verbose_name=_('商品轮播图'), default=list)
-    spec_type = models.PositiveSmallIntegerField(
-        choices=SpecType.choices,
-        default=SpecType.ONE,
-        verbose_name=_('商品规格类型')
-    )
     status = models.PositiveSmallIntegerField(
         choices=Status.choices,
         default=Status.ONLINE,
