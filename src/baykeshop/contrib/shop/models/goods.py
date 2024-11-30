@@ -51,6 +51,8 @@ class BaykeShopGoods(BaseGoodsModel):
         blank=True,
         null=True
     )
+    # 推荐
+    is_recommend = models.BooleanField(default=False, verbose_name=_('商品推荐'))
 
     objects = BaykeShopGoodsManager()
 

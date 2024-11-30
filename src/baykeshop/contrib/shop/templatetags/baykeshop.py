@@ -129,7 +129,7 @@ def _group_by_spec(data):
 @register.inclusion_tag("baykeshop/tags/sku.html")
 def sku_template(spu):
     """商品规格模板"""
-    sku_queryset = spu.baykeshopgoodssku_set.all()
+    sku_queryset = spu.baykeshopgoodssku_set.order_by('price')
     # 所有的商品规格数据
     specs_data = []
 
@@ -152,3 +152,4 @@ def sku_template(spu):
         "skus_data": skus_data,
         "specs_data": specs,
     }
+

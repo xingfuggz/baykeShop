@@ -7,7 +7,7 @@ from baykeshop.contrib.shop.models import BaykeShopCategory, BaykeShopGoods
 class BaykeShopGoodsListView(ListView):
     """商品列表"""
     template_name = 'baykeshop/shop/list.html'
-    paginate_by = 1
+    paginate_by = 20
     model = BaykeShopGoods
     ordering = ('-created_time',)
 
@@ -56,6 +56,25 @@ class BaykeShopGoodsDetailView(DetailView):
     model = BaykeShopGoods
     template_name = 'baykeshop/shop/detail.html'
     context_object_name = 'spu'
-
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.get_object().name
+        context['images'] = self.get_images()
+        context['recommends'] = self.get_recommend()
+        return context
+    
+    def get_images(self):
+        queryset = self.get_object().baykeshopgoodsimages_set.order_by('order')
+        return queryset
+    
+    def get_recommend(self):
+        cates = self.get_object().category.all()
+        # 获取同类别推荐的商品，按销量排序，排除当前商品
+        queryset = BaykeShopGoods.objects.filter(
+            is_recommend=True, 
+            category__in=cates
+        ).exclude(
+            id=self.get_object().id
+        ).order_by('-sales')
+        return queryset[:5]

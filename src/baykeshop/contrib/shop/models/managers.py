@@ -22,7 +22,7 @@ class BaykeShopGoodsManager(BaseManager):
                     goods=models.OuterRef('pk'),
                 ).values('image')[:1]
             )
-        ).prefetch_related('baykeshopgoodssku_set')
+        ).prefetch_related('baykeshopgoodssku_set', 'baykeshopgoodsimages_set')
 
 
 class BaykeShopCartsManager(BaseManager):

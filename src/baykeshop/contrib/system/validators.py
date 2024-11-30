@@ -36,7 +36,6 @@ def is_list(value):
         return True
     return False
 
-
 def is_json(value):
     """
     验证值是否为JSON对象

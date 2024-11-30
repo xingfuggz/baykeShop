@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from django.utils.html import format_html
 # Register your models here.
 from baykeshop.sites import admin as bayke_admin
 from .forms import BaykeShopGoodsSKUForm
@@ -52,8 +53,9 @@ class BaykeShopGoodsImagesInline(bayke_admin.TabularInline):
 
 @admin.register(BaykeShopGoods)
 class BaykeShopGoodsAdmin(bayke_admin.ModelAdmin):
-    list_display = ('id', 'name', 'brand', 'created_time', 'updated_time')
-    list_display_links = ('id', 'name')
+    list_display = ('id', 'name', 'image', 'brand', 'price', 'sales', 'stock', 'is_recommend', 'created_time')
+    list_display_links = ('id', 'name', 'image')
+    list_editable = ('is_recommend',)
     list_filter = ('category', 'brand')
     search_fields = ('name', 'category__name', 'brand__name')
     inlines = [BaykeShopGoodsSKUInline, BaykeShopGoodsImagesInline]
@@ -72,6 +74,25 @@ class BaykeShopGoodsAdmin(bayke_admin.ModelAdmin):
         if db_field.name == 'category':
             kwargs['queryset'] = BaykeShopCategory.objects.filter(parent__isnull=False)
         return super().formfield_for_manytomany(db_field, request, **kwargs)
+    
+    @admin.display(description='商品价格')
+    def price(self, obj):
+        return obj.price
+    
+    @admin.display(description='商品销量')
+    def sales(self, obj):
+        return obj.sales
+    
+    @admin.display(description='商品库存')
+    def stock(self, obj):
+        return obj.stock
+    
+    @admin.display(description='商品图片')
+    def image(self, obj):
+        return format_html(
+            '<img src="/media/{}" width="64" height="64" />',
+            obj.image_url
+        )
 
 
 @admin.register(BaykeShopBrand)

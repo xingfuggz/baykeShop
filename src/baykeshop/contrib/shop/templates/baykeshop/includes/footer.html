@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n baykeconfig %}
 <footer class="bk-footer bk-has-background-black-ter bk-has-text-grey-light">
     <div class="bk-container">
         <div class="bk-fixed-grid bk-has-5-cols-desktop bk-has-1-cols-mobile">
@@ -63,9 +63,9 @@
         <div class="bk-dropdown-divider bk-has-background-grey-dark"></div>
         <div class="bk-has-text-centered">
             
-            <p class="bk-is-size-5">asdasda</p>
+            <p class="bk-is-size-5">{% dict_value 'COPYRIGHT' %}</p>
             <p class="bk-has-text-grey-light mt-3">
-                <a class="bk-has-text-grey-light" href=""><span>陕ICP备123456789</span></a>
+                <a class="bk-has-text-grey-light" href=""><span>{% dict_value 'ICP' %}</span></a>
                 / <a class="bk-has-text-grey-light" href="">SiteMap</a> 
             </p>
         </div>

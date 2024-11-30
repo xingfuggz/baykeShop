@@ -83,4 +83,9 @@ class Command(BaseCommand):
             site_id, 'ALIPAY_PRIVATE_KEY', "支付宝私钥", 
             bayke_settings.ALIPAY_PRIVATE_KEY
         )
+        management.call_command(
+            "add_dict", 
+            site_id, 'ICP', "备案号", 
+            bayke_settings.ICP
+        )
 
