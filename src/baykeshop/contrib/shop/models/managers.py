@@ -20,22 +20,34 @@ class BaykeShopGoodsManager(BaseManager):
             image_url = models.Subquery(
                 BaykeShopGoodsImages.objects.filter(
                     goods=models.OuterRef('pk'),
-                ).values('image')[:1]
+                ).values('image')[:1],
+                # output_field=models.CharField()
             )
         ).prefetch_related('baykeshopgoodssku_set', 'baykeshopgoodsimages_set')
 
 
 class BaykeShopCartsManager(BaseManager):
     """购物车管理器"""
+    
     def get_queryset(self):
+        from baykeshop.contrib.shop.models import BaykeShopGoodsImages
         return super().get_queryset().select_related('sku').alias(
             total_price=models.ExpressionWrapper(
                 models.F('quantity') * models.F('sku__price'),
                 output_field=models.DecimalField()
             ),
-            image=models.F('sku__goods__image'),
             name=models.F('sku__goods__name'),
             specs=models.F('sku__specs')
+        ).annotate(
+            total_price=models.F('total_price'),
+            name=models.F('name'),
+            specs=models.F('specs'),
+            image_url = models.Subquery(
+                BaykeShopGoodsImages.objects.filter(
+                    goods=models.OuterRef('sku__goods'),
+                ).values('image')[:1],
+                # output_field=models.CharField()
+            )
         )
     
 

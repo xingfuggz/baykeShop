@@ -1,0 +1,13 @@
+<div class="bk-control {{ icon_position }}">
+    {% include "django/forms/widgets/text.html" %}
+    {% if icons_class.left %}
+    <span class="bk-icon bk-is-small bk-is-left">
+        <i class="{{ icons_class.left }}"></i>
+    </span>
+    {% endif %}
+    {% if icons_class.right %}
+    <span class="bk-icon bk-is-small bk-is-right">
+      <i class="{{ icons_class.right }}"></i>
+    </span>
+    {% endif %}
+</div>

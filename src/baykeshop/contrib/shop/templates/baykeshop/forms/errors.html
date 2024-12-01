@@ -1,0 +1,6 @@
+{% if errors %}
+<div class="bk-notification bk-is-danger bk-is-light">
+    <button class="bk-delete bk-is-small"></button>
+    <ul class="{{ error_class }}">{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+</div>
+{% endif %}

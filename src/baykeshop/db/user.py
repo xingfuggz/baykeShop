@@ -9,17 +9,21 @@ User = get_user_model()
 
 class BaseUserModel(BaseModel):
     """ 用户基础信息 """
-    class GENDER_CHOICES(models.TextChoices):
+    class GenderChoices(models.TextChoices):
         MALE = 'male', _('男')
         FEMALE = 'female', _('女')
         UNKNOWN = 'unknown', _('未知')
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('用户'))
     nickname = models.CharField(max_length=50, blank=True, null=True, verbose_name=_('昵称'))
     avatar = models.ImageField(upload_to='avatar', blank=True, null=True, verbose_name=_('头像'))
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='male', verbose_name=_('性别'))
+    gender = models.CharField(
+        max_length=10, 
+        choices=GenderChoices.choices, 
+        default=GenderChoices.MALE, 
+        verbose_name=_('性别')
+    )
     birthday = models.DateField(blank=True, null=True, verbose_name=_('生日'))
-    mobile = models.CharField(max_length=11, blank=True, null=True, verbose_name=_('手机号码'))
+    mobile = models.CharField(max_length=11, blank=True, null=True, verbose_name=_('手机号码'), unique=True)
     qq = models.CharField(max_length=20, blank=True, null=True, verbose_name=_('QQ'))
     wechat = models.CharField(max_length=50, blank=True, null=True, verbose_name=_('微信'))
     description = models.TextField(blank=True, null=True, verbose_name=_('简介'))
