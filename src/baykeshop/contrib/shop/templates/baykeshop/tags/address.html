@@ -1,0 +1,104 @@
+{% load i18n %}
+{{ address_list|json_script:"address-data" }}
+<div id="address">
+    <div class="bk-columns bk-is-multiline">
+        <template v-for="address in addressList" :key="address.id">
+            <div class="bk-column bk-is-4-desktop bk-is-6-tablet">
+                <div class="bk-box bk-is-clickable p-5 bk-is-relative address-box" @click="selectAddress(address)" :class="{ 'is-selected': address.id === selectedAddressId }">
+                    <div class="is-absolute is-top-right bk-tag bk-is-link bk-is-light mr-2 mt-2" v-if="address.id === selectedAddressId">
+                        <span class="bk-icon">
+                            <i class="mdi mdi-check"></i>
+                        </span>
+                        <span class="bk-is-size-7">{% translate '已选择' %}</span>
+                    </div>
+                    <a class="is-absolute is-bottom-right bk-tag bk-is-light mr-2 mb-2" 
+                        v-if="address.id === selectedAddressId" 
+                        :href="address.update_url">
+                        <span class="bk-icon">
+                            <i class="mdi mdi-tag-edit"></i>
+                        </span>
+                        <span class="bk-is-size-7">{% translate '去修改' %}</span>
+                    </a>
+                    <h1 class="bk-has-text-weight-bold">
+                        <span class="bk-is-size-5">{% verbatim %}{{ address.name }}{% endverbatim %}</span>
+                        <span class="bk-tag is-link bk-is-light ml-2" v-if="address.is_default">{% translate '默认' %}</span>
+                    </h1>
+                    <p class="bk-has-text-grey">{% verbatim %}{{ address.phone }}{% endverbatim %}</p>
+                    <p class="bk-has-text-grey">{% verbatim %}{{ getFullAddress(address) }}{% endverbatim %}</p>
+                </div>
+            </div>
+        </template>
+    </div>
+    <template v-if="addressList.length === 0">
+        <div class="bk-has-text-centered p-6">
+            <div class="mb-3">{% translate '您还没有添加收货地址，请先添加地址' %}</div>
+            <div class="bk-field bk-is-grouped bk-is-grouped-centered">
+                <div class="bk-control">
+                    <a class="bk-button bk-is-link bk-is-outlined" href="{% url 'member:address-create' %}?next={{ request.get_full_path }}">{% translate '添加地址' %}</a>
+                </div>
+            </div>
+        </div>
+    </template>
+</div>
+<script>
+    const { createApp, ref, computed, reactive, watch, mounted } = Vue;
+    const userAddress = createApp({
+        setup() {
+            const addressList = computed(() => {
+                return JSON.parse(document.getElementById('address-data').textContent)
+            })
+            const selectedAddress = ref(null)
+            const selectedAddressId = ref(null)
+            return {
+                addressList,
+                selectedAddress,
+                selectedAddressId
+            }
+        },
+        methods: {
+            getFullAddress(address) {
+                return address.province + address.city + address.district + address.address
+            },
+            selectAddress(address) {
+                this.selectedAddress = address
+            },
+        },
+        mounted() {
+            // 初始化地址列表
+            this.selectedAddress = this.addressList.length > 0 ? this.addressList.filter(item => item.is_default)[0] : null
+        },
+        watch: {
+            selectedAddress: {
+                handler(newValue) {
+                    this.selectedAddressId = newValue ? newValue.id : null
+                },
+                deep: true,
+                immediate: true
+            }
+        }
+    }).mount('#address')
+</script>
+
+<style>
+    #address .is-absolute, 
+    #paytype .is-absolute{
+        position: absolute;
+    }
+    #address .is-top-right,
+    #paytype .is-top-right{
+        top: 0;
+        right: 0;
+    }
+    #address .is-bottom-right,
+    #paytype .is-bottom-right{
+        bottom: 0;
+        right: 0;
+    }
+    #address .is-selected,
+    #paytype .is-selected{
+        border: 1px solid #022ce9;
+    }
+    #address .address-box{
+        height: 120px;
+    }
+</style>

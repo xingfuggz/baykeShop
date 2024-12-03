@@ -35,13 +35,3 @@ class BaykeShopOrdersGoods(BaseOrdersGoodsModel):
 
     def __str__(self):
         return self.name
-    
-    def save(self, *args, **kwargs):
-        """ 创建时自动获取sku信息 """
-        self.name = self.sku.goods.name
-        self.price = self.sku.price
-        self.detail = self.sku.goods.detail
-        # self.image = self.sku.goods.image
-        self.sku_sn = self.sku.sku_sn
-        self.specs = self.sku.specs
-        super().save(*args, **kwargs)

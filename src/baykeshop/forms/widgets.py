@@ -50,3 +50,35 @@ class PasswordInput(Input):
         return context
 
 
+class Select(widgets.Select):
+    """ 下拉框 """
+    template_name = 'baykeshop/forms/widgets/select.html'
+    
+    def __init__(
+            self, attrs=None, choices=(), icon_position=None, icons_class=None, select_class=None
+        ):
+        super().__init__(attrs, choices)
+        self.icon_position = icon_position or ''
+        # 仅支持左侧配置
+        self.icons_class = icons_class or { 'left': '', 'right': '' }
+        # select样式,可以影响颜色，大小，状态
+        # bk-is-multiple 支持多选
+        # bk-is-rounded 圆角
+        # bk-is-link等颜色标签，会影响颜色
+        # bk-is-small bk-is-medium bk-is-large 大小
+        # bk-is-loading 加载中
+        # bk-is-hovered 鼠标移上去
+        # bk-is-focused 获取焦点
+        # bk-is-active 选中
+        self.select_class = select_class or ''
+    
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        context['icon_position'] = self.icon_position
+        context['icons_class'] = self.icons_class
+        return context
+
+
+class ClearableFileInput(widgets.ClearableFileInput):
+
+    template_name = 'baykeshop/forms/widgets/clearable_file_input.html'

@@ -1,8 +1,11 @@
 import json
 
 from django.template import Library
+from django.urls import reverse
+
 from baykeshop.contrib.shop.models import (
-    BaykeShopCategory, BaykeShopBrand, BaykeShopGoods
+    BaykeShopCategory, BaykeShopBrand, BaykeShopGoods,
+    BaykeShopCarts, BaykeShopOrders
 )
 
 register = Library()
@@ -153,3 +156,45 @@ def sku_template(spu):
         "specs_data": specs,
     }
 
+
+@register.simple_tag
+def carts_count(user):
+    """获取购物车数量"""
+    if not user.is_authenticated:
+        return 0
+    count = BaykeShopCarts.objects.filter(user=user).count()
+    return count
+
+def _insert_update_url(data, request):
+    """ 插入修改地址url
+    方便修改地址后能快速跳转回原地址
+    """
+    for item in data:
+        item['update_url'] = f"{reverse('member:address-update', kwargs={'pk': item['id']})}?next={request.get_full_path()}"
+    return data
+
+@register.inclusion_tag('baykeshop/tags/address.html', takes_context=True)
+def address_template(context, user):
+    address_list = user.baykeshopuseraddress_set.values()
+    request = context['request']
+    return {
+        'address_list': _insert_update_url(list(address_list), request),
+        'request': request,
+    }
+
+@register.inclusion_tag('baykeshop/tags/paytype.html')
+def paytype_template():
+    choices = BaykeShopOrders.PayType.choices
+    _types = [
+        { 
+            'value': item[0], 
+            'label': item[1]
+        } 
+        for item in choices
+    ]
+    return { 'pay_types': _types }
+
+@register.filter
+def json_loads(value):
+    """json loads"""
+    return json.loads(value)

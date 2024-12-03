@@ -1,5 +1,8 @@
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin, DetailView
+from django.http.response import HttpResponseRedirect
+from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
 
 from baykeshop.contrib.shop.models import BaykeShopCategory, BaykeShopGoods
 
@@ -61,16 +64,17 @@ class BaykeShopGoodsDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['title'] = self.get_object().name
         context['images'] = self.get_images()
-        context['recommends'] = self.get_recommend()
+        context['recommends'] = self.get_recommend_queryset()
         return context
     
     def get_images(self):
+        """ 获取商品图片 """
         queryset = self.get_object().baykeshopgoodsimages_set.order_by('order')
         return queryset
     
-    def get_recommend(self):
+    def get_recommend_queryset(self):
+        """ 获取同类别推荐的商品，按销量排序，排除当前商品 """
         cates = self.get_object().category.all()
-        # 获取同类别推荐的商品，按销量排序，排除当前商品
         queryset = BaykeShopGoods.objects.filter(
             is_recommend=True, 
             category__in=cates

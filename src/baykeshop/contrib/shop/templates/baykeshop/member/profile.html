@@ -1,0 +1,174 @@
+{% extends 'baykeshop/base_site.html' %}
+
+{% load i18n static %}
+
+{% block extrastyle %}
+<style>
+    .userinfo li {
+        border-bottom: 1px #ddd dashed;
+        padding: 15px 0;
+        vertical-align: middle;
+    }
+
+    .userinfo li span {
+        display: inline-block;
+        width: 100px;
+        text-align: right;
+        padding-right: 10px;
+        color: #777676;
+    }
+</style>
+{% endblock %}
+
+
+{% block main %}
+<section class="bk-section">
+    <div class="bk-container">
+        <div class="bk-columns">
+            <div class="bk-column bk-is-2">
+                <div class="box1">
+                    <div class="bk-box bk-is-shadowless1 bk-has-background-light">
+                        <div class="bk-is-flex bk-is-flex-direction-column bk-is-align-items-center">
+                            <figure class="bk-image bk-is-64x64">
+                                {% if user.baykeshopuser and user.baykeshopuser.avatar %}
+                                    <img class="bk-is-rounded" src="{{ user.baykeshopuser.avatar.url }}">
+                                {% else %}
+                                    <img class="bk-is-rounded" src="{% static 'baykeshop/images/logo.jpg' %}">
+                                {% endif %}
+                            </figure>
+                            <p class="bk-title bk-is-4 mt-2">{{ user.username }}</p>
+                        </div>
+                    </div>
+                    <div class="bk-box bk-is-shadowless1 bk-has-background-light1">
+                        <aside class="bk-menu">
+                            <ul class="bk-menu-list">
+                                <li>
+                                    <div class="bk-has-text-weight-bold">
+                                        <span class="bk-icon">
+                                            <i class="mdi mdi-account-circle"></i>
+                                        </span>
+                                        {% translate '个人信息' %}
+                                    </div>
+                                    <ul class="bk-menu-list">
+                                        <li>
+                                            <a class="{% if '/profile/' in request.path %} bk-is-active {% elif '/change-profile/' in request.path %} bk-is-active {% endif %}"
+                                                href="{% url 'member:profile' %}">
+                                                {% translate '账户信息' %}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="{% if '/password/' in request.path %} bk-is-active {% endif %}" href="{% url 'member:password' %}">
+                                                {% translate '修改密码' %}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="{% if '/address/' in request.path %} bk-is-active {% endif %}" href="{% url 'member:address-list' %}">
+                                                {% translate '收货地址' %}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <div class="bk-has-text-weight-bold">
+                                        <span class="bk-icon">
+                                            <i class="mdi mdi-shopping"></i>
+                                        </span>
+                                        {% translate '我的订单' %}
+                                    </div>
+                                    <ul class="bk-menu-list">
+                                        <li>
+                                            <a class="{% if '/order/' in request.path %} is-active {% endif %}" href="">
+                                                {% translate '全部订单' %}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+            <div class="bk-column">
+                <div class="bk-box p-6">
+                    <div class="bk-is-flex bk-is-justify-content-space-between">
+                        {% block profile_header %}
+                            <h1 class="bk-is-size-4">
+                                <span class="icon"><i class="mdi mdi-account-box-outline"></i></span>
+                                {{ title }}
+                            </h1>
+                            <div>
+                                <a class="bk-button bk-is-link bk-is-outlined" href="{% url 'member:profile-update' user.pk %}">
+                                    <span class="bk-icon"><i class="mdi mdi-pencil"></i></span>
+                                    <span>{% translate '编辑信息' %}</span>
+                                </a>
+                            </div>
+                        {% endblock %}
+                    </div>
+                    <hr class="my-2">
+                    {% block profile_content %}
+                        <ul class="mt-4 userinfo">
+                            <li class="bk-is-flex bk-is-align-items-center">
+                                <span>{% translate '头像' %}: </span>
+                                <figure class="bk-image bk-is-64x64 bk-is-relative">
+                                    {% if user.baykeshopuser and user.baykeshopuser.avatar %}
+                                    <img class="bk-is-rounded" src="{{ user.baykeshopuser.avatar.url }}">
+                                    {% else %}
+                                    <img class="bk-is-rounded" src="{% static 'baykeshop/images/logo.jpg' %}">
+                                    {% endif %}
+                                </figure>
+                            </li>
+                            <li>
+                                <span>{% translate '昵称' %}:</span>
+                                {{ user.baykeshopuser.nickname|default:'~' }}
+                            </li>
+                            <li>
+                                <span>{% translate '性别' %}: </span>
+                                {{ user.baykeshopuser.get_gender_display|default:'~' }}
+                            </li>
+                            <li>
+                                <span>{% translate '生日' %}: </span>
+                                {{ user.baykeshopuser.birthday|default:'~' }}
+                            </li>
+                            <li>
+                                <span>{% translate '手机' %}:</span>
+                                {{ user.baykeshopuser.mobile|default:'~' }}
+                            </li>
+                            <li>
+                                <span>{% translate '邮箱' %}:</span>
+                                {{ user.email|default:'~' }}
+                            </li>
+                            <li>
+                                <span>{% translate 'QQ' %}:</span>
+                                {{ user.baykeshopuser.qq|default:'~' }}
+                            </li>
+                            <li>
+                                <span>{% translate '微信' %}:</span>
+                                {{ user.baykeshopuser.wechat|default:'~' }}
+                            </li>
+                            <li>
+                                <span>{% translate '简介' %}:</span>
+                                {{ user.baykeshopuser.description|default:'~' }}
+                            </li>
+                            <li>
+                                <span>{% translate '注册时间' %}:</span>
+                                {{ user.date_joined }}
+                            </li>
+                            <li>
+                                <span>{% translate '上次登录时间' %}: </span>
+                                {{ user.last_login }}
+                            </li>
+                        </ul>
+                        <div class="bk-has-text-right mt-4">
+                            <a class="bk-button bk-is-danger bk-is-light" href="{% url 'member:logout' %}">
+                                <span class="bk-icon"><i class="mdi mdi-exit-to-app"></i></span>
+                                <span>{% translate '退出登录' %}</span>
+                            </a>
+                        </div>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+    

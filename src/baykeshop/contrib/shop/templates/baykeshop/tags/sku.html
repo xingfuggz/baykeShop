@@ -106,7 +106,6 @@ input[type=number] {
     <div class="bk-box bk-is-radiusless bk-is-shadowless1 m-0">
         <div class="bk-field bk-is-grouped">
             <p class="bk-control">
-                {% url 'baykeshop_api:carts-list' %}
                 <button 
                     class="bk-button bk-is-link px-6 bk-is-shadowless"
                     @click="addCarts"
@@ -115,7 +114,11 @@ input[type=number] {
                 </button>
             </p>
             <p class="bk-control">
-              <button class="bk-button px-6 bk-is-shadowless" :disabled="!sku.stock">立即购买</button>
+              <button class="bk-button px-6 bk-is-shadowless"
+                @click="buyNow"
+                :disabled="!sku.stock">
+                立即购买
+              </button>
             </p>
         </div>
     </div>
@@ -164,7 +167,6 @@ input[type=number] {
                 const formData = new FormData()
                 formData.append('sku', this.sku.id)
                 formData.append('quantity', this.count)
-                console.log(url, bayke.csrftoken)
                 fetch(url, {
                     method: 'POST',
                     headers: {
@@ -173,21 +175,26 @@ input[type=number] {
                     body: formData,
                 }).then(response => {
                     if (response.status == 201) {
-                        bayke.message.success('加入购物车成功')
+                        window.location.reload()
+                        return
                     } else if (response.status == 403) {
                         bayke.message.error('请登录后操作添加购物车', {
                             onClose: () => {
                                 let pathname = window.location.pathname
-                                // console.log('加入购物车失败tiaozhuan', response)
-                                console.log(window.location.pathname)
+                                window.location.href = '{% url "member:login" %}?next=' + pathname
                             },
                         })
+                        return
                     }
                     return response.json()
                 }).then(data => {
                     console.log(data)
                 })
-            }  
+            },
+            // 立即购买
+            buyNow(){
+                window.location.href = `{% url "shop:list" %}${this.sku.id}/${this.count}/`
+            }
         },
         watch: {
             seceltSpecs: {

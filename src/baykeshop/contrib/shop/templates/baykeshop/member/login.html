@@ -1,5 +1,5 @@
 {% extends 'baykeshop/base_site.html' %}
-{% load i18n %}
+{% load i18n baykeconfig %}
 
 {% block main %}
 <section class="bk-section">
@@ -8,17 +8,29 @@
             <div class="bk-column bk-is-5">
                 <div class="bk-box p-6">
                     <div class="bk-has-text-centered">
-                        {% block auth_title %}
-                        <h1 class="bk-title bk-has-text-centered bk-has-text-grey-dark">{% translate '登录' %}</h1>
-                        {% endblock %}
-                        <p class="bk-subtitle">站点名称</p>
+                        <h1 class="bk-title bk-has-text-centered bk-has-text-grey-dark">
+                            {% block auth_title %}{% translate title %}{% endblock %}
+                        </h1>
+                        {% dict_value 'SITE_TITLE' as SITE_TITLE %}
+                        <p class="bk-subtitle">{% translate SITE_TITLE %}</p>
                     </div>
                     <div class="bk-dropdown-divider bk-has-background-light mb-4"></div>
                     <form action="" method="post">
                         {% csrf_token %}
                         {{ form.as_bulma }}
-                        <button type="submit" class="bk-button bk-is-link bk-is-fullwidth">{% trans 'login' %}</button>
+                        <input type="hidden" name="next" value="{{ next }}">
+                        <div class="bk-field">
+                            <button type="submit" class="bk-button bk-is-link bk-is-fullwidth">
+                                <span class="bk-icon">
+                                    <i class="mdi mdi-login-variant"></i>
+                                </span>
+                                <span>
+                                    {% translate title %}
+                                </span>
+                            </button>
+                        </div>
                     </form>
+                    {% block form_footer %}{% endblock %}
                 </div>
             </div>
         </div>

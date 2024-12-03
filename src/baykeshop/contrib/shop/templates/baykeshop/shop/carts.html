@@ -1,0 +1,330 @@
+{% extends 'baykeshop/base_site.html' %}
+
+{% load i18n baykeshop %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+    #cartList table td {
+        vertical-align: middle !important;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+    {{ carts_list|json_script:'cartsListData' }}
+    <section class="bk-section" id="cartList"> 
+        <div class="bk-container">
+            <div class="bk-box p-6">
+                <div class="bk-table-container">
+                <table class="bk-table bk-is-fullwidth bk-is-hoverable">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" class="checkbox" v-model="allChecked" @click="toggleAllSelection" /></th>
+                            <th>{% translate 'ID' %}</th>
+                            <th>{% translate '商品' %}</th>
+                            <th>{% translate '规格' %}</th>
+                            <th>{% translate '单价' %}</th>
+                            <th>{% translate '数量' %}</th>
+                            <th>{% translate '小计' %}</th>
+                            <th>{% translate '操作' %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="cart, i in cartsListData" :key="cart.id">
+                            <td>
+                                <input type="checkbox" class="bk-checkbox" v-model="checkedItems[cart.id]" @change="changeSelectCart(cart.id)" />
+                            </td>
+                            <td>{% verbatim %}{{ cart.id }}{% endverbatim %}</td> 
+                            <td>
+                                <div class="bk-is-flex bk-is-align-items-center">
+                                    <figure class="bk-image bk-is-96x96">
+                                        <img :src="`/media/${cart.image_url}`" :alt="cart.name"></img>
+                                    </figure>
+                                    <h1 class="ml-2" style="width: 25rem;">{% verbatim %}{{ cart.name }}{% endverbatim %}</h1>
+                                </div>
+                            </td>
+                            <td>
+                                <div v-for="spec, index in cart.specs" :key="index">
+                                    {% verbatim %}
+                                    <span class="bk-has-text-weight-bold">{{ spec.parent__name }}</span> :{{ spec.name }}
+                                    {% endverbatim %}
+                                </div>
+                                <div v-if="cart.specs.length == 0">
+                                    ~
+                                </div>
+                            </td>
+                            <td>{% verbatim %}{{ cart.sku__price }}{% endverbatim %}</td>
+                            <td>
+                                <div class="bk-field bk-is-grouped bk-is-grouped-multiline">
+                                    
+                                    <div class="bk-field bk-has-addons">
+                                        <p class="bk-control">
+                                            <button class="bk-button bk-is-small bk-is-shadowless" 
+                                                @click="minusQuantity(cart)" 
+                                                :disabled="cart.quantity <= 1 || cart.sku__stock <= 0">
+                                                <span class="bk-icon bk-is-small">
+                                                    <i class="mdi mdi-minus"></i>
+                                                </span>
+                                            </button>
+                                        </p>
+                                        <p class="bk-control">
+                                            <input class="bk-input bk-is-small bk-has-text-centered bk-is-shadowless" 
+                                                type="number" 
+                                                v-model="cart.quantity"
+                                                step="1"
+                                                readonly
+                                                min="1" 
+                                                :max="cart.sku__stock">
+                                        </p>
+                                        <p class="bk-control">
+                                            <button class="bk-button bk-is-small bk-is-shadowless" 
+                                                @click="addQuantity(cart)" 
+                                                :disabled="cart.quantity >= cart.sku__stock || cart.sku__stock <= 0">
+                                                <span class="bk-icon bk-is-small">
+                                                    <i class="mdi mdi-plus"></i>
+                                                </span>
+                                            </button>
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{% verbatim %}
+                                <span class="bk-has-text-weight-bold bk-has-text-danger">￥{{ cart.total_price }}</span>
+                                {% endverbatim %}</td>
+                            <td>
+                                <div class="bk-buttons">
+                                    <button class="bk-button bk-is-danger bk-is-light bk-is-small" 
+                                        @click="deleteCart(cart.id)">
+                                        <span class="bk-icon bk-is-small">
+                                            <i class="mdi mdi-delete-outline"></i>
+                                        </span>
+                                        <span>{% translate '删除' %}</span>
+                                    </button>
+                                    <a class="bk-button bk-is-small bk-is-link bk-is-light">
+                                        <span class="bk-icon bk-is-small">
+                                            <i class="mdi mdi-eye"></i>
+                                        </span>
+                                        <span>{% translate '查看' %}</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-if="cartsListData.length == 0">
+                            <td colspan="8">
+                                <div class="bk-has-text-centered py-6">
+                                    <div class="bk-is-size-3">{% translate '购物车空空如也' %}</div>
+                                    <a class="bk-button is-link bk-is-light mt-5 bk-is-small" href="{% url 'shop:list' %}">
+                                        <i class="mdi mdi-cart-off mdi-24px"></i>
+                                            {% translate '随便逛逛' %}
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="5">
+                                <div class="bk-is-size-5">
+                                    {% translate '总计' %}
+                                    <span class="bk-is-size-4 bk-has-text-weight-bold bk-has-text-danger">
+                                        ￥{% verbatim %}{{ totalPrice }}{% endverbatim %}
+                                    </span> 
+                                    {% translate '共' %} 
+                                    {% verbatim %}{{ seclectCarts.length }}{% endverbatim %}
+                                    {% translate '件商品' %}
+                                </div>
+                            </td>
+                            <td colspan="3">
+                                <div class="bk-buttons bk-is-justify-content-end">
+                                    <button class="bk-button bk-is-link" :disabled="seclectCarts.length == 0" @click="cash">
+                                        <span class="bk-icon">
+                                            <i class="mdi mdi-cart-check"></i>
+                                        </span>
+                                        <span>{% translate '去结算' %}</span>
+                                    </button>
+                                    <a class="bk-button bk-is-link bk-is-light" href="{% url 'shop:list' %}">
+                                        <span class="bk-icon">
+                                            <i class="mdi mdi-cart-plus"></i>
+                                        </span>
+                                        <span>{% translate '继续购物' %}</span> 
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div>    
+            </div>
+        </div> 
+    </section>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    const { createApp } = bayke.vue
+    const cartsData = JSON.parse(document.querySelector('#cartsListData').textContent)
+    const cartsApp = createApp({
+        data() {
+            return {
+                allChecked: false,
+                seclectCarts: [],
+                cartsListData: cartsData,
+                totalPrice: 0
+            }
+        },
+        computed: {
+            isAllSelected() {
+                return this.cartsListData.length > 0 && this.seclectCarts.length === this.cartsListData.length;
+            },
+            checkedItems: {
+                get() {
+                    const items = {};
+                    this.cartsListData.forEach(cart => {
+                        items[cart.id] = this.seclectCarts.includes(cart.id);
+                    });
+                    return items;
+                },
+                set(items) {
+                    this.seclectCarts = Object.keys(items).filter(key => items[key]).map(Number);
+                    this.updateAllChecked();
+                }
+            }
+        },
+        mounted() {
+            // 初始化 checkedItems, 默认勾选所有
+            this.checkedItems = this.cartsListData.reduce((acc, cart) => {
+                acc[cart.id] = true;
+                return acc;
+            }, {});
+            // this.checkedItems = this.checkedItems;
+        },
+        methods: {
+            // 全选
+            toggleAllSelection() {
+                if (this.isAllSelected) {
+                    this.seclectCarts = [];
+                } else {
+                    this.seclectCarts = this.cartsListData.map(cart => cart.id);
+                }
+                this.updateAllChecked();
+            },
+            // 单选
+            changeSelectCart(id) {
+                const index = this.seclectCarts.indexOf(id);
+                if (index > -1) {
+                    this.seclectCarts.splice(index, 1);
+                } else {
+                    this.seclectCarts.push(id);
+                }
+                this.updateAllChecked();
+            },
+            // 更新全选状态
+            updateAllChecked() {
+                this.allChecked = this.isAllSelected;
+            },
+            // 数量减
+            minusQuantity(cart) {
+                if (cart.quantity > 1) {
+                    cart.quantity--;
+                    cart.total_price = cart.sku__price * cart.quantity;
+                    this.totalPrice = this.seclectCarts.reduce((acc, cur) => {
+                        const cart = this.cartsListData.find(cart => cart.id === cur);
+                        return acc + parseFloat(cart.total_price);
+                    }, 0).toFixed(2);
+                    this.updateQuantityAPI(cart);
+                }
+            },
+            // 数量加
+            addQuantity(cart) {
+                if (cart.quantity < cart.sku__stock) {
+                    cart.quantity++;
+                    cart.total_price = cart.sku__price * cart.quantity;
+                    this.totalPrice = this.seclectCarts.reduce((acc, cur) => {
+                        const cart = this.cartsListData.find(cart => cart.id === cur);
+                        return acc + parseFloat(cart.total_price);
+                    }, 0).toFixed(2);
+                    this.updateQuantityAPI(cart);
+                }
+            },
+            // 删除购物车
+            deleteCart(cart_id){
+                let url = '{% url "baykeshop_api:carts-list" %}' + cart_id + '/'
+                bayke.message.confirm('{% translate "确定要删除此商品吗？" %}')
+                fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': bayke.csrftoken
+                    }
+                }).then(response => {
+                    if (response.status == 204) {
+                        window.location.reload()
+                    }
+                })
+            },
+            // 修改数量
+            updateQuantityAPI(cart){
+                var loadingMsg = bayke.message.loading("修改中...");
+                let url = '{% url "baykeshop_api:carts-list" %}' + cart.id + '/'
+                let formData = new FormData()
+                formData.append('quantity', cart.quantity)
+                formData.append('sku', cart.sku_id)
+                fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'X-CSRFToken': bayke.csrftoken
+                    },
+                    body: formData
+                }).then(response => {
+                    if (response.status == 200) {
+                        window.location.reload()
+                        loadingMsg.close()
+                    }
+                    return response.json()
+                })
+            },
+            // 购物车结算
+            cash() {
+                // 从cartsListData中根据选中的cartsid获取skuids
+                let skuids = []
+                this.cartsListData.forEach(item => {
+                    if (this.seclectCarts.includes(item.id)) {
+                        skuids.push(item.sku_id)
+                    }
+                })
+                if (skuids.length === 0) {
+                    return
+                }
+                
+                skuids = skuids.join(',')
+                window.location.href = `{% url "shop:carts" %}${skuids}/`
+            }
+        },
+        watch: {
+            seclectCarts: {
+                handler(newValue) {
+                    // 监听选中商品数量，计算总价
+                    const totalPrice = newValue.reduce((acc, cur) => {
+                        console.log(cur, acc);
+                        const cart = this.cartsListData.find(cart => cart.id === cur);
+                        return acc + parseFloat(cart.total_price);
+                    }, 0);
+                    this.totalPrice = totalPrice.toFixed(2);
+                },
+                immediate: true,
+                deep: true,
+            }
+        }
+    }).mount('#cartList')
+</script>
+{% endblock %}

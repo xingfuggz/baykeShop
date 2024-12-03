@@ -8,10 +8,11 @@
 @版本    :1.0
 @微信    :baywanyun
 '''
-
+from django.urls import path
 from rest_framework import routers
 
 from baykeshop.api.carts import views as carts_views
+from baykeshop.api.orders import views as orders_views
 
 
 router = routers.DefaultRouter()
@@ -20,4 +21,11 @@ app_name = 'baykeshop_api'
 # 购物车
 router.register('carts', carts_views.BaykeShopCartsViewSet, basename='carts')
 
-urlpatterns = router.urls
+urlpatterns = [
+    path(
+        'orders/', 
+        orders_views.BaykeShopOrdersGenericAPIView.as_view(), 
+        name='orders-create'
+    ),
+    *router.urls
+]

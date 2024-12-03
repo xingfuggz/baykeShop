@@ -1,0 +1,34 @@
+{% extends 'baykeshop/member/profile.html' %}
+
+{% load i18n %}
+
+{% block profile_header %}
+    <h1 class="bk-is-size-4">
+        <span class="bk-icon"><i class="mdi mdi-flag-triangle"></i></span>
+        {% translate '新增收货地址' %}
+    </h1>
+{% endblock %}
+
+{% block profile_content %}
+<div class="p-6">
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_bulma }}
+        <input type="hidden" name="next" value="{{ next }}">
+        <div class="bk-field bk-is-grouped bk-is-grouped-right">
+            <div class="bk-control">
+                <a class="bk-button bk-is-light" href="{% url 'member:address-list' %}">
+                  <span class="bk-icon"><i class="mdi mdi-arrow-left"></i></span>
+                  <span>{% translate '取消' %}</span>
+                </a> 
+            </div>
+            <div class="bk-control">
+                <button class="bk-button bk-is-link" type="submit">
+                    <span class="bk-icon"><i class="mdi mdi-content-save-all-outline"></i></span>
+                    <span>{% translate '保存' %}</span> 
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

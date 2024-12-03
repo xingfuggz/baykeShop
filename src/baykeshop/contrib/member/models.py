@@ -36,3 +36,11 @@ class BaykeShopUserAddress(BaseModel):
     
     def __str__(self):
         return self.name
+
+    def get_full_address(self):
+        return '{province}{city}{district}{address}'.format(
+            province=self.province,
+            city=self.city,
+            district=self.district,
+            address=self.address
+        )

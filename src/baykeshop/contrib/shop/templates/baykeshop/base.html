@@ -15,7 +15,6 @@
     <script src="{% static 'baykeshop/js/js.cookie.min.js' %}"></script>
     <script src="{% static 'baykeshop/js/message.min.js' %}"></script>
     <script src="{% static 'admin/js/vendor/jquery/jquery.min.js' %}"></script>
-
     {% block extrahead %}{% endblock %}
     {% block blockbots %}{% endblock %}
     <script>
@@ -33,5 +32,25 @@
     <footer>{% block footer %}{% endblock %}</footer>
     {% block extrajs %}{% endblock %}
     {% block javascript %}{% endblock %}
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="bayke-message" data-tags="{{ message.tags }}" style="display: none;">
+                {{ message }}
+            </div>
+        {% endfor %}
+        <script>
+            const messages = document.querySelectorAll('.bayke-message');
+            for (let i = 0; i < messages.length; i++) {
+                const message = messages[i];
+                const tags = message.getAttribute('data-tags');
+                if (!tags || tags=='debug') continue;
+                bayke.message[tags](
+                    message.innerText,
+                    {html: true}
+                );
+            }
+        </script>
+    {% endif %}
 </body>
 </html>

@@ -1,0 +1,81 @@
+{% extends 'baykeshop/member/profile.html' %}
+
+{% load i18n static %}
+
+{% block profile_header %}
+    <h1 class="bk-is-size-4">
+        <span class="bk-icon"><i class="mdi mdi-flag-triangle"></i></span>
+        {% translate '收货地址' %}
+    </h1>
+    <a class="bk-button bk-is-link bk-is-outlined bk-is-pulled-right" href="{% url 'member:address-create' %}">
+        <span class="bk-icon"><i class="mdi mdi-plus"></i></span>
+        <span>{% translate '添加地址' %}</span>
+    </a>
+{% endblock %}
+
+
+{% block profile_content %}
+<div class="bk-columns bk-is-multiline">
+    {% for address in address_list %}
+    <div class="bk-column bk-is-4">
+        <div class="bk-card bk-is-shadowless" style="border: solid 1px #e6e6e6;">
+            <div class="bk-card-content" style="height: 120px;">
+                <h1 class="bk-has-text-weight-bold">
+                    <span class="bk-is-size-5">{{ address.name }}</span>
+                    {% if address.is_default %}
+                        <span class="bk-tag bk-is-link bk-is-light"> {% translate '默认' %} </span>
+                    {% endif %}
+                </h1>
+                <p class="bk-has-text-grey">{{ address.phone }}</p>
+                <p class="bk-has-text-grey">{{ address.get_full_address }}</p>
+            </div>
+            <footer class="bk-card-footer">
+                <a class="bk-card-footer-item bk-has-text-grey" href="{% url 'member:address-update' address.pk %}">
+                    <button type="button" class="bk-button bk-is-ghost bk-has-text-grey">
+                        <span class="bk-icon"><i class="mdi mdi-18px mdi-book-edit-outline"></i></span>
+                        <span>{% translate '修改' %}</span>
+                    </button>
+                </a>
+                <a class="bk-card-footer-item bk-has-text-grey">
+                    <form action="{% url 'member:address-delete' address.pk %}" method="post" class="bk-delete-form">
+                        {% csrf_token %}
+                        <button type="submit" class="bk-button bk-is-ghost bk-has-text-grey">
+                            <span class="bk-icon"><i class="mdi mdi-18px mdi-delete-outline"></i></span>
+                            <span>{% translate '删除' %}</span>
+                        </button>
+                    </form>
+                </a>
+            </footer>
+        </div>
+    </div>
+    {% empty %}
+    <div class="bk-is-flex bk-is-align-items-center bk-is-flex-direction-column py-6" style="width: 100%;">
+        <span class="bk-icon bk-is-large bk-has-text-info-light">
+            <i class="mdi mdi-24px mdi-account-alert"></i>
+        </span>
+        <div class="bk-has-text-centered">
+            <p class="bk-is-size-4">{% translate '暂无收货地址' %}</p>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}
+
+{% block javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var forms = document.querySelectorAll('.bk-delete-form');
+        for (var i = 0; i < forms.length; i++) {
+            var form = forms[i];
+            form.addEventListener('submit', function(e) {
+                // 阻止表单提交
+                e.preventDefault();
+                // 弹出确认框
+                var confirmed = confirm('{% translate "确定要删除此地址吗？" %}');
+                if (confirmed) {
+                    form.submit();
+                }
+            })
+        }
+    })
+</script>
+{% endblock %}

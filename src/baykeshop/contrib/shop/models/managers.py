@@ -37,7 +37,8 @@ class BaykeShopCartsManager(BaseManager):
                 output_field=models.DecimalField()
             ),
             name=models.F('sku__goods__name'),
-            specs=models.F('sku__specs')
+            specs=models.F('sku__specs'),
+            price=models.F('sku__price'),
         ).annotate(
             total_price=models.F('total_price'),
             name=models.F('name'),
@@ -46,8 +47,9 @@ class BaykeShopCartsManager(BaseManager):
                 BaykeShopGoodsImages.objects.filter(
                     goods=models.OuterRef('sku__goods'),
                 ).values('image')[:1],
-                # output_field=models.CharField()
-            )
+                output_field=models.CharField()
+            ),
+            price=models.F('price'),
         )
     
 
@@ -65,3 +67,19 @@ class BaykeShopOrdersManager(BaseManager):
             total_quantity=models.F('total_quantity')
         )
 
+
+class BaykeShopGoodsSKUManager(models.Manager):
+    def get_queryset(self):
+        from baykeshop.contrib.shop.models import BaykeShopGoodsImages
+        queryset = super().get_queryset().select_related('goods').annotate(
+            name = models.F('goods__name'),
+            image_url = models.Subquery(
+                BaykeShopGoodsImages.objects.filter(
+                    goods=models.OuterRef('goods'),
+                ).values('image')[:1],
+                output_field=models.CharField()
+            ),
+            detail=models.F('goods__detail'),
+            goods_type=models.F('goods__goods_type'),
+        )
+        return queryset

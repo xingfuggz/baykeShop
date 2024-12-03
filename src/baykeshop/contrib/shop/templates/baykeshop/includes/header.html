@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n baykeshop %}
 <header>
     <div id="head-top" class="bk-has-background-black-ter bk-has-text-white-ter">
         <div class="bk-container">
@@ -20,7 +20,7 @@
                         </div>
                         <div class="bk-dropdown-menu" id="dropdown-menu4" role="menu">
                             <div class="bk-dropdown-content">
-                                <a class="bk-dropdown-item" href="">
+                                <a class="bk-dropdown-item" href="{% url 'member:profile' %}">
                                     <span class="bk-icon">
                                         <i class="mdi mdi-account-badge-outline"></i>
                                     </span>
@@ -33,25 +33,28 @@
                                     {% translate '我的订单' %}
                                 </a>
                                 <hr class="bk-dropdown-divider" />
-                                <a class="bk-dropdown-item" href="">
-                                    <span class="bk-icon">
-                                        <i class="mdi mdi-logout"></i>
-                                    </span>
-                                    {% translate '退出' %}
-                                </a>
+                                <form action="{% url 'member:logout' %}" method="post" class="bk-dropdown-item">
+                                    {% csrf_token %}
+                                    <button class="bk-dropdown-item1 bk-is-clickable1" type="submit">
+                                            <span class="bk-icon">
+                                                <i class="mdi mdi-logout"></i>
+                                            </span>
+                                            {% translate '退出' %}
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                     {% else %}
                     <a class="bk-button bk-is-ghost bk-has-text-grey-light" style="height: 40px;"
-                        href="">
+                        href="{% url 'member:login' %}">
                         <span class="bk-icon">
                             <i class="mdi mdi-18px mdi-login"></i>
                         </span>
                         <span>登录</span>
                     </a><span class="bk-has-text-grey-light">|</span>
                     <a class="bk-button bk-is-ghost bk-has-text-grey-light" style="height: 40px;"
-                        href="">
+                        href="{% url 'member:register' %}">
                         <span class="bk-icon">
                             <i class="mdi mdi-18px mdi-account-box-plus-outline"></i>
                         </span>
@@ -59,11 +62,11 @@
                     </a>
                     {% endif %}
                     <a class="bk-button bk-is-light bk-is-radiusless bk-is-shadowless" 
-                        href="" style="height: 40px; width: 120px;">
+                        href="{% url 'shop:carts' %}" style="height: 40px; width: 120px;">
                         <span class="bk-icon">
                             <i class="mdi mdi-cart-heart"></i>
                         </span>
-                        <span>购物车(0)</span>
+                        <span>购物车({% carts_count user %})</span>
                     </a>
                 </div>
             </div>

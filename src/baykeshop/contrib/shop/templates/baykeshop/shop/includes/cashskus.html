@@ -1,0 +1,30 @@
+{% load baykeshop %}
+<div class="bk-fixed-grid bk-has-5-cols">
+    <div class="bk-grid">
+        <div class="bk-cell bk-is-col-span-3 px-6">
+            <div class="bk-is-flex bk-is-align-items-center">
+                <figure class="bk-image bk-is-96x96">
+                    <img src="/media/{{ sku.image_url }}" alt="{{ sku.name }}">
+                </figure>
+                <div class="ml-3">
+                    <h1 class="bk-is-size-6 bk-has-text-weight-bold">{{ sku.name|truncatechars:25 }}</h1>
+                    {% for spec in sku.specs|json_loads %}
+                    <span class="bk-has-text-grey">{{ spec.parent__name }}:</span>
+                    <span>{{ spec.name }}</span>&nbsp;
+                    {% endfor %}
+                </div>
+                    
+            </div>
+        </div>
+        <div class="bk-cell">
+            <div class="bk-is-flex bk-is-align-items-center bk-is-justify-content-center" style="height: 100%;">
+                <span>￥{{ sku.price }}*{{ sku.quantity }}</span> 
+            </div>
+        </div>
+        <div class="bk-cell">
+            <div class="bk-is-flex bk-is-align-items-center bk-is-justify-content-center" style="height: 100%;">
+                <span class="bk-has-text-weight-bold">￥{{ sku.total_price }}</span> 
+            </div>
+        </div>
+    </div>
+</div>

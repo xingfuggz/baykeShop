@@ -5,7 +5,7 @@ from baykeshop.db import (
     BaseModel, BaseGoodsModel, BaseGoodsSKUModel, BaseCategoryModel,
     BaseCartsModel
 )
-from .managers import BaykeShopGoodsManager, BaykeShopCartsManager
+from .managers import BaykeShopGoodsManager, BaykeShopCartsManager, BaykeShopGoodsSKUManager
 
 
 class BaykeShopCategory(BaseCategoryModel):
@@ -71,6 +71,8 @@ class BaykeShopGoods(BaseGoodsModel):
 class BaykeShopGoodsSKU(BaseGoodsSKUModel):
     """商品SKU"""
     goods = models.ForeignKey(BaykeShopGoods, on_delete=models.CASCADE, verbose_name=_('商品'))
+
+    objects = BaykeShopGoodsSKUManager()
 
     class Meta:
         verbose_name = _('商品SKU')

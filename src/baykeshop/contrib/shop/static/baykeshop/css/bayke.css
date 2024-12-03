@@ -2899,14 +2899,14 @@ th:not([align]) {
 
 :root {
   --bk-body-background-color: var(--bk-scheme-main);
-  --bk-body-size: 1em;
+  --bk-body-size: 14px;
   --bk-body-min-width: 300px;
   --bk-body-rendering: optimizeLegibility;
   --bk-body-family: var(--bk-family-primary);
   --bk-body-overflow-x: hidden;
   --bk-body-overflow-y: scroll;
   --bk-body-color: var(--bk-text);
-  --bk-body-font-size: 0.9rem;
+  --bk-body-font-size: 14px;
   --bk-body-weight: var(--bk-weight-normal);
   --bk-body-line-height: 1.5;
   --bk-code-family: var(--bk-family-code);

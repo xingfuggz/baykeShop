@@ -136,7 +136,7 @@ class BaykeShopOrdersAdmin(bayke_admin.ModelAdmin):
     ]
     fieldsets = (
         (_('订单信息'), {
-            'fields': ('order_sn', 'user', 'status', 'pay_type', 'total_price', 'pay_price', 'is_comment')
+            'fields': ('order_sn', 'user', 'status', 'pay_type', 'pay_price', 'is_comment')
         }),
         (_('支付信息'), {
             'fields': ('pay_sn', 'pay_time')
@@ -198,3 +198,4 @@ class BaykeShopSpecAdmin(bayke_admin.ModelAdmin):
         if obj and obj.parent:
             return []
         return super().get_inline_instances(request, obj)
+    
