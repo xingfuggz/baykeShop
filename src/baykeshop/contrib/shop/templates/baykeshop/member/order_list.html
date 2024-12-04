@@ -1,0 +1,212 @@
+{% extends 'baykeshop/member/profile.html' %}
+
+{% load i18n baykeshop %}
+
+{% block profile_header %}
+<h1 class="bk-is-size-4">
+    <span class="bk-icon"><i class="mdi mdi-shopping"></i></span>
+    {% translate '我的订单' %}
+</h1>
+{% endblock %}
+
+{% block profile_content %}
+<div class="pb-5 pt-1">
+    <div class="bk-tabs bk-is-toggle bk-is-fullwidth mt-3">
+        <ul>
+            <li class="{% if not request.GET.status %} bk-is-active {% endif %}">
+                <a href="{% url 'member:orders-list' %}">
+                    <span class="bk-icon bk-is-small">
+                        <i class="mdi mdi-all-inclusive-box-outline" aria-hidden="true"></i>
+                    </span>
+                    <span>{% translate '全部订单' %}</span>
+                </a>
+            </li>
+        <li class="{% if request.GET.status == '0' %} bk-is-active {% endif %}">
+            <a href="{% url 'member:orders-list' %}?status=0">
+                <span class="bk-icon bk-is-small">
+                    <i class="mdi mdi-mini-sd" aria-hidden="true"></i>
+                </span>
+                <span>{% translate '待支付' %}</span>
+            </a>
+        </li>
+        <li class="{% if request.GET.status == '1' %} bk-is-active {% endif %}">
+            <a href="{% url 'member:orders-list' %}?status=1">
+                <span class="bk-icon bk-is-small">
+                    <i class="mdi mdi-car-clutch" aria-hidden="true"></i>
+                </span>
+                <span>{% translate '待发货' %}</span>
+            </a>
+        </li>
+        <li class="{% if request.GET.status == '2' %} bk-is-active {% endif %}">
+            <a href="{% url 'member:orders-list' %}?status=2">
+                <span class="bk-icon bk-is-small">
+                    <i class="mdi mdi-shaker-outline" aria-hidden="true"></i>
+                </span>
+                <span>{% translate '待收货' %}</span>
+            </a>
+        </li>
+        <li class="{% if request.GET.status == '3' %} bk-is-active {% endif %}">
+            <a href="{% url 'member:orders-list' %}?status=3">
+                <span class="bk-icon bk-is-small">
+                    <i class="mdi mdi-comment-account-outline" aria-hidden="true"></i>
+                </span>
+                <span>{% translate '待评价' %}</span>
+            </a>
+        </li>
+        <li class="{% if request.GET.status == '4' %} bk-is-active {% endif %}">
+            <a href="{% url 'member:orders-list' %}?status=4">
+                <span class="bk-icon bk-is-small">
+                    <i class="mdi mdi-clover-outline" aria-hidden="true"></i>
+                </span>
+                <span>{% translate '已完成' %}</span>
+            </a>
+        </li>
+        <li class="{% if request.GET.status == '5' %} bk-is-active {% endif %}">
+            <a href="{% url 'member:orders-list' %}?status=5">
+                <span class="bk-icon bk-is-small">
+                    <i class="mdi mdi-clock-check-outline" aria-hidden="true"></i>
+                </span>
+                <span>{% translate '已取消' %}</span>
+            </a>
+        </li>
+        <li class="{% if request.GET.status == '6' %} bk-is-active {% endif %}">
+            <a href="{% url 'member:orders-list' %}?status=6">
+                <span class="bk-icon bk-is-small">
+                    <i class="mdi mdi-cash-refund" aria-hidden="true"></i>
+                </span>
+                <span>{% translate '已退款' %}</span>
+            </a>
+        </li>
+        <li class="{% if request.GET.status == '7' %} bk-is-active {% endif %}">
+            <a href="{% url 'member:orders-list' %}?status=7">
+                <span class="bk-icon bk-is-small">
+                    <i class="mdi mdi-diversify" aria-hidden="true"></i>
+                </span>
+                <span>{% translate '待核销' %}</span>
+            </a>
+        </li>
+        </ul>
+    </div>
+</div>
+    {% for order in page_obj %}
+    <div class="bk-box bk-is-shadowless p-6" style="border: 1px solid #e6e6e6;">
+        <div class="bk-is-flex bk-is-align-items-center bk-is-justify-content-space-between">
+            <h1>订单号：{{ order.order_sn }}</h1>
+            <span class="bk-tag bk-is-link bk-is-light">{{ order.get_status_display }}</span>
+        </div>
+        <hr>
+        {% for item in order.baykeshopordersgoods_set.all %}
+        <div class="bk-fixed-grid bk-has-5-cols m-0">
+            <div class="bk-grid">
+                <div class="bk-cell bk-is-col-span-3 px-3">
+                    <div class="bk-is-flex bk-is-align-items-center">
+                        <figure class="bk-image bk-is-96x96">
+                            <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                        </figure>
+                        <div class="ml-3">
+                            <h1 class="bk-is-size-5 bk-has-text-weight-bold">{{ item.name|truncatechars:25 }}</h1>
+                            {% for spec in item.specs|json_loads %}
+                                <span class="has-text-grey">{{ spec.parent__name }}:</span>
+                                <span>{{ spec.name }}</span>&nbsp;
+                            {% endfor %}
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="bk-cell">
+                    <div class="bk-is-flex bk-is-align-items-center bk-is-justify-content-center" style="height: 100%;">
+                        <span>￥{{ item.sku.price }}*{{ item.quantity }}</span> 
+                    </div>
+                </div>
+                <div class="bk-cell">
+                    <div class="bk-is-flex bk-is-align-items-center bk-is-justify-content-center" style="height: 100%;">
+                        <span class="bk-has-text-weight-bold">￥{{ item.total_price }}</span> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        {% endfor %}
+        <div class="bk-has-text-right">
+            <h1 class="bk-is-size-5">共{{ order.total_quantity }}件商品，总金额<span>￥{{ order.total_price }}</span></h1>
+            <div class="bk-buttons bk-is-justify-content-end mt-3">
+                <a class="bk-button bk-is-link bk-is-light" href="{% url 'member:orders-detail' order.order_sn %}">
+                    <span class="bk-icon"><i class="mdi mdi-eye"></i></span>
+                    <span>{% translate '查看详情' %}</span>
+                </a>
+                {% if order.status == 0 %}
+                <a class="bk-button bk-is-link" href="">
+                    <span class="bk-icon"><i class="mdi mdi-cash"></i></span>
+                    <span>{% translate '立即支付' %}</span>
+                </a>
+                {% elif order.status == 2 %}
+                <a class="bk-button bk-is-link receipt" data-api="">
+                    <span class="icon"><i class="mdi mdi-truck-delivery"></i></span>
+                    <span>{% translate '确认收货' %}</span>
+                </a>
+                {% elif order.status == 3 %}
+                <a class="bk-button bk-is-link comment" data-api="">
+                    <span class="bk-icon"><i class="mdi mdi-comment-account-outline"></i></span>
+                    <span>{% translate '评价' %}</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="bk-page">
+        {% paginator_template page_obj request %}
+    </div>
+
+    <!-- 确认收货模态框 -->
+     
+    {% comment %}
+    <div class="modal" id="modal-receipt">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="box p-6">
+                <h1 class="title is-5">
+                    <span class="icon">
+                        <i class="mdi mdi-checkbox-intermediate"></i>
+                    </span>
+                    确认收货
+                </h1>
+                <p>已收到货，现在确认收货吗？</p>
+                <hr class="my-3">
+                <div class="buttons is-justify-content-end">
+                    <button class="button cancel" id="modal-receipt-cancel">取消</button>
+                    <button class="button is-link" id="modal-receipt-confirm">确认</button>
+                </div>
+            </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close"></button>
+    </div>
+    {% endcomment %}
+    <!-- 评价模态框 -->
+     
+    {% comment %} 
+    <div class="modal" id="modal-comment">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="box p-6">
+                <h1 class="title is-5">
+                    <span class="icon">
+                        <i class="mdi mdi-comment-account-outline"></i>
+                    </span>
+                    评价
+                </h1>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ comment_form.as_bulma }}
+                    <div class="buttons is-justify-content-end">
+                        <button class="button cancel" id="modal-comment-cancel">取消</button>
+                        <button class="button is-link" id="modal-comment-confirm" type="submit">确认</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close"></button>
+    </div>
+    {% endcomment %}
+{% endblock %}
+    

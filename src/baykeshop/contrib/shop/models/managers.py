@@ -21,14 +21,13 @@ class BaykeShopGoodsManager(BaseManager):
                 BaykeShopGoodsImages.objects.filter(
                     goods=models.OuterRef('pk'),
                 ).values('image')[:1],
-                # output_field=models.CharField()
+                output_field=models.CharField()
             )
         ).prefetch_related('baykeshopgoodssku_set', 'baykeshopgoodsimages_set')
 
 
 class BaykeShopCartsManager(BaseManager):
     """购物车管理器"""
-    
     def get_queryset(self):
         from baykeshop.contrib.shop.models import BaykeShopGoodsImages
         return super().get_queryset().select_related('sku').alias(
@@ -53,6 +52,29 @@ class BaykeShopCartsManager(BaseManager):
         )
     
 
+class BaykeShopGoodsSKUManager(models.Manager):
+    """ sku 管理器 """
+    def get_queryset(self):
+        from baykeshop.contrib.shop.models import BaykeShopGoodsImages
+        queryset = super().get_queryset().select_related('goods').alias(
+            name=models.F('goods__name'),
+            detail=models.F('goods__detail'),
+            goods_type=models.F('goods__goods_type'),
+            image_url=models.Subquery(
+                BaykeShopGoodsImages.objects.filter(
+                    goods=models.OuterRef('goods'),
+                ).values('image')[:1],
+                output_field=models.CharField()
+            )
+        ).annotate(
+            name = models.F('goods__name'),
+            image_url = models.F('image_url'),
+            detail=models.F('goods__detail'),
+            goods_type=models.F('goods__goods_type'),
+        )
+        return queryset
+
+
 class BaykeShopOrdersManager(BaseManager):
     """订单管理器"""
     def get_queryset(self):
@@ -61,25 +83,26 @@ class BaykeShopOrdersManager(BaseManager):
                 models.Sum(models.F('baykeshopordersgoods__quantity') * models.F('baykeshopordersgoods__price')),
                 output_field=models.DecimalField()
             ),
-            total_quantity=models.Sum('baykeshopordersgoods__quantity')
+            total_quantity=models.Sum('baykeshopordersgoods__quantity'),
+            name=models.F('baykeshopordersgoods__name')
         ).annotate(
             total_price=models.F('total_price'),
-            total_quantity=models.F('total_quantity')
+            total_quantity=models.F('total_quantity'),
+            name=models.F('name')
         )
 
 
-class BaykeShopGoodsSKUManager(models.Manager):
+class BaykeShopOrdersGoodsManager(BaseManager):
+    """订单商品管理器"""
     def get_queryset(self):
         from baykeshop.contrib.shop.models import BaykeShopGoodsImages
-        queryset = super().get_queryset().select_related('goods').annotate(
-            name = models.F('goods__name'),
+        return super().get_queryset().select_related('sku').alias(
+            name=models.F('sku__goods__name'),
+            specs=models.F('sku__specs'),
             image_url = models.Subquery(
                 BaykeShopGoodsImages.objects.filter(
-                    goods=models.OuterRef('goods'),
+                    goods=models.OuterRef('sku__goods'),
                 ).values('image')[:1],
                 output_field=models.CharField()
-            ),
-            detail=models.F('goods__detail'),
-            goods_type=models.F('goods__goods_type'),
+            )
         )
-        return queryset

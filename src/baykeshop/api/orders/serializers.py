@@ -11,6 +11,7 @@
 
 
 from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
 from rest_framework import serializers
 from baykeshop.contrib.shop.models import (
     BaykeShopOrders, BaykeShopOrdersGoods, BaykeShopGoodsSKU, 
@@ -32,6 +33,12 @@ class BaykeShopOrdersCreateSerializer(serializers.Serializer):
     receiver = serializers.CharField(max_length=50, help_text=_('收货人'), required=True)
     phone = serializers.CharField(max_length=11, help_text=_('手机号码'), required=True)
     address = serializers.CharField(max_length=255, help_text=_('收货地址'), required=True)
+    pay_url = serializers.CharField(
+        max_length=255, 
+        help_text=_('支付地址'), 
+        read_only=True, 
+        allow_blank=True
+    )
     
     def validate(self, attrs):
         request = self.context['request']
@@ -68,20 +75,9 @@ class BaykeShopOrdersCreateSerializer(serializers.Serializer):
             carts = validated_data.get('carts')
             pay_price = sum([cart.total_price for cart in carts])
             orders = self.create_orders(validated_data, pay_price)
-            # 批量创建
-            BaykeShopOrdersGoods.objects.bulk_create([
-                BaykeShopOrdersGoods(
-                    site=self.context['request'].site,
-                    orders=orders, 
-                    sku=cart.sku, 
-                    quantity=cart.quantity,
-                    price=cart.price,
-                    specs=cart.specs,
-                    name=cart.name,
-                    detail=cart.sku.goods.detail,
-                    image=BaykeShopGoodsImages.objects.filter(goods=cart.sku.goods).first().image
-                ) for cart in carts
-            ])
+            # 不能采用批量创建的方法，每次会同时生成两个同样的订单
+            for cart in carts:
+                self.create_orders_goods(orders, cart.sku, cart.quantity)
             # 删除购物车
             carts.delete()
         else:
@@ -89,19 +85,8 @@ class BaykeShopOrdersCreateSerializer(serializers.Serializer):
             quantity = validated_data.get('quantity')
             pay_price = sku.price * int(validated_data.get('quantity'))
             orders = self.create_orders(validated_data, pay_price)
-            goods = BaykeShopOrdersGoods(
-                site=self.context['request'].site,
-                orders=orders, 
-                sku=sku, 
-                quantity=quantity,
-                price=sku.price,
-                specs=sku.specs,
-                name=sku.goods.name,
-                detail=sku.goods.detail,
-                image=BaykeShopGoodsImages.objects.filter(goods=sku.goods).first().image
-            )
-            goods.save()
-        validated_data['order_sn'] = orders.order_sn
+            self.create_orders_goods(orders, sku, quantity)
+        validated_data['pay_url'] = reverse('shop:orders-pay', kwargs={'order_sn': orders.order_sn})
         return validated_data
     
     def create_orders(self, validated_data, pay_price):
@@ -116,3 +101,19 @@ class BaykeShopOrdersCreateSerializer(serializers.Serializer):
         )
         orders.save()
         return orders
+
+    def create_orders_goods(self, orders, sku, count):
+        """ 创建订单商品 """
+        goods = BaykeShopOrdersGoods(
+            site=self.context['request'].site,
+            orders=orders, 
+            sku=sku, 
+            quantity=count,
+            price=sku.price,
+            specs=sku.specs,
+            name=sku.goods.name,
+            detail=sku.goods.detail,
+            image=BaykeShopGoodsImages.objects.filter(goods=sku.goods).first().image
+        )
+        goods.save()
+        return goods

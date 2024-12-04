@@ -19,7 +19,8 @@ class BaykeShopOrdersGenericAPIView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        messages.success(request, _('下单成功'))
+        messages.success(request, _('下单成功, 请尽快支付...'))
+        print(serializer.data, serializer)
         return Response(serializer.data)
 
     

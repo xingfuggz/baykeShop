@@ -77,7 +77,7 @@
                                     </div>
                                     <ul class="bk-menu-list">
                                         <li>
-                                            <a class="{% if '/order/' in request.path %} is-active {% endif %}" href="">
+                                            <a class="{% if '/orders/' in request.path %} bk-is-active {% endif %}" href="{% url 'member:orders-list' %}">
                                                 {% translate '全部订单' %}
                                             </a>
                                         </li>

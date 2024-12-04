@@ -22,7 +22,7 @@ class BaykeShopOrders(BaseOrdersModel):
 
 class BaykeShopOrdersGoods(BaseOrdersGoodsModel):
     """订单商品表"""
-    sku = models.ForeignKey(BaykeShopGoodsSKU, on_delete=models.CASCADE, verbose_name=_('商品'))
+    sku = models.ForeignKey(BaykeShopGoodsSKU, on_delete=models.SET_NULL, verbose_name=_('商品'), null=True)
     orders = models.ForeignKey(BaykeShopOrders, on_delete=models.CASCADE, verbose_name=_('订单'))
 
     class Meta:

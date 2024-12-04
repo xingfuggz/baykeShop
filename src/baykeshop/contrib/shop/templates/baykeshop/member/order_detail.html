@@ -1,0 +1,112 @@
+{% extends 'baykeshop/member/profile.html' %}
+{% load i18n baykeshop %}
+
+{% block profile_header %}
+<h1 class="bk-is-size-4">
+    <span class="bk-icon"><i class="mdi mdi-shopping"></i></span>
+    {% translate '我的订单' %}
+</h1>
+{% endblock %}
+
+{% block profile_content %}
+<div id="orderDetailContent">
+    <div class="p-6 bk-box bk-has-background-light">
+        <h1 class="bk-is-size-4">
+            <span class="bk-icon">
+                <i class="mdi mdi-information"></i>
+            </span>
+            {% translate '订单信息' %}
+        </h1>
+        <hr class="my-2 has-background-white">
+        <ul>
+            <li>{% translate '订单号' %}: {{ order.order_sn }}</li>
+            <li>{% translate '订单状态' %}: {{ order.get_status_display }}</li>
+            <li>{% translate '订单金额' %}: {{ order.total_price }}</li>
+            <li>{% translate '支付方式' %}: {{ order.get_pay_type_display }}</li>
+            <li>{% translate '下单时间' %}: {{ order.created_time }}</li>
+            <li>{% translate '支付时间' %}: {{ order.pay_time|default:"~" }}</li>
+        </ul>
+    </div>
+    <div class="p-6 bk-box bk-has-background-light">
+        <h1 class="bk-is-size-4">
+            <span class="bk-icon">
+                <i class="mdi mdi-information"></i>
+            </span>
+            {% translate '收货信息' %}
+        </h1>
+        <hr class="my-2 bk-has-background-white">
+        <ul>
+            <li>{% translate '签收人' %}: {{ order.receiver }}</li>
+            <li>{% translate '联系电话' %}: {{ order.phone }}</li>
+            <li>{% translate '收货地址' %}: {{ order.address }}</li>
+            <li>{% translate '备注' %}: {{ order.remark|default:"~" }}</li>
+        </ul>
+    </div>
+    <div class="p-6 bk-box bk-has-background-light">
+        <h1 class="bk-is-size-4">
+            <span class="bk-icon">
+                <i class="mdi mdi-information"></i>
+            </span>
+            {% translate '订单商品' %}
+        </h1>
+        <hr class="my-2 bk-has-background-white">
+        {% for item in order.baykeshopordersgoods_set.all %}
+        <div class="bk-fixed-grid bk-has-5-cols m-0">
+            <div class="bk-grid">
+                <div class="bk-cell bk-is-col-span-3 px-3">
+                    <div class="bk-is-flex bk-is-align-items-center">
+                        <figure class="bk-image bk-is-96x96">
+                            <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                        </figure>
+                        <div class="ml-3">
+                            <h1 class="bk-is-size-5 bk-has-text-weight-bold">{{ item.name|truncatechars:25 }}</h1>
+                            {% for spec in item.specs|json_loads %}
+                                <span class="bk-has-text-grey">{{ spec.parent__name }}:</span>
+                                <span>{{ spec.name }}</span>&nbsp;
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="bk-cell">
+                    <div class="bk-is-flex bk-is-align-items-center bk-is-justify-content-center" style="height: 100%;">
+                        <span>￥{{ item.sku.price }}*{{ item.quantity }}</span> 
+                    </div>
+                </div>
+                <div class="bk-cell">
+                    <div class="bk-is-flex bk-is-align-items-center bk-is-justify-content-center" style="height: 100%;">
+                        <span class="bk-has-text-weight-bold">￥{{ item.total_price }}</span> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="my-2 bk-has-background-white">
+        {% endfor %}
+        <div class="bk-has-text-right">
+            <h1 class="bk-is-size-5">共{{ order.total_quantity }}件商品，总金额<span>￥{{ order.total_price }}</span></h1>
+            <div class="bk-buttons bk-is-justify-content-end mt-3">
+                {% if order.status == 0 %}
+                <a class="bk-button bk-is-link" href="">
+                    <span class="bk-icon"><i class="mdi mdi-cash"></i></span>
+                    <span>{% translate '立即支付' %}</span>
+                </a>
+                {% elif order.status == 2 %}
+                <a class="bk-button bk-is-link" href="">
+                    <span class="bk-icon"><i class="mdi mdi-truck-delivery"></i></span>
+                    <span>{% translate '确认收货' %}</span>
+                </a>
+                {% elif order.status == 3 %}
+                <a class="bk-button bk-is-link" href="">
+                    <span class="icon"><i class="mdi mdi-comment-account-outline"></i></span>
+                    <span>{% translate '评价' %}</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    #orderDetailContent ul li{
+        line-height: 30px;
+    }
+</style>
+{% endblock %}

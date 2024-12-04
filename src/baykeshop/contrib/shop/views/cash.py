@@ -8,12 +8,11 @@
 @版本    :1.0
 @微信    :baywanyun
 '''
-import json
+
 from django.db import models
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView, RedirectView
+from django.views.generic import TemplateView
 from baykeshop.contrib.shop.models import BaykeShopGoodsSKU, BaykeShopCarts
-from baykeshop.contrib.shop.models import BaykeShopGoodsImages
 
 
 class BaykeShopCashView(LoginRequiredMixin, TemplateView):
@@ -46,17 +45,10 @@ class BaykeShopCashView(LoginRequiredMixin, TemplateView):
             skuids = [int(self.kwargs.get('skuid'))]
             num = self.kwargs.get('num', 1)
             queryset = BaykeShopGoodsSKU.objects.filter(id__in=skuids).annotate(
-                image_url = models.Subquery(
-                    BaykeShopGoodsImages.objects.filter(
-                        goods=models.OuterRef('goods'),
-                    ).values('image')[:1],
-                    output_field=models.CharField()
-                ),
                 total_price = models.ExpressionWrapper(
                     models.F('price') * models.Value(num, output_field=models.IntegerField()),
                     output_field=models.DecimalField()
                 ),
-                name = models.F('goods__name'),
                 quantity = models.Value(num, output_field=models.IntegerField()),
             )
             return queryset

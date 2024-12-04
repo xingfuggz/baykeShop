@@ -78,14 +78,16 @@
             body: formData,
         })
         .then(response => {
-            console.log(response)
-            if (response.status == 200) {
-                window.location.reload()
+            if (response.status !== 200) {
+                console.log(response)
+                bayke.message.error("{% translate '创建订单失败' %}")
+                return
             }
             return response.json()
         })
         .then(data => {
-            console.log(data);
+            console.log(data)
+            window.location.href = data.pay_url;
         })
     })
 </script>

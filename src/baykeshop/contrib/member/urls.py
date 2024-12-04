@@ -15,5 +15,8 @@ urlpatterns = [
     path('address/create/', views.BaykeShopUserAddressCreateView.as_view(), name='address-create'),
     path('address/<int:pk>/update/', views.BaykeShopUserAddressUpdateView.as_view(), name='address-update'),
     path('address/<int:pk>/delete/', views.BaykeShopUserAddressDeleteView.as_view(), name='address-delete'),
-
+    path('orders/', views.BaykeShopOrdersListView.as_view(), name='orders-list'),
+    path('orders/<slug:order_sn>/', views.BaykeShopOrdersDetailView.as_view(), name='orders-detail'),
+    # path('orders/<str:order_sn>/pay/', views.BaykeShopOrdersPayView.as_view(), name='orders-pay'),
+    # path('orders/<str:order_sn>/comment/', views.BaykeShopOrdersCommentView.as_view(), name='orders-comment'),
 ]

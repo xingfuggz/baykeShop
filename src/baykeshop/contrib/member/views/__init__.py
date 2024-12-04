@@ -6,3 +6,4 @@ from .profile import (
     BaykeShopUserAddressCreateView, BaykeShopUserAddressUpdateView, BaykeShopUserAddressDeleteView,
     BaykeShopUserProfileUpdateView
 )
+from .orders import BaykeShopOrdersListView, BaykeShopOrdersDetailView

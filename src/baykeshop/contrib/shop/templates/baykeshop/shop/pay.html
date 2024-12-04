@@ -1,0 +1,161 @@
+{% extends 'baykeshop/base_site.html' %}
+{% load i18n baykeshop %}
+
+
+{% block main %}
+<section class="bk-section">
+    <div class="bk-container">
+        <div class="bk-box p-6">
+            <h1 class="bk-title bk-is-4">
+                <span class="bk-icon">
+                    <i class="mdi mdi-bank-plus"></i>
+                </span>
+                {% translate '支付方式' %}
+            </h1>
+            <hr>
+            {% paytype_template %}
+        </div>
+        <div class="bk-box p-6 m-0">
+            <h1 class="bk-title bk-is-4">
+                <span class="bk-icon">
+                    <i class="mdi mdi-all-inclusive-box-outline"></i>
+                </span>
+                {% translate '订单概况' %}
+            </h1>
+            <hr>
+            <div class="orderDetail px-3">
+                <div class="bk-notification bk-is-success bk-is-light">
+                    <span class="bk-icon">
+                        <i class="mdi mdi-alert-circle"></i>
+                    </span>
+                    <span class="bk-has-text-weight-bold">{% translate '温馨提示' %}：</span> 
+                    每一次决定都是对未来的一次投资，把握当下，尽快下单，享受你的选择。
+                </div>
+                <ul>
+                    <li><span class="bk-has-text-weight-bold">{% translate '订单号' %}：</span>{{ order.order_sn }}</li>
+                    <li><span class="bk-has-text-weight-bold">{% translate '订单日期' %}：</span>{{ order.created_time }}</li>
+                    <li><span class="bk-has-text-weight-bold">{% translate '支付状态' %}：</span>{{ order.get_status_display }}</li>
+                    <li><span class="bk-has-text-weight-bold">{% translate '订单总额' %}：</span>￥{{ order.total_price }}</li>
+                    <li> 
+                        <span class="bk-has-text-weight-bold">{% translate '订单商品' %}：</span>
+                        <div class="bk-box bk-is-shadowless bk-has-background-light">
+                            <ol class="px-6">
+                                {% for item in order.baykeshopordersgoods_set.all %}
+                                    <li>{{ item.name }} ({{ item.price }}x {{ item.quantity }})
+                                        {% for spec in item.specs|json_loads %}
+                                        <span>[{{ spec.parent__name }}:{{ spec.name }}]</span>
+                                        {% endfor %}
+                                    </li>
+                                {% endfor %} 
+                            </ol>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="bk-box p-6">
+            <div class="bk-is-flex bk-is-flex-direction-column bk-is-align-items-end">
+                <p class="bk-is-size-4 bk-has-text-grey">{% translate '订单总额' %}：
+                    <span>￥{{ order.total_price }}</span>
+                </p>
+                <p class="bk-is-size-4 bk-has-text-link">{% translate '实际支付' %}：
+                    <span>￥{{ order.pay_price }}</span> 
+                </p>
+            </div>
+            <hr>
+            <div class="bk-is-flex bk-is-justify-content-space-between">
+                    <a class="bk-button bk-is-light bk-is-large" href="{% url 'member:orders-list' %}">
+                        <span class="bk-icon">
+                            <i class="mdi mdi-arrow-left"></i>
+                        </span>
+                        <span>{% translate '返回订单列表' %}</span> 
+                    </a>
+                    <button class="bk-button bk-is-link bk-is-large" id="pay-button">
+                        <span class="bk-icon">
+                            <i class="mdi mdi-cash-check"></i>
+                        </span>
+                        <span>{% translate '立即支付' %}</span> 
+                    </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .orderDetail ul li {
+        line-height: 30px;
+    }
+</style>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        const payBtn = document.querySelector('#pay-button');
+        function createSuperLabel(url, id) {
+            // 确保 URL 是有效的
+            if (!url || typeof url !== 'string') {
+                console.error('Invalid URL provided:', url);
+                return;
+            }
+
+            // 确保 ID 是有效的
+            if (!id || typeof id !== 'string') {
+                console.error('Invalid ID provided:', id);
+                return;
+            }
+
+            // 确保 DOM 已经完全加载
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                addLinkAndClick();
+            } else {
+                document.addEventListener('DOMContentLoaded', addLinkAndClick);
+            }
+
+            function addLinkAndClick() {
+                // 防止反复添加
+                if (!document.getElementById(id)) {
+                    let a = document.createElement("a");
+                    a.setAttribute("href", url);
+                    a.setAttribute("target", "_blank");
+                    a.setAttribute("id", id);
+                    a.style.display = 'none'; // 确保链接不可见
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove(); // 移除链接元素，避免污染 DOM
+                }
+            }
+        }
+
+        payBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // console.log('click', payType.selectedPayTypeID)
+            const url = "{% url 'baykeshop_api:pay-detail' order.order_sn %}"
+            // console.log('url', url)
+            const formData = new FormData();
+            formData.append('pay_type', payType.selectedPayTypeID);
+            fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRFToken': bayke.csrftoken,
+                },
+                body: formData
+            })
+            .then(response => {
+                if (response.status !== 200) {
+                    window.location.reload()
+                    return
+                }
+                return response.json()
+            })
+            .then(data => {
+                if (data.pay_type === '2') {
+                    window.location.href = data.pay_url
+                    return
+                }
+                createSuperLabel(data.pay_url, '{{ order.order_sn }}')
+            })
+        })
+    </script>
+{% endblock %}
+    

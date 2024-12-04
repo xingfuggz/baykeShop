@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "alipay-sdk-python>=3.7.345",
     "django==4.2.16",
     "djangorestframework>=3.15.2",
     "pillow>=11.0.0",

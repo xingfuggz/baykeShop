@@ -11,4 +11,6 @@ urlpatterns = [
     path('carts/', views.BaykeShopCartsListView.as_view(), name='carts'),
     re_path(r'^list/(?P<skuid>\d+)/(?P<num>\d+)/$', views.BaykeShopCashView.as_view(), name='cash-sku'),
     re_path(r'^carts/(?P<skuids>\d+(?:,\d+)*)/$', views.BaykeShopCashView.as_view(), name='cash_cartids'),
+    path('pay/<slug:order_sn>/', views.BaykeShopOrdersPayView.as_view(), name='orders-pay'),
+    path('pay/callback/', views.AlipayCallbackView.as_view(), name='alipay-callback'),
 ]

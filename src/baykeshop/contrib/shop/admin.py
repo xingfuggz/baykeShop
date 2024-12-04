@@ -161,7 +161,7 @@ class BaykeShopOrdersAdmin(bayke_admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = super().get_readonly_fields(request, obj)
         # 已支付订单不能再修改支付金额
-        if obj and obj.status >= BaykeShopOrders.ORDER_STATUS.SHIPPED:
+        if obj and obj.status >= BaykeShopOrders.OrderStatus.SHIPPED:
             readonly_fields = list(readonly_fields) + ['pay_price',]
         return readonly_fields
 

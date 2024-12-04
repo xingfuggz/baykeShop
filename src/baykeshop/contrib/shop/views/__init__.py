@@ -4,3 +4,4 @@ from .goods import (
 )
 from .carts import BaykeShopCartsListView
 from .cash import BaykeShopCashView
+from .pay import BaykeShopOrdersPayView, AlipayCallbackView
