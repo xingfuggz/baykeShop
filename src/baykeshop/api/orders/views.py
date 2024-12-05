@@ -1,27 +1,27 @@
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import generics
+from rest_framework import mixins, viewsets
 from rest_framework import authentication
 from rest_framework import permissions
-from rest_framework.response import Response
+
+from baykeshop.contrib.shop.models import BaykeShopOrders
 
 from .serializers import BaykeShopOrdersCreateSerializer
 
 
-class BaykeShopOrdersGenericAPIView(generics.GenericAPIView):
+class BaykeShopOrdersViewSet(mixins.CreateModelMixin,
+                             mixins.DestroyModelMixin, 
+                             viewsets.GenericViewSet):
     """ 创建订单 """
+    queryset = BaykeShopOrders.objects.all()
     serializer_class = BaykeShopOrdersCreateSerializer
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data, context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        messages.success(request, _('下单成功, 请尽快支付...'))
-        print(serializer.data, serializer)
-        return Response(serializer.data)
-
+    lookup_url_kwarg = 'order_sn'
+    lookup_field = 'order_sn'
     
-        
+    def perform_destroy(self, instance):
+        super().perform_destroy(instance)
+        messages.success(self.request, _('订单删除成功'))
+

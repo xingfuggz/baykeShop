@@ -15,7 +15,7 @@ class BaseManager(models.Manager):
     """
 
     def get_queryset(self):
-        return super().get_queryset().filter(is_delete=False)
+        return super().get_queryset()
     
     def delete(self):
         return super().update(is_delete=True)
@@ -38,7 +38,7 @@ class BaseModel(models.Model):
     """
     基础模型
     """
-    site = models.ForeignKey(Site, on_delete=models.CASCADE, verbose_name=_('站点'), editable=False)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, verbose_name=_('站点'), editable=False, blank=True, null=True)
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('创建时间'))
     updated_time = models.DateTimeField(auto_now=True, verbose_name=_('更新时间'))
     is_delete = models.BooleanField(default=False, editable=False, verbose_name=_('是否删除'))

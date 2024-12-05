@@ -78,18 +78,19 @@ class BaykeShopGoodsSKUManager(models.Manager):
 class BaykeShopOrdersManager(BaseManager):
     """订单管理器"""
     def get_queryset(self):
-        return super().get_queryset().prefetch_related('baykeshopordersgoods_set').alias(
-            total_price=models.ExpressionWrapper(
-                models.Sum(models.F('baykeshopordersgoods__quantity') * models.F('baykeshopordersgoods__price')),
-                output_field=models.DecimalField()
-            ),
-            total_quantity=models.Sum('baykeshopordersgoods__quantity'),
-            name=models.F('baykeshopordersgoods__name')
-        ).annotate(
-            total_price=models.F('total_price'),
-            total_quantity=models.F('total_quantity'),
-            name=models.F('name')
-        )
+        # return super().get_queryset().prefetch_related('baykeshopordersgoods_set').alias(
+        #     total_price=models.ExpressionWrapper(
+        #         models.Sum(models.F('baykeshopordersgoods__quantity') * models.F('baykeshopordersgoods__price')),
+        #         output_field=models.DecimalField()
+        #     ),
+        #     total_quantity=models.Sum('baykeshopordersgoods__quantity'),
+        #     name=models.F('baykeshopordersgoods__name')
+        # ).annotate(
+        #     total_price=models.F('total_price'),
+        #     total_quantity=models.F('total_quantity'),
+        #     name=models.F('name')
+        # )
+        return super().get_queryset()
 
 
 class BaykeShopOrdersGoodsManager(BaseManager):

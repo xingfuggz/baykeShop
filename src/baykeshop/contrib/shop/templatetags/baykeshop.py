@@ -198,3 +198,19 @@ def paytype_template():
 def json_loads(value):
     """json loads"""
     return json.loads(value)
+
+@register.simple_tag
+def paydata(skus, has_carts=False):
+    """json dumps"""
+    print
+    results = []
+    for sku in skus:
+        item = {}
+        if has_carts:
+            item['sku'] = sku.sku.id
+        else:
+            item['sku'] = sku.id
+        item['price'] = str(sku.price)
+        item['quantity'] = sku.quantity
+        results.append(item)
+    return results

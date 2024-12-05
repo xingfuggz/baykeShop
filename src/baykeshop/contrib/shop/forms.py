@@ -3,7 +3,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.contrib.admin import widgets
 from baykeshop.forms import ModelForm
-from .models import BaykeShopGoodsSKU, BaykeShopSpec, BaykeShopGoods
+from .models import BaykeShopGoodsSKU, BaykeShopSpec
 
 
 class MyFilteredSelectMultiple(widgets.FilteredSelectMultiple):
@@ -63,3 +63,4 @@ class BaykeShopGoodsSKUForm(ModelForm):
             specs = json_data
             return specs
         return json.dumps([], ensure_ascii=False)
+        

@@ -1,0 +1,24 @@
+{% load i18n %}
+<div class="bk-box p-6">
+    <h1 class="bk-title bk-is-5"">
+        <span class="bk-icon">
+            <i class="mdi mdi-magnify"></i>
+        </span>
+        <span>{{ sidebar.name }}</span> 
+    </h1>
+    <hr>
+    <form action="{% url 'article:search' %}" method="get">
+        <div class="bk-field bk-has-addons">
+            <div class="bk-control">
+                <input class="bk-input" type="text" name="q" placeholder="{% translate '搜索文章' %}">
+            </div>
+            <div class="bk-control">
+                <button class="bk-button bk-is-primary" type="submit">
+                    <span class="bk-icon">
+                        <i class="mdi mdi-magnify"></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

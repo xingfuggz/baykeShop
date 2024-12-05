@@ -1,0 +1,21 @@
+<div class="bk-box p-6">
+    <h1 class="bk-title bk-is-5"">
+        <span class="bk-icon">
+            <i class="mdi mdi-tag-multiple-outline"></i>
+        </span>
+        <span>{{ sidebar.name }}</span> 
+    </h1>
+    <hr>
+    <aside class="bk-menu">
+        {% for item in sidebar.tags %}
+        <span class="bk-tag {{ item.theme|random }} bk-is-light">
+            <a class="bk-has-text-dark" href="{% url 'article:tags' item.id %}">
+                <span class="bk-icon bk-is-small">
+                    <i class="mdi mdi-tag-outline"></i>
+                </span>
+                {{ item.name }}({{ item.count }})
+            </a>
+        </span>
+        {% endfor %}
+    </aside>
+</div>

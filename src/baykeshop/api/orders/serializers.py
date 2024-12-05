@@ -9,111 +9,89 @@
 @微信    :baywanyun
 '''
 
-
+from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from rest_framework import serializers
 from baykeshop.contrib.shop.models import (
-    BaykeShopOrders, BaykeShopOrdersGoods, BaykeShopGoodsSKU, 
-    BaykeShopCarts, BaykeShopGoodsImages
+    BaykeShopOrdersGoods, BaykeShopOrders, BaykeShopGoodsImages,
+    BaykeShopCarts
 )
- 
 
-class BaykeShopOrdersCreateSerializer(serializers.Serializer):
+ 
+class BaykeShopOrdersGoodsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BaykeShopOrdersGoods
+        fields = ('sku', 'quantity')
+
+
+class BaykeShopOrdersCreateSerializer(serializers.ModelSerializer):
     """订单创建序列化器"""
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    source = serializers.ChoiceField(choices=('carts', 'spu'), default='spu', help_text=_('订单来源'))
-    quantity = serializers.IntegerField(
-        help_text=_('商品数量,只在渠道为spu时需要携带'), 
-        default=1, 
-        required=False, 
-        min_value=1
+    baykeshopordersgoods_set = BaykeShopOrdersGoodsSerializer(many=True)
+    """ 创建订单的几种方式
+        carts: 购物车，这里会查找购物车去清理数据
+        default: 直接创建不做任何处理
+    """
+    source = serializers.ChoiceField(
+        choices=('carts', 'default'), 
+        help_text=_('订单来源'), 
+        required=False,
+        write_only=True,
+        default='default'
     )
-    skuids = serializers.CharField(help_text=_('商品id,多个以英文逗号隔开'), required=True)
-    receiver = serializers.CharField(max_length=50, help_text=_('收货人'), required=True)
-    phone = serializers.CharField(max_length=11, help_text=_('手机号码'), required=True)
-    address = serializers.CharField(max_length=255, help_text=_('收货地址'), required=True)
-    pay_url = serializers.CharField(
-        max_length=255, 
-        help_text=_('支付地址'), 
-        read_only=True, 
-        allow_blank=True
-    )
+    pay_url = serializers.CharField(required=False, read_only=True, help_text=_('支付地址'))
+
+    class Meta:
+        model = BaykeShopOrders
+        fields = (
+            'user', 'baykeshopordersgoods_set', 
+            'receiver', 'phone', 'address', 'source',
+            'pay_url'
+        )
     
     def validate(self, attrs):
-        request = self.context['request']
-        source = attrs.get('source')
-        if source == 'spu':
-            attrs['skuids'] = [int(attrs.get('skuids'))]
-            skus_queryset = BaykeShopGoodsSKU.objects.filter(id__in=attrs['skuids'])
-            if not skus_queryset.exists():
-                raise serializers.ValidationError(_('商品不存在'))
-            # 判断库存
-            if skus_queryset.first().stock < int(attrs['quantity']):
-                raise serializers.ValidationError(_('库存不足'))
-            # 获取商品,传递给create()
-            attrs['skus'] = skus_queryset
-
-        elif source == 'carts':
-            attrs['skuids'] = [int(skuid) for skuid in attrs.get('skuids').split(',')]
-            carts = BaykeShopCarts.objects.filter(user=request.user, sku_id__in=attrs['skuids'])
-
-            if not carts.exists():
-                raise serializers.ValidationError('购物车中没有该商品')
-            
-            for cart in carts:
-                # 判断库存
-                if cart.sku.stock < cart.quantity:
-                    raise serializers.ValidationError('库存不足')
-                
-            # 获取商品,传递给create()
-            attrs['carts'] = carts
-        return super().validate(attrs)
+        """验证数据"""
+        baykeshopordersgoods_set = attrs.get('baykeshopordersgoods_set')
+        if not baykeshopordersgoods_set:
+            raise serializers.ValidationError(_('请选择商品'))
+        for item in baykeshopordersgoods_set:
+            if int(item['quantity']) <= 0:
+                raise serializers.ValidationError(_('商品数量必须大于0'))
+            sku = item.get('sku')
+            if sku.stock < int(item['quantity']):
+                raise serializers.ValidationError(_('商品库存不足'))
+        return attrs
 
     def create(self, validated_data):
-        if validated_data.get('source') == 'carts':
-            carts = validated_data.get('carts')
-            pay_price = sum([cart.total_price for cart in carts])
-            orders = self.create_orders(validated_data, pay_price)
-            # 不能采用批量创建的方法，每次会同时生成两个同样的订单
-            for cart in carts:
-                self.create_orders_goods(orders, cart.sku, cart.quantity)
-            # 删除购物车
-            carts.delete()
-        else:
-            sku = validated_data.get('skus').first()
-            quantity = validated_data.get('quantity')
-            pay_price = sku.price * int(validated_data.get('quantity'))
-            orders = self.create_orders(validated_data, pay_price)
-            self.create_orders_goods(orders, sku, quantity)
-        validated_data['pay_url'] = reverse('shop:orders-pay', kwargs={'order_sn': orders.order_sn})
-        return validated_data
-    
-    def create_orders(self, validated_data, pay_price):
-        """ 创建订单 """
-        orders = BaykeShopOrders(
-            site=self.context['request'].site,
-            pay_price=pay_price,
-            user=validated_data.get('user'),
-            receiver=validated_data.get('receiver'),
-            phone=validated_data.get('phone'),
-            address=validated_data.get('address'),
+        """创建订单"""
+        source = validated_data.pop('source')
+        baykeshopordersgoods_set = validated_data.pop('baykeshopordersgoods_set')
+        pay_price = sum([item['sku'].price * item['quantity'] for item in baykeshopordersgoods_set])
+        orders = BaykeShopOrders.objects.create(pay_price=pay_price, **validated_data)
+        BaykeShopOrdersGoods.objects.bulk_create(
+            [BaykeShopOrdersGoods(orders=orders, **self.goods_format(item)) for item in baykeshopordersgoods_set]
         )
-        orders.save()
+        # 清理购物车数据
+        if source == 'carts':
+            skus = [item['sku'] for item in baykeshopordersgoods_set]
+            BaykeShopCarts.objects.filter(user=validated_data['user'], sku__in=skus).delete()
+        orders.pay_url = reverse('shop:orders-pay', kwargs={'order_sn': orders.order_sn})
+        messages.success(self.context['request'], _('订单创建成功, 请尽快支付, 否则订单会自动取消'))
         return orders
+    
+    def get_image(self, sku):
+        images = BaykeShopGoodsImages.objects.filter(goods=sku.goods)
+        if images.exists(): 
+            return images.first().image
+        return ''
 
-    def create_orders_goods(self, orders, sku, count):
-        """ 创建订单商品 """
-        goods = BaykeShopOrdersGoods(
-            site=self.context['request'].site,
-            orders=orders, 
-            sku=sku, 
-            quantity=count,
-            price=sku.price,
-            specs=sku.specs,
-            name=sku.goods.name,
-            detail=sku.goods.detail,
-            image=BaykeShopGoodsImages.objects.filter(goods=sku.goods).first().image
-        )
-        goods.save()
-        return goods
+    def goods_format(self, item):
+        """商品格式化"""
+        item['price'] = item['sku'].price
+        item['sku_sn'] = item['sku'].sku_sn
+        item['name'] = item['sku'].goods.name
+        item['image'] = self.get_image(item['sku'])
+        item['specs'] = item['sku'].specs
+        item['detail'] = item['sku'].goods.detail
+        return item

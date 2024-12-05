@@ -1,0 +1,111 @@
+{% extends 'baykeshop/article/base.html' %}
+
+{% load i18n static baykearticle baykeconfig %}
+
+
+{% block content %}
+<div class="bk-box p-6">
+    <div class="pb-4">
+        <h1 class="bk-is-size-3 bk-has-text-centered">
+            {{ article.title }}
+        </h1>
+        <p class="mb-1 bk-has-text-centered">
+            {% if article.user %}
+            <small> 
+                <span class="bk-icon">
+                    <i class="mdi mdi-account"></i>
+                </span>
+                {{ article.user.username }}
+            </small> 
+            {% endif %}
+            <small>
+                <span class="bk-icon">
+                    <i class="mdi mdi-clock"></i>
+                </span>
+                {{ article.created_time|timesince }}前
+            </small>
+
+            <a class="bk-has-text-dark" href="{% url 'article:category' article.category.id %}">
+                <small>
+                    <span class="bk-icon">
+                        <i class="mdi mdi-menu"></i>
+                    </span>
+                    {{ article.category.name }}
+                </small>
+            </a>
+        </p>
+    </div>
+    <div class="bk-content">
+        <blockquote>{{ article.description|truncatechars:80 }}</blockquote>
+        <div class="mt-1">{{ article.content|safe  }}</div> 
+    </div>
+    <nav class="bk-level bk-is-mobile">
+        <div class="bk-level-left">
+            {% for tag in article.tags.all %}
+            <a class="bk-level-item bk-has-text-grey bk-tag" href="{% url 'article:tags' tag.id %}">
+                <span class="bk-icon bk-is-small">
+                    <i class="mdi mdi-tag-outline"></i>
+                </span>
+                <span>{{ tag }}</span>
+            </a>
+            {% endfor %} 
+        </div>
+        <div class="bk-level-right">
+          <!-- <a class="bk-level-item">
+            <span class="bk-icon bk-is-small"><i class="mdi mdi-reply"></i></span>
+          </a> -->
+          <a class="bk-level-item bk-has-text-grey">
+            <span class="bk-icon bk-is-small mr-1"><i class="mdi mdi-eye-check-outline"></i></span>
+            <span>{% visit_count article 'pv' %}</span>p
+          </a>
+          <a class="bk-level-item bk-has-text-grey">
+            <span class="bk-icon is-small"><i class="mdi mdi-account-arrow-up-outline"></i></span>
+            <span>{% visit_count article 'uv' %}</span>u
+          </a>
+        </div>
+    </nav>
+</div>
+<!-- 上一篇 及 下一篇 -->
+{% if article.prev_article or article.next_article %}
+    <div class="bk-box px-6">
+        <div class="bk-level bk-is-mobile">
+            <div class="bk-level-left">
+                {% if article.prev_article %}
+                <a class="bk-level-item bk-has-text-dark" href="{% url 'article:detail' article.prev_article.id %}">
+                   <span class="bk-icon">
+                      <i class="mdi mdi-arrow-right"></i>
+                   </span>
+                   <span class="bk-level-item">{{ article.prev_article.title }}</span>
+                </a>
+                {% else %}
+                <a class="bk-level-item bk-has-text-dark" href="{% url 'article:list' %}">
+                   <span class="bk-icon">
+                      <i class="mdi mdi-arrow-left"></i>
+                   </span>
+                   <span>{% trans '返回列表' %}</span>
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="bk-level-right">
+                {% if article.next_article %}
+                <a class="bk-level-item bk-has-text-dark" href="{% url 'article:detail' article.next_article.id %}">
+                    <span class="bk-icon">
+                        <i class="mdi mdi-arrow-right"></i>
+                   </span>
+                   <span>{{ article.next_article.title }}</span>
+                </a>
+                {% else %}
+                <a class="bk-level-item bk-has-text-dark" href="{% url 'article:list' %}">
+                    <span class="bk-icon">
+                        <i class="mdi mdi-arrow-left"></i>
+                   </span>
+                   <span>{% trans '返回列表' %}</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+{% endif %}
+{% endblock %}

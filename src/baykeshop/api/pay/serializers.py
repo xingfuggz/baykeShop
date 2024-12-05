@@ -8,8 +8,11 @@ from rest_framework import serializers
 from baykeshop.contrib.shop.models import BaykeShopOrders
 from baykeshop.payment import alipay as alipay_sdk
 
-class BaykeShopOrdersPaySerializer(serializers.ModelSerializer):
 
+class BaykeShopOrdersPaySerializer(serializers.ModelSerializer):
+    """ 处理支付逻辑
+    根据选择的支付方式返回对应的支付地址
+    """
     pay_url = serializers.SerializerMethodField()
     
     class Meta:
@@ -26,8 +29,8 @@ class BaykeShopOrdersPaySerializer(serializers.ModelSerializer):
         return value
 
     def update(self, instance, validated_data):
-
-        # 判断订单创建时间是否在一个小时之内,超时则不能再支付了
+        # 判断订单创建时间是否在一个小时之内,超时则不能再支付了,这是一种简便的处理方式
+        # 后续可以考虑使用消息队列来处理超时订单，这里目前仅做了简单的阻止，库存并未回归
         if (timezone.now() - instance.created_time) > timedelta(hours=1):
             instance.status = BaykeShopOrders.OrderStatus.EXPIRED
             instance.save()
@@ -57,9 +60,9 @@ class BaykeShopOrdersPaySerializer(serializers.ModelSerializer):
             url = alipay_sdk.page_pay(
                 order_sn=instance.order_sn, 
                 total_price=str(instance.pay_price), 
-                subject=instance.name, 
-                return_url=callback_url, 
-                notify_url=url
+                subject=instance.order_sn,
+                return_url=callback_url,
+                notify_url=callback_url
             )
         except Exception as e:
             alipay_sdk.logger.error(e)

@@ -48,47 +48,43 @@
     </section>
     {{ has_carts|json_script:'has-carts' }}
     {{ view.kwargs|json_script:'view-kwargs' }}
+    {% paydata skus has_carts as payData %}
+    {{ payData|json_script:'payData' }}
 {% endblock %}
 
 {% block javascript %}
 <script>
-    const url = "{% url 'baykeshop_api:orders-create' %}"
+    const url = "{% url 'baykeshop_api:orders-list' %}"
     const createOrderBtn = document.querySelector('#create-order-btn');
     const hasCarts = JSON.parse(document.getElementById('has-carts').textContent);
-    const viewKwargs = JSON.parse(document.getElementById('view-kwargs').textContent);
+    // const viewKwargs = JSON.parse(document.getElementById('view-kwargs').textContent);
+    const payData = JSON.parse(document.getElementById('payData').textContent);
+
     createOrderBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('receiver', userAddress.selectedAddress.name);
-        formData.append('phone', userAddress.selectedAddress.phone);
-        formData.append('address', userAddress.getFullAddress(userAddress.selectedAddress));
-        if (!hasCarts) {
-            formData.append('source', 'spu');
-            formData.append('skuids', viewKwargs.skuid);
-            formData.append('quantity', viewKwargs.num);
-        } else {
-            formData.append('source', 'carts');
-            formData.append('skuids', viewKwargs.skuids);
+        data = {
+            receiver: userAddress.selectedAddress.name,
+            phone: userAddress.selectedAddress.phone,
+            address: userAddress.getFullAddress(userAddress.selectedAddress),
+            baykeshopordersgoods_set: payData,
+            source: 'carts'
         }
         fetch(url, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': bayke.csrftoken,
+                'Content-Type': 'application/json',
             },
-            body: formData,
+            body: JSON.stringify(data)
         })
         .then(response => {
-            if (response.status !== 200) {
-                console.log(response)
-                bayke.message.error("{% translate '创建订单失败' %}")
-                return
-            }
+            console.log('response', response)
             return response.json()
+        }).then(data => {
+            console.log('data', data)
+            window.location.href = data.pay_url
         })
-        .then(data => {
-            console.log(data)
-            window.location.href = data.pay_url;
-        })
+        
     })
 </script>
 {% endblock %}

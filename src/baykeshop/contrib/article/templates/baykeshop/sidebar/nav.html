@@ -1,0 +1,23 @@
+<div class="bk-box p-6">
+    <h1 class="bk-title bk-is-5"">
+        <span class="bk-icon">
+            <i class="{{ sidebar.icon }}"></i>
+        </span>
+        <span>{{ sidebar.name }}</span> 
+    </h1>
+    <hr>
+    <aside class="bk-menu px-2">
+        {% for item in sidebar.navs %}
+        <p class="bk-menu-label">{{ item.name }}</p>
+        <ul class="bk-menu-list">
+            {% for subitem in item.baykearticlecategory_set.all %}
+                <li>
+                    <a href="{% url 'article:category' subitem.id %}">
+                        <span>{{ subitem.name }}</span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% endfor %}
+    </aside>
+</div>

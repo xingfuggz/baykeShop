@@ -14,6 +14,7 @@ from rest_framework import routers
 from baykeshop.api.carts import views as carts_views
 from baykeshop.api.orders import views as orders_views
 from baykeshop.api.pay import views as pay_views
+from baykeshop.api.comments import views as comments_views
 
 
 router = routers.DefaultRouter()
@@ -21,14 +22,26 @@ router = routers.DefaultRouter()
 app_name = 'baykeshop_api'
 # 购物车
 router.register('carts', carts_views.BaykeShopCartsViewSet, basename='carts')
-# 支付订单
-router.register('pay', pay_views.BaykeShopOrdersPayView, basename='pay')
 
-urlpatterns = [
-    path(
-        'orders/', 
-        orders_views.BaykeShopOrdersGenericAPIView.as_view(), 
-        name='orders-create'
-    ),
-    *router.urls
-]
+"""
+支付订单,处理支付逻辑
+根据选择的支付方式返回对应的支付地址
+    @url: {% url 'baykeshop_api:pay-detail' order_sn=订单编号 %}
+    @method: post
+"""
+router.register('pay', pay_views.BaykeShopOrdersPayView, basename='pay')
+# 订单评论
+router.register('comments', comments_views.BaykeShopOrdersCommentViewSet, basename='comments')
+
+"""
+创建订单及删除订单
+1.创建订单 
+    @url: {% url 'baykeshop_api:orders-list' %} 
+    @method: post
+2.删除订单 
+    @url: {% url 'baykeshop_api:orders-detail' order_sn=订单编号 %} 
+    @method: delete
+"""
+router.register('orders', orders_views.BaykeShopOrdersViewSet, basename='orders')
+
+urlpatterns = router.urls

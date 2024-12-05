@@ -129,9 +129,7 @@
 
         payBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // console.log('click', payType.selectedPayTypeID)
             const url = "{% url 'baykeshop_api:pay-detail' order.order_sn %}"
-            // console.log('url', url)
             const formData = new FormData();
             formData.append('pay_type', payType.selectedPayTypeID);
             fetch(url, {
@@ -142,6 +140,7 @@
                 body: formData
             })
             .then(response => {
+                console.log('response', response)
                 if (response.status !== 200) {
                     window.location.reload()
                     return
@@ -149,6 +148,7 @@
                 return response.json()
             })
             .then(data => {
+                console.log('data', data)
                 if (data.pay_type === '2') {
                     window.location.href = data.pay_url
                     return

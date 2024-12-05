@@ -6,7 +6,8 @@ from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 
-from baykeshop.contrib.shop.models import BaykeShopOrders, BaykeShopOrdersGoods
+from baykeshop.contrib.shop.models import BaykeShopOrders
+from baykeshop.contrib.member.forms import BaykeShopOrdersCommentForm
 
 
 class BaykeShopOrdersListView(LoginRequiredMixin, ListView):
@@ -27,6 +28,7 @@ class BaykeShopOrdersListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = _('我的订单')
+        context['comment_form'] = BaykeShopOrdersCommentForm()
         return context
     
 

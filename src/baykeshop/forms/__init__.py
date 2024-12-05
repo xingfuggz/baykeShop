@@ -10,10 +10,5 @@ class ModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            # print(field.widget)
             if isinstance(field.widget, AdminTextareaWidget):
                 field.widget.attrs['rows'] = 3
-            
-            # if isinstance(field, forms.JSONField):
-            #     print('json', field.widget)
-                # field.widget.attrs['class'] = 'json-editor'

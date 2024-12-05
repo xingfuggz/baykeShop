@@ -5,6 +5,7 @@ from rest_framework import permissions
 from baykeshop.contrib.shop.models import BaykeShopOrders
 from .serializers import BaykeShopOrdersPaySerializer
 
+
 class BaykeShopOrdersPayView(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     """
     支付订单

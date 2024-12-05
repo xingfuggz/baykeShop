@@ -1,7 +1,7 @@
 {% extends 'baykeshop/member/profile.html' %}
 
-{% load i18n baykeshop %}
-
+{% load i18n static baykeshop %}
+    
 {% block profile_header %}
 <h1 class="bk-is-size-4">
     <span class="bk-icon"><i class="mdi mdi-shopping"></i></span>
@@ -135,21 +135,25 @@
                     <span>{% translate '查看详情' %}</span>
                 </a>
                 {% if order.status == 0 %}
-                <a class="bk-button bk-is-link" href="">
+                <a class="bk-button bk-is-link" href="{% url 'shop:orders-pay' order.order_sn %}">
                     <span class="bk-icon"><i class="mdi mdi-cash"></i></span>
                     <span>{% translate '立即支付' %}</span>
                 </a>
                 {% elif order.status == 2 %}
-                <a class="bk-button bk-is-link receipt" data-api="">
+                <a class="bk-button bk-is-link receipt" data-api="{% url 'member:orders-receipt' order.order_sn %}">
                     <span class="icon"><i class="mdi mdi-truck-delivery"></i></span>
                     <span>{% translate '确认收货' %}</span>
                 </a>
                 {% elif order.status == 3 %}
-                <a class="bk-button bk-is-link comment" data-api="">
+                <a class="bk-button bk-is-link comment" data-api="{% url 'member:orders-comment' order.order_sn %}">
                     <span class="bk-icon"><i class="mdi mdi-comment-account-outline"></i></span>
                     <span>{% translate '评价' %}</span>
                 </a>
                 {% endif %}
+                <button class="bk-button bk-is-danger bk-is-light" aria-label="delete" data-api="{% url 'baykeshop_api:orders-detail' order.order_sn %}"">
+                    <span class="bk-icon"><i class="mdi mdi-delete-empty"></i></span>
+                    <span>{% translate '删除' %}</span>
+                </button>
             </div>
         </div>
     </div>
@@ -158,55 +162,86 @@
         {% paginator_template page_obj request %}
     </div>
 
-    <!-- 确认收货模态框 -->
-     
-    {% comment %}
-    <div class="modal" id="modal-receipt">
-        <div class="modal-background"></div>
-        <div class="modal-content">
-            <div class="box p-6">
-                <h1 class="title is-5">
-                    <span class="icon">
-                        <i class="mdi mdi-checkbox-intermediate"></i>
-                    </span>
-                    确认收货
-                </h1>
-                <p>已收到货，现在确认收货吗？</p>
-                <hr class="my-3">
-                <div class="buttons is-justify-content-end">
-                    <button class="button cancel" id="modal-receipt-cancel">取消</button>
-                    <button class="button is-link" id="modal-receipt-confirm">确认</button>
+ <!-- 确认收货模态框 -->
+ <div class="bk-modal" id="modal-receipt">
+    <div class="bk-modal-background"></div>
+    <div class="bk-modal-content">
+        <div class="bk-box p-6">
+            <h1 class="bk-title bk-is-5">
+                <span class="bk-icon">
+                    <i class="mdi mdi-checkbox-intermediate"></i>
+                </span>
+                确认收货
+            </h1>
+            <p>已收到货，现在确认收货吗？</p>
+            <hr class="my-3">
+            <div class="bk-buttons bk-is-justify-content-end">
+                <button class="bk-button cancel" id="modal-receipt-cancel">取消</button>
+                <button class="bk-button bk-is-link" id="modal-receipt-confirm">确认</button>
+            </div>
+        </div>
+    </div>
+    <button class="bk-modal-close bk-is-large" aria-label="close"></button>
+</div>
+
+<!-- 评价模态框 -->
+<div class="bk-modal" id="modal-comment">
+    <div class="bk-modal-background"></div>
+    <div class="bk-modal-content">
+        <div class="bk-box p-6">
+            <h1 class="bk-title bk-is-5">
+                <span class="bk-icon">
+                    <i class="mdi mdi-comment-account-outline"></i>
+                </span>
+                评价
+            </h1>
+            <form action="" method="post">
+                {% csrf_token %}
+                {{ comment_form.as_bulma }}
+                <div class="bk-buttons bk-is-justify-content-end">
+                    <button class="bk-button cancel" id="modal-comment-cancel">取消</button>
+                    <button class="bk-button bk-is-link" id="modal-comment-confirm" type="submit">确认</button>
                 </div>
-            </div>
+            </form>
         </div>
-        <button class="modal-close is-large" aria-label="close"></button>
     </div>
-    {% endcomment %}
-    <!-- 评价模态框 -->
-     
-    {% comment %} 
-    <div class="modal" id="modal-comment">
-        <div class="modal-background"></div>
-        <div class="modal-content">
-            <div class="box p-6">
-                <h1 class="title is-5">
-                    <span class="icon">
-                        <i class="mdi mdi-comment-account-outline"></i>
-                    </span>
-                    评价
-                </h1>
-                <form action="" method="post">
-                    {% csrf_token %}
-                    {{ comment_form.as_bulma }}
-                    <div class="buttons is-justify-content-end">
-                        <button class="button cancel" id="modal-comment-cancel">取消</button>
-                        <button class="button is-link" id="modal-comment-confirm" type="submit">确认</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <button class="modal-close is-large" aria-label="close"></button>
-    </div>
-    {% endcomment %}
+    <button class="bk-modal-close bk-is-large" aria-label="close"></button>
+</div>
+    
 {% endblock %}
+
+{% block extrajs %}
+<script src="{% static 'baykeshop/js/actions.js' %}"></script>
+<script>
+    // 删除订单
+    // 获取aria-label="delete"的元素
+    const delBtns = document.querySelectorAll('[aria-label="delete"]')
+    delBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            console.log('删除订单')
+            e.preventDefault()
+            const api = btn.getAttribute('data-api')
+            // 确认删除
+            if (!confirm('确认删除订单,删除后不可恢复，请慎重...')) {
+                return
+            }
+            
+            fetch(api, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': bayke.csrftoken,
+                },
+            })
+            .then(response => {
+                console.log('response', response)
+                if (response.status !== 204) {
+                    return
+                }
+                window.location.reload()
+            })
+        })
+    })
+</script>
+{% endblock %}
+    
     

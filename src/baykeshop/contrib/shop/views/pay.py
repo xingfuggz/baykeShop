@@ -19,10 +19,7 @@ class BaykeShopOrdersPayView(LoginRequiredMixin, DetailView):
     template_name = 'baykeshop/shop/pay.html'
 
     def get_queryset(self):
-        return BaykeShopOrders.objects.filter(
-            user=self.request.user, 
-            status=BaykeShopOrders.OrderStatus.UNPAID
-        )
+        return BaykeShopOrders.objects.filter(user=self.request.user)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

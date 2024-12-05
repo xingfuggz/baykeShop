@@ -1,0 +1,88 @@
+{% extends 'baykeshop/article/base.html' %}
+
+{% load i18n static baykeshop baykeconfig %}
+
+{% block content %}
+<div class="bk-box p-6">
+  {% for article in page_obj %}
+  <article class="bk-media">
+    <figure class="bk-media-left">
+      <p class="bk-image bk-is-128x128">
+        {% if article.image %}
+        <img src="{{ article.image.url }}" />
+        {% else %}
+        <img
+          src="https://www.bing.com/th/id/OGC.b3d97397c6eb8297f1f1ce0c9dbe84ad?pid=1.7&rurl=https%3a%2f%2fc-ssl.dtstatic.com%2fuploads%2fblog%2f202205%2f16%2f20220516122156_3a800.thumb.400_0.gif&ehk=FPiz4pgVSyM19sUN5ohtVVsnmuhjAZgCUYFi1dCObj8%3d" />
+        {% endif %}
+      </p>
+    </figure>
+    <div class="bk-media-content">
+      <div class="bk-content">
+        <h1 class="bk-is-size-4">
+          <a class="bk-has-text-dark" href="{% url 'article:detail' article.id %}">{{ article.title }}</a>
+        </h1>
+        <p class="mb-1">
+          {% if article.user %}
+          <small>
+            <span class="bk-icon">
+              <i class="mdi mdi-account"></i>
+            </span>
+            {{ article.user.username }}
+          </small>
+          {% endif %}
+          <small>
+            <span class="bk-icon">
+              <i class="mdi mdi-clock"></i>
+            </span>
+            {{ article.created_time|timesince }}前
+          </small>
+
+          <a class="bk-has-text-dark" href="{% url 'article:category' article.category.id %}">
+            <small>
+              <span class="bk-icon">
+                <i class="mdi mdi-menu"></i>
+              </span>
+              {{ article.category.name }}
+            </small>
+          </a>
+        <p>{{ article.description|truncatechars:80 }}</p>
+        </p>
+      </div>
+      <nav class="bk-level bk-is-mobile">
+        <div class="bk-level-left">
+          {% for tag in article.tags.all %}
+          <a class="bk-level-item bk-has-text-grey bk-tag" href="{% url 'article:tags' tag.id %}">
+            <span class="bk-icon bk-is-small">
+              <i class="mdi mdi-tag-outline"></i>
+            </span>
+            <span>{{ tag }}</span>
+          </a>
+          {% endfor %}
+        </div>
+        <div class="bk-level-right">
+          <!-- <a class="bk-level-item">
+                    <span class="bk-icon bk-is-small"><i class="mdi mdi-reply"></i></span>
+                  </a> -->
+          <a class="bk-level-item bk-has-text-grey">
+            <span class="bk-icon bk-is-small mr-1"><i class="mdi mdi-eye-check-outline"></i></span>
+            <span>{% visit_count article 'pv' %}</span>p
+          </a>
+          <a class="bk-level-item bk-has-text-grey">
+            <span class="bk-icon is-small"><i class="mdi mdi-account-arrow-up-outline"></i></span>
+            <span>{% visit_count article 'uv' %}</span>u
+          </a>
+        </div>
+      </nav>
+    </div>
+  </article>
+  {% empty %}
+  <div class="bk-notification bk-is-warning bk-is-light bk-has-text-centered">
+    <span class="bk-icon">
+      <i class="mdi mdi-alert"></i>
+    </span>
+    {% trans '暂无文章' %}
+  </div>
+  {% endfor %}
+</div>
+{% paginator_template page_obj request %}
+{% endblock %}

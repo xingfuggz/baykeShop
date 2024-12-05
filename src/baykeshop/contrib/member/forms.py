@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from baykeshop.forms.mixins import BaseFormMixins
 from baykeshop.forms import widgets
+from baykeshop.contrib.shop.models import BaykeShopOrdersComment
 from .models import BaykeShopUserAddress, BaykeShopUser
 
 
@@ -138,6 +139,7 @@ class BaykeShopUserAddressForm(BaseFormMixins, forms.ModelForm):
             )
         }
 
+
 class BaykeShopUserProfileForm(BaseFormMixins, forms.ModelForm):
     """ 个人资料表单 """
     
@@ -152,7 +154,6 @@ class BaykeShopUserProfileForm(BaseFormMixins, forms.ModelForm):
 
     class Meta:
         model = BaykeShopUser
-        # exclude = ['user']
         fields = ['avatar', 'gender', 'nickname', 'birthday', 'email', 'mobile', 'qq', 'wechat', 'description']
         widgets = {
             'nickname': widgets.TextInput(
@@ -183,5 +184,23 @@ class BaykeShopUserProfileForm(BaseFormMixins, forms.ModelForm):
             ),
             'description': forms.Textarea(
                 attrs={'placeholder': _('请输入简介'), 'class': 'bk-textarea bk-has-fixed-size'},
+            )
+        }
+
+
+class BaykeShopOrdersCommentForm(BaseFormMixins, forms.ModelForm):
+    """订单评论表单"""
+
+    class Meta:
+        model = BaykeShopOrdersComment
+        fields = ('content', 'score',)
+        widgets = {
+            'content': forms.Textarea(
+                attrs={'placeholder': _('请输入评论内容'), 'class': 'bk-textarea', 'rows': 5, 'cols': 50},
+            ),
+            'score': widgets.Select(
+                attrs={'placeholder': _('请选择评分')},
+                icon_position='bk-has-icons-left',
+                icons_class={'left':'mdi mdi-star', 'right': ''}
             )
         }

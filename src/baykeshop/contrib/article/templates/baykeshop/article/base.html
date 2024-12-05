@@ -1,0 +1,23 @@
+{% extends 'baykeshop/base_site.html' %}
+
+{% load i18n static baykearticle %}
+
+{% block main %}
+<section class="bk-section">
+    <div class="bk-container"> 
+        <div class="bk-columns">
+            <div class="bk-column bk-is-9"> 
+                {% block content %}{% endblock %}
+            </div>
+            <div class="bk-column bk-is-3">
+                {% sidebars as sidebars %}
+                {% for sidebar in sidebars %}
+                    {{ sidebar.render }}
+                {% endfor %}
+                {% block sidebar %}{% endblock %}
+            </div>
+        </div>
+    </div>
+</section>
+    
+{% endblock %}
