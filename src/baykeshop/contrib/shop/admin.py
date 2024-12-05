@@ -13,7 +13,7 @@ class BaykeShopCategoryInline(bayke_admin.TabularInline):
 
 @admin.register(BaykeShopCategory)
 class BaykeShopCategoryAdmin(bayke_admin.ModelAdmin):
-    list_display = ['name', 'parent', 'order', 'is_show']
+    list_display = ['name', 'parent', 'order', 'is_floor', 'is_nav', 'is_show']
     list_editable = ['order', 'is_show']
     list_filter = ['is_show',]
     search_fields = ['name']
@@ -23,7 +23,7 @@ class BaykeShopCategoryAdmin(bayke_admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': (
-                'name', 'icon', 'parent', 'order', 'is_show', 
+                'name', 'icon', 'order',  'is_floor', 'is_nav', 'is_show', 
             )
         }),
     )

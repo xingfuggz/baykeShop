@@ -45,3 +45,14 @@ class BaykeDictModelAdmin(bayke_admin.ModelAdmin):
             self.message_user(request, _(f'{obj.key}为系统内置字典不允许删除'), 'ERROR')
             return False
         return super().has_delete_permission(request, obj)
+    
+
+@admin.register(BaykeBanners)
+class BaykeBannersAdmin(bayke_admin.ModelAdmin):
+    list_display = ('title', 'image', 'url', 'is_show', 'order', 'created_time')
+    search_fields = ('title', 'url')
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'image', 'url', 'is_show', 'order')
+        }),
+    )

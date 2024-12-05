@@ -92,7 +92,7 @@
         </div>
         <div id="navbarBasicExample" class="bk-navbar-menu">
             <div class="bk-navbar-start">
-                <a class="bk-navbar-item" href="">
+                <a class="bk-navbar-item" href="{% url 'shop:index' %}">
                     首页
                 </a>
                 <a class="bk-navbar-item" href="{% url 'shop:list' %}">
@@ -101,28 +101,25 @@
                 <a class="bk-navbar-item" href="{% url 'article:list' %}">
                     商城资讯
                 </a>
-                {% comment %}
-                {% nav_categorys as nav_categorys %}
-                {% for cate in nav_categorys|slice:4 %}
-                <div class="navbar-item has-dropdown is-hoverable">
-                    <a class="navbar-link" href="{% url 'shop:category-spu-list' cate.id %}">
-                        {{ cate.name }}
-                    </a>
-                    <div class="navbar-dropdown">
-                        {% for child in cate.baykeshopcategory_set.all %}
-                        <a class="navbar-item" href="{% url 'shop:category-spu-list' child.id %}">
-                            {{ child.name }}
-                        </a>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endfor %}
-                {% endcomment %}
             </div>
 
             <div class="bk-navbar-end">
                 <div class="bk-navbar-item">
-                    搜索
+                    <form action="{% url 'shop:search' %}" method="get">
+                        <div class="bk-field bk-has-addons">
+                            <div class="bk-control">
+                                <input class="bk-input" type="text" name="keyword" placeholder="搜索商品">
+                            </div>
+                            <div class="bk-control">
+                                <button class="bk-button bk-is-link" type="submit">
+                                    <span class="bk-icon">
+                                       <i class="mdi mdi-magnify"></i>
+                                    </span>
+                                    <span>搜索</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

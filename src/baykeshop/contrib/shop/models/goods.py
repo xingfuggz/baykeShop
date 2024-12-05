@@ -11,6 +11,8 @@ from .managers import BaykeShopGoodsManager, BaykeShopCartsManager, BaykeShopGoo
 class BaykeShopCategory(BaseCategoryModel):
     """商品分类"""
     icon = models.CharField(max_length=50, blank=True, default='', verbose_name=_('图标'))
+    is_floor = models.BooleanField(default=False, verbose_name=_('是否楼层'))
+    is_nav = models.BooleanField(default=False, verbose_name=_('是否导航'))
 
     class Meta:
         verbose_name = _('商品分类')

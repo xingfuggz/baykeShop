@@ -82,3 +82,19 @@ class BaykeShopGoodsDetailView(DetailView):
             id=self.get_object().id
         ).order_by('-sales')
         return queryset[:5]
+
+
+class BaykeShopSearchView(BaykeShopGoodsListView):
+    """商品搜索"""
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "商品搜索"
+        return context
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        keyword = self.request.GET.get("keyword")
+        if keyword:
+            queryset =queryset.filter(name__icontains=keyword)
+            return self.filter_queryset(queryset)
+        return queryset

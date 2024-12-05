@@ -1,0 +1,27 @@
+{% extends 'baykeshop/base_site.html' %}
+
+{% load i18n baykeconfig %}
+
+{% block main %}
+{% banners_template %}
+    
+{% for floor in floors %}
+<section class="bk-section">
+    <div class="bk-container">
+        <div class="bk-is-flex bk-is-align-items-center bk-is-justify-content-space-between p-3">
+            <h1 class="bk-is-size-4 bk-has-text-weight-bold">{{ floor.name }}</h1>
+            <a class="bk-has-text-grey" href="{% url 'shop:category' floor.id %}" target="_blank" rel="noopener noreferrer">更多>></a>
+        </div>
+        <div class="bk-fixed-grid bk-has-5-cols-fullhd bk-has-5-cols-widescreen bk-has-5-cols-desktop bk-has-5-cols-tablet bk-has-2-cols-mobile">
+            <div class="bk-grid">
+                {% for spu in floor.spu_list|slice:10 %}
+                <div class="bk-cell">
+                    {% include "baykeshop/shop/includes/spu.html" with spu=spu %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% load static %}
+<swiper-container navigation="true" pagination="true" loop="true" autoplay="true">
+    {% for item in banners %}
+    <swiper-slide>
+        <a href="{{ item.url }}" _target="blank">
+            <img src="{{ item.image.url }}" alt="{{ item.title }}">
+        </a>
+    </swiper-slide>
+    {% endfor %}
+</swiper-container>
+<script src="{% static 'baykeshop/js/swiper-element-bundle.min.js' %}"></script>

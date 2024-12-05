@@ -5,8 +5,12 @@ from . import views
 app_name = 'shop'
 
 urlpatterns = [
+    # 首页
+    path('', views.BaykeShopIndexView.as_view(), name='index'),
     # 商品列表
     path('list/', views.BaykeShopGoodsListView.as_view(), name='list'),
+    # 搜索
+    path('search/', views.BaykeShopSearchView.as_view(), name='search'),
     # 商品详情
     path('detail/<int:pk>/', views.BaykeShopGoodsDetailView.as_view(), name='detail'),
     # 商品分类
