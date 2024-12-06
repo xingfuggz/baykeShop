@@ -2,7 +2,7 @@ from django.urls import path, include
 
 
 urlpatterns = [
-    path('shop/', include('baykeshop.contrib.shop.urls')),
+    path('', include('baykeshop.contrib.shop.urls')),
     path('member/', include('baykeshop.contrib.member.urls')),
     path('article/', include('baykeshop.contrib.article.urls')),
     # 接口url

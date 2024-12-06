@@ -1,0 +1,93 @@
+{% load i18n baykeshop %}
+<div class="bk-box bk-is-radiusless p-6 mt-3" id="tab-container">
+    <div class="bk-tabs">
+        <ul>
+            <li class="bk-is-active">
+                <a href="#tab-1">{% translate '商品详情' %}</a>
+            </li>
+            <li class="">
+                <a href="#tab-2">{% translate '商品评价' %}({{ comments_count }})</a>
+            </li>
+        </ul>
+    </div>
+    <div class="bk-tab-content">
+        <div id="tab-1" class="bk-tab-pane bk-is-active">
+            <div class="bk-content">
+                {{ spu.detail|safe }}
+            </div>
+        </div>
+        <div id="tab-2" class="bk-tab-pane">
+            <div class="bk-content">
+                <div class="bk-is-flex bk-is-justify-content-space-between py-2 px-3">
+                    <div class="bk-has-text-weight-bold bk-has-text-grey">满意度：{{ like_score }}%</div>
+                    <div class="bk-has-text-weight-bold bk-has-text-grey">评分：{{ score_avg }}分</div>
+                </div>
+                <div class="bk-dropdown-divider bk-has-background-light"></div>
+                {% for comment in comments %}
+                    <article class="bk-media">
+                        <figure class="bk-media-left">
+                            <p class="bk-image bk-is-32x32">
+                                <img class="bk-is-rounded" src="{% if comment.user.baykeshopuser.avatar %}{{ comment.user.baykeshopuser.avatar.url }}{% endif %}">
+                            </p>
+                        </figure>
+                        <div class="bk-media-content">
+                            <p>
+                                {{ comment.user.username }}
+                                ({{ comment.score }}分)
+                            </p>
+                            <p class="bk-is-size-7">{{ comment.created_time|timesince }}前</p>
+                            <p class="bk-has-text-grey-light">{{ comment.content }}</p>
+                            
+                            {% if comment.reply_content %}
+                            <div class="bk-box bk-is-shadowless bk-has-background-light">
+                                <span class="bk-has-text-danger-dark">商家回复：</span> {{ comment.reply_content }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                    </article>
+                {% endfor %}
+                {% paginator_template comments request %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const page = "{{ request.GET.page|escapejs }}"
+    const tabContainer = document.getElementById('tab-container');
+    const tabs = tabContainer.querySelectorAll('.bk-tabs ul li');
+    const panes = tabContainer.querySelectorAll('.bk-tab-content .bk-tab-pane');
+    
+    if (page) {
+        tabs[0].classList.remove('bk-is-active');
+        panes[0].classList.remove('bk-is-active');
+        tabs[1].classList.add('bk-is-active');
+        panes[1].classList.add('bk-is-active');
+    } 
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = e.target.getAttribute('href');
+            panes.forEach(pane => {
+               pane.classList.remove('bk-is-active');
+               if (pane.getAttribute('id') === target.substring(1)) {
+                   pane.classList.add('bk-is-active');
+               }
+               tabs.forEach(tab => tab.classList.remove('bk-is-active'));
+               tab.classList.add('bk-is-active');
+               return false;
+            })
+        })
+    })
+</script>
+
+<style>
+    .bk-tab-content .bk-tab-pane {
+        display: none;
+    }
+    .bk-tab-content .bk-tab-pane.bk-is-active {
+        display: block;
+    }
+</style>

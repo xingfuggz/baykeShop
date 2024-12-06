@@ -71,11 +71,8 @@ class BaykeShopOrdersComment(BaseModel):
     
     @classmethod
     def get_spu_queryset(cls, spu):
-        orders = BaykeShopOrdersGoods.objects.filter(
-            sku__goods=spu).values_list(
-                'orders_id', flat=True
-            ).distinct()
-        queryset = cls.objects.filter(id__in=orders)
+        orders = BaykeShopOrdersGoods.objects.filter(sku__goods=spu).values_list('orders', flat=True).distinct()
+        queryset = cls.objects.filter(order_id__in=orders, status=True)
         return queryset.order_by('-created_time')
     
     @classmethod
@@ -116,7 +113,7 @@ class BaykeShopOrdersComment(BaseModel):
         """ 获取商品好评率  """
         gte_3 = cls.get_spu_queryset(spu).filter(score__gte=3).count()
         rate = gte_3 / cls.get_comment_count(spu) if cls.get_comment_count(spu) else 0.98
-        return round(rate * 100, 2)
+        return round(rate * 100, 1)
     
     @classmethod
     def get_user_comment_avg_score(cls, user):

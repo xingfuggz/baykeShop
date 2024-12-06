@@ -260,7 +260,8 @@
             // 删除购物车
             deleteCart(cart_id){
                 let url = '{% url "baykeshop_api:carts-list" %}' + cart_id + '/'
-                bayke.message.confirm('{% translate "确定要删除此商品吗？" %}')
+                let confirmed = confirm('{% translate "确定要删除此商品吗？" %}')
+                if (!confirmed) return
                 fetch(url, {
                     method: 'DELETE',
                     headers: {

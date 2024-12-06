@@ -1,10 +1,12 @@
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin, DetailView
-from django.http.response import HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
-from django.urls import reverse
+from django.core.paginator import Paginator
 
-from baykeshop.contrib.shop.models import BaykeShopCategory, BaykeShopGoods
+from baykeshop.contrib.shop.models import (
+    BaykeShopCategory, BaykeShopGoods,
+    BaykeShopOrdersComment
+)
 
 
 class BaykeShopGoodsListView(ListView):
@@ -65,6 +67,10 @@ class BaykeShopGoodsDetailView(DetailView):
         context['title'] = self.get_object().name
         context['images'] = self.get_images()
         context['recommends'] = self.get_recommend_queryset()
+        context['comments'] = self.get_comments()
+        context['score_avg'] = self.get_score_avg()
+        context['like_score'] = self.get_like_score()
+        context['comments_count'] = self.get_comments_count()
         return context
     
     def get_images(self):
@@ -82,6 +88,25 @@ class BaykeShopGoodsDetailView(DetailView):
             id=self.get_object().id
         ).order_by('-sales')
         return queryset[:5]
+
+    def get_comments(self):
+        queryset = BaykeShopOrdersComment.get_spu_queryset(self.get_object())
+        paginator = Paginator(queryset, 20)
+        page_obj = paginator.get_page(self.request.GET.get('page', 1))
+        return page_obj
+    
+    def get_score_avg(self):
+        """ 获取商品平均评分 """
+        return BaykeShopOrdersComment.get_score_avg(self.get_object())
+    
+    def get_like_score(self):
+        """ 好评率 """
+        return BaykeShopOrdersComment.get_spu_comment_avg_score(self.get_object())
+    
+    def get_comments_count(self):
+        """ 获取商品评论数 """
+        return BaykeShopOrdersComment.get_comment_count(self.get_object())
+
 
 
 class BaykeShopSearchView(BaykeShopGoodsListView):

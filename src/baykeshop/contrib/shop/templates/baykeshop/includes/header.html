@@ -1,4 +1,4 @@
-{% load i18n baykeshop %}
+{% load i18n baykeshop baykeconfig %}
 <header>
     <div id="head-top" class="bk-has-background-black-ter bk-has-text-white-ter">
         <div class="bk-container">
@@ -78,8 +78,8 @@
             {% if logo %}
             <img src="{{ logo.url }}" alt="" width="150" height="auto">
             {% else %}
-            <a class="bk-navbar-item bk-is-size-3 bk-has-text-weight-bold" href="">
-                BaykeShop
+            <a class="bk-navbar-item bk-is-size-3 bk-has-text-weight-bold" href="{% url 'shop:index' %}">
+                {% dict_value "SITE_TITLE" %}
             </a>
             {% endif %}
             <a role="bk-button" class="bk-navbar-burger" aria-label="menu" aria-expanded="false"
@@ -107,14 +107,14 @@
                 <div class="bk-navbar-item">
                     <form action="{% url 'shop:search' %}" method="get">
                         <div class="bk-field bk-has-addons">
-                            <div class="bk-control">
+                            <div class="bk-control bk-has-icons-left">
                                 <input class="bk-input" type="text" name="keyword" placeholder="搜索商品">
+                                <span class="bk-icon bk-is-left">
+                                    <i class="mdi mdi-magnify"></i>
+                                 </span>
                             </div>
                             <div class="bk-control">
                                 <button class="bk-button bk-is-link" type="submit">
-                                    <span class="bk-icon">
-                                       <i class="mdi mdi-magnify"></i>
-                                    </span>
                                     <span>搜索</span>
                                 </button>
                             </div>

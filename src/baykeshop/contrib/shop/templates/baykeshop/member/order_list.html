@@ -92,7 +92,9 @@
     <div class="bk-box bk-is-shadowless p-6" style="border: 1px solid #e6e6e6;">
         <div class="bk-is-flex bk-is-align-items-center bk-is-justify-content-space-between">
             <h1>订单号：{{ order.order_sn }}</h1>
-            <span class="bk-tag bk-is-link bk-is-light">{{ order.get_status_display }}</span>
+            <span class="bk-tag {% if order.status == 4 %} bk-is-success {% else %} bk-is-link {% endif %} bk-is-light">
+                {{ order.get_status_display }}
+            </span>
         </div>
         <hr>
         {% for item in order.baykeshopordersgoods_set.all %}

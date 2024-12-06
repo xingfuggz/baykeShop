@@ -10,6 +10,8 @@
 '''
 
 from django.db import models
+from django.utils.translation import gettext_lazy as _
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from baykeshop.contrib.shop.models import BaykeShopGoodsSKU, BaykeShopCarts
@@ -60,3 +62,7 @@ class BaykeShopCashView(LoginRequiredMixin, TemplateView):
     def get_total_count(self):
         total = sum([obj.quantity for obj in self.get_queryset()])
         return total
+    
+    def get_login_url(self):
+        messages.warning(self.request, _('请先登录后操作！'))
+        return super().get_login_url()

@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from baykeshop.contrib.shop.models import (
     BaykeShopCategory, BaykeShopBrand, BaykeShopGoods,
-    BaykeShopCarts, BaykeShopOrders
+    BaykeShopCarts, BaykeShopOrders, BaykeShopOrdersComment
 )
 
 register = Library()
@@ -214,3 +214,14 @@ def paydata(skus, has_carts=False):
         item['quantity'] = sku.quantity
         results.append(item)
     return results
+
+
+@register.simple_tag
+def score_avg(spu):
+    """商品平均评分"""
+    return BaykeShopOrdersComment.get_score_avg(spu)
+
+@register.simple_tag
+def rate(spu):
+    """商品评论率"""
+    return BaykeShopOrdersComment.get_spu_comment_avg_score(spu)

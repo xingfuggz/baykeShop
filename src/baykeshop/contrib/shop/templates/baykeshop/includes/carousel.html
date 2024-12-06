@@ -61,6 +61,7 @@
         object-fit: cover;
     }
 </style>
+<script src="{% static 'baykeshop/js/swiper-element-bundle.min.js' %}"></script>
 <div class="gallery">
     <swiper-container style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff" class="mySwiper"
         thumbs-swiper=".mySwiper2" space-between="10">
@@ -78,6 +79,5 @@
             <img class="bk-is-clickable" src="{{ gallery.image.url }}" />
         </swiper-slide>
         {% endfor %}
-    </swiper-container>
-    <script src="{% static 'baykeshop/js/swiper-element-bundle.min.js' %}"></script>
+    </swiper-container> 
 </div>

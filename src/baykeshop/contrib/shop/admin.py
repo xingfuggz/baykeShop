@@ -1,6 +1,9 @@
+import json
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html
+from django.utils import timezone
+from django.template.loader import render_to_string
 # Register your models here.
 from baykeshop.sites import admin as bayke_admin
 from .forms import BaykeShopGoodsSKUForm
@@ -113,58 +116,92 @@ class BaykeShopBrandAdmin(bayke_admin.ModelAdmin):
 class BaykeShopOrdersGoodsInline(bayke_admin.TabularInline):
     model = BaykeShopOrdersGoods
     extra = 0
+    exclude = ('specs', 'sku', 'detail', 'image')
     readonly_fields = (
-        'sku_sn', 'sku', 'name', 'price', 'quantity', 'detail', 'image', 'specs'
+        '_image', 'name', 'price', 'quantity', '_specs', 'sku_sn' 
     )
 
-
-# @admin.register(BaykeShopOrders)
-# class BaykeShopOrdersAdmin(bayke_admin.ModelAdmin):
-#     list_display = (
-#         'id', 'user', 'order_sn', 'status', 'pay_type', 
-#         'pay_price', 'is_verify', 'is_comment', 'created_time', 'pay_time'
-#     )
-#     list_display_links = ('id', 'user', 'order_sn')
-#     search_fields = ('id', 'user__username', 'user__nickname')
-#     list_filter = ('status', 'pay_type', 'is_verify', 'is_comment')
-#     readonly_fields = (
-#         'order_sn', 'user', 'pay_type', 'is_comment',
-#         'pay_sn', 'pay_time', 'is_verify', 'verify_time'
-#     )
-#     inlines = [
-#         BaykeShopOrdersGoodsInline,
-#     ]
-#     fieldsets = (
-#         (_('订单信息'), {
-#             'fields': ('order_sn', 'user', 'status', 'pay_type', 'pay_price', 'is_comment')
-#         }),
-#         (_('支付信息'), {
-#             'fields': ('pay_sn', 'pay_time')
-#         }),
-#         (_('核销信息'), {
-#             'fields': ('is_verify', 'verify_time',)
-#         }),
-#         (_('收货信息'), {
-#             'fields': ('address', 'phone','receiver')
-#         })
-#     )
-
-#     def has_add_permission(self, request):
-#         return False
+    @admin.display(description='规格')
+    def _specs(self, obj):
+        specs = obj.specs
+        if isinstance(specs, str):
+            specs = json.loads(obj.specs)
+        if not specs: return '-'
+        return ', '.join([f"{spec['parent__name']}:{spec['name']}" for spec in specs])
     
-#     def has_change_permission(self, request, obj=None):
-#         # 未支付和未发货订单可操作修改
-#         if obj and obj.status in [0, 1]:
-#             return super().has_change_permission(request, obj)
-#         return False
-    
-#     def get_readonly_fields(self, request, obj=None):
-#         readonly_fields = super().get_readonly_fields(request, obj)
-#         # 已支付订单不能再修改支付金额
-#         if obj and obj.status >= BaykeShopOrders.OrderStatus.SHIPPED:
-#             readonly_fields = list(readonly_fields) + ['pay_price',]
-#         return readonly_fields
+    @admin.display(description='商品图片')
+    def _image(self, obj):
+        if not obj.image: return '-'
+        return format_html(
+            '<img src="/media/{}" width="64" height="64" />',
+            obj.image
+        )
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(BaykeShopOrders)
+class BaykeShopOrdersAdmin(bayke_admin.ModelAdmin):
+    list_display = (
+        'id', 'user', 'order_sn', 'order_skus', 'status', 'pay_type', 
+        'pay_price', 'is_verify', 'is_comment', 'created_time', 'pay_time'
+    )
+    list_display_links = ('id', 'user', 'order_sn')
+    search_fields = ('id', 'user__username', 'user__nickname')
+    list_filter = ('status', 'pay_type', 'is_verify', 'is_comment')
+    readonly_fields = (
+        'order_sn', 'user', 'pay_type', 'is_comment',
+        'pay_sn', 'pay_time', 'is_verify', 'verify_time'
+    )
+    inlines = [
+        BaykeShopOrdersGoodsInline,
+    ]
+    actions = ['shipments', 'verify']
+   
+    def has_add_permission(self, request):
+        return False
+    
+    def has_change_permission(self, request, obj=None):
+        # 未支付和未发货订单可操作修改
+        if obj and obj.status in [0, 1]:
+            return super().has_change_permission(request, obj)
+        return False
+    
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = super().get_readonly_fields(request, obj)
+        # 已支付订单不能再修改支付金额
+        if obj and obj.status >= BaykeShopOrders.OrderStatus.SHIPPED:
+            readonly_fields = list(readonly_fields) + ['pay_price',]
+        return readonly_fields
+
+    @admin.display(description='订单商品')
+    def order_skus(self, obj):
+        queryset = obj.baykeshopordersgoods_set.all()
+        return render_to_string('baykeshop/admin/ordersgoods.html', {'queryset': queryset})
+
+    @admin.action(description='所选订单 发货')
+    def shipments(self, request, queryset):
+        for item in queryset:
+            if item.status != BaykeShopOrders.OrderStatus.PAID: 
+                continue
+            item.status = BaykeShopOrders.OrderStatus.SHIPPED
+            item.save()
+        self.message_user(request, '发货成功')
+    
+    @admin.action(description='所选订单 核销')
+    def verify(self, request, queryset):
+        for item in queryset:
+            if item.status != BaykeShopOrders.OrderStatus.VERIFY: 
+                continue
+            item.status = BaykeShopOrders.OrderStatus.SIGNED
+            item.is_verify = True
+            item.pay_time = timezone.now()
+            item.save()
+        self.message_user(request, '核销成功')
 
 # 规格值
 class BaykeShopSpecInline(bayke_admin.TabularInline):
@@ -198,6 +235,31 @@ class BaykeShopSpecAdmin(bayke_admin.ModelAdmin):
         if obj and obj.parent:
             return []
         return super().get_inline_instances(request, obj)
+
+
+@admin.register(BaykeShopOrdersComment)
+class BaykeShopOrdersCommentAdmin(bayke_admin.ModelAdmin):
+    '''Admin View for BaykeShopOrdersComment'''
+    list_display = ('id', 'user', 'order', 'score', 'content', 'reply_user', 'status', 'created_time')
+    list_display_links = ('id', 'user', 'order')
+    list_editable = ('status',)
+    search_fields = ('user__username', 'user__nickname')
+    list_filter = ('score',)
+    readonly_fields = ('user', 'order', 'content', 'reply_user', 'score')
+
+    fieldsets = (
+        (_('评论信息'), {
+            'fields': ('user', 'order', 'content', 'score')
+        }),
+        (_('回复信息'), {
+            'fields': ('reply_user', 'reply_content', 'status')
+        }),
+    )
+
+    def save_model(self, request, obj, form, change):
+        obj.reply_user = request.user
+        return super().save_model(request, obj, form, change)
     
 
-admin.site.register([BaykeShopOrdersComment, BaykeShopOrders])
+    def has_add_permission(self, request, obj=None):
+        return False

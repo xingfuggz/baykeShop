@@ -31,15 +31,17 @@ ALLOWED_HOSTS = []
 # Application definition
 from baykeshop import INSTALLED_APPS as _INSTALLED_APPS
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    # 'django.contrib.admin',
+    'baykeshop.AdminConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'rest_framework'
-] + _INSTALLED_APPS
+    'rest_framework',
+    *_INSTALLED_APPS,
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

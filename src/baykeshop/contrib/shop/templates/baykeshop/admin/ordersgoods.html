@@ -1,0 +1,41 @@
+{% load baykeshop %}
+<div id="orderItem">
+    {% for item in queryset %}
+    <div class="item">
+        <div>
+            <img src="{{ item.image.url }}" width="50">
+        </div>
+        <div class="info">
+            <div class="title">{{ item.name|truncatechars:15 }}({{ item.price }}x{{ item.quantity }})</div>
+            <div class="spec">
+                {% for spec in item.specs|json_loads %}
+                    {{ spec.parent__name }}:{{ spec.name }}
+                {% endfor %}     
+            </div>
+        </div>
+    </div>
+    {% if queryset|length > 1 %}<hr>{% endif %}
+    {% endfor %}
+</div>
+
+<style>
+#result_list td, th{
+    vertical-align: middle;
+}
+#orderItem .item{
+    display: flex;
+    align-items: center;
+    padding: 3px 3px;
+}
+#orderItem .item .title {
+    font-weight: bold;
+    font-size: 14px;
+}
+#orderItem .item .spec {
+    font-size: 12px;
+    color: rgb(121, 121, 121);
+}
+#orderItem .item .info{
+    margin-left: 5px;
+}
+</style>

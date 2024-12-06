@@ -62,7 +62,7 @@ class BaseOrdersModel(BaseModel):
     pay_sn = models.CharField(max_length=125, verbose_name=_('支付流水号'), blank=True, default='')
     pay_time = models.DateTimeField(blank=True, null=True, verbose_name=_('支付时间'))
     # 是否核销订单
-    is_verify = models.BooleanField(default=False, verbose_name=_('是否核销订单'))
+    is_verify = models.BooleanField(default=False, verbose_name=_('是否已核销'))
     verify_time = models.DateTimeField(blank=True, null=True, verbose_name=_('核销时间'))
     is_comment = models.BooleanField(default=False, verbose_name=_('是否评价'))
 

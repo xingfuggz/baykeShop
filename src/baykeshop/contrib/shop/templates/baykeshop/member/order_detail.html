@@ -85,19 +85,9 @@
             <h1 class="bk-is-size-5">共{{ order.total_quantity }}件商品，总金额<span>￥{{ order.total_price }}</span></h1>
             <div class="bk-buttons bk-is-justify-content-end mt-3">
                 {% if order.status == 0 %}
-                <a class="bk-button bk-is-link" href="">
+                <a class="bk-button bk-is-link" href="{% url 'shop:orders-pay' order.order_sn %}">
                     <span class="bk-icon"><i class="mdi mdi-cash"></i></span>
                     <span>{% translate '立即支付' %}</span>
-                </a>
-                {% elif order.status == 2 %}
-                <a class="bk-button bk-is-link" href="">
-                    <span class="bk-icon"><i class="mdi mdi-truck-delivery"></i></span>
-                    <span>{% translate '确认收货' %}</span>
-                </a>
-                {% elif order.status == 3 %}
-                <a class="bk-button bk-is-link" href="">
-                    <span class="icon"><i class="mdi mdi-comment-account-outline"></i></span>
-                    <span>{% translate '评价' %}</span>
                 </a>
                 {% endif %}
             </div>

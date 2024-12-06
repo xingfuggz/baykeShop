@@ -6,7 +6,6 @@ from baykeshop.contrib.shop.models import BaykeShopOrdersComment, BaykeShopOrder
 
 class BaykeShopOrdersCommentSerializer(serializers.ModelSerializer):
     """ 订单评论序列化器 """
-    
     class Meta:
         model = BaykeShopOrdersComment
         fields = ('order', 'content', 'score')

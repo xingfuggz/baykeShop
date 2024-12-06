@@ -11,18 +11,7 @@
             <div class="bk-column bk-is-7">
                 <h1 class="bk-is-size-3">{{ spu.name }}</h1>
                 {% sku_template spu %}
-                <div class="bk-box mt-3 bk-is-radiusless">
-                    <div class="bk-tabs">
-                        <ul>
-                            <li class="bk-is-active">
-                                <a href="#tab-1">{% translate '商品详情' %}</a>
-                            </li>
-                            <li class="">
-                                <a href="#tab-2">{% translate '商品评价' %}</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                {% include 'baykeshop/shop/includes/content.html' with spu=spu %}
             </div>
             <div class="bk-column bk-is-2">
                 <div class="bk-box bk-is-shadowless" style="border: 1px solid #eee;">

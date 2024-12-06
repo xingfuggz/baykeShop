@@ -1,0 +1,135 @@
+{% extends 'admin/base_site.html' %}
+
+{% load i18n static %}
+
+{% block extrastyle %}
+<link rel="stylesheet" href="{% static 'baykeshop/css/grid.css' %}">
+<link rel="stylesheet" href="{% static 'baykeshop/css/materialdesignicons.min.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- 数据统计 -->
+<div class="bk-grid">
+    <div class="bk-cell">
+        <div class="bk-box bk-has-background-light bk-is-align-items-center bk-is-shadowless1">
+            <div class="bk-is-flex bk-is-justify-content-space-between">
+                <div>销售额</div>
+                <div>
+                    <span class="bk-tag bk-is-link bk-is-light">今日</span>
+                </div>
+            </div>
+            <div>
+                <div class="bk-is-size-3">{{ sales_data.today_sales }}</div>
+                <div>
+                    <span>昨日 {{ sales_data.yesterday_sales }}</span> 
+                    <span>日环比 {{ sales_data.sales_ratio }}%</span>
+                    
+                    {% if sales_data.sales_ratio > 0 %}
+                    <span class="bk-is-size-7 bk-has-text-danger">▲</span>
+                    {% else %}
+                    <span class="bk-is-size-7 bk-has-text-success">▼</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="bk-has-background-primary-95 my-2" style="height: 1px;"></div>
+            <div class="bk-is-flex bk-is-justify-content-space-between bk-has-text-grey">
+                <div>本月销售额</div>
+                <div>
+                    <span>{{ sales_data.last_month_sales }}元</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bk-cell">
+        <div class="bk-box bk-has-background-light bk-is-align-items-center bk-is-shadowless1">
+            <div class="bk-is-flex bk-is-justify-content-space-between">
+                <div>用户访问量</div>
+                <div>
+                    <span class="bk-tag bk-is-link bk-is-light">今日</span>
+                </div>
+            </div>
+            <div>
+                <div class="bk-is-size-3">{{ visit_data.today_count.count_pv }}</div>
+                <div>
+                    <span>昨日 {{ visit_data.yesterday_count.count_pv }}</span> 
+                    <span>日环比 {{ visit_data.ratio.pv }}%</span>
+                    {% if visit_data.ratio.pv > 0 %}
+                    <span class="bk-is-size-7 bk-has-text-danger">▲</span>
+                    {% else %}
+                    <span class="bk-is-size-7 bk-has-text-success">▼</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="bk-has-background-primary-95 my-2" style="height: 1px;"></div>
+            <div class="bk-is-flex bk-is-justify-content-space-between bk-has-text-grey">
+                <div>本月访问量</div>
+                <div>
+                    <span>{{ visit_data.last_month_count.count_pv }}PV</span>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+    <div class="bk-cell">
+        <div class="bk-box bk-has-background-light bk-is-align-items-center bk-is-shadowless1">
+            <div class="bk-is-flex bk-is-justify-content-space-between">
+                <div>订单量</div>
+                <div>
+                    <span class="bk-tag bk-is-link bk-is-light">今日</span>
+                </div>
+            </div>
+            <div>
+                <div class="bk-is-size-3">{{ order_data.today_count }}</div>
+                <div>
+                    <span>昨日 {{ order_data.yesterday_count }}</span> 
+                    <span>日环比 {{ order_data.ratio }}%</span>
+                    {% if order_data.ratio > 0 %}
+                    <span class="bk-is-size-7 bk-has-text-danger">▲</span>
+                    {% else %}
+                    <span class="bk-is-size-7 bk-has-text-success">▼</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="bk-has-background-primary-95 my-2" style="height: 1px;"></div>
+            <div class="bk-is-flex bk-is-justify-content-space-between bk-has-text-grey">
+                <div>本月订单量</div>
+                <div>
+                    <span>{{ order_data.last_month_count }}单</span>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <div class="bk-cell">
+        <div class="bk-box bk-has-background-light bk-is-align-items-center bk-is-shadowless1">
+            <div class="bk-is-flex bk-is-justify-content-space-between">
+                <div>新增用户</div>
+                <div>
+                    <span class="bk-tag bk-is-link bk-is-light">今日</span>
+                </div>
+            </div>
+            <div>
+                <div class="bk-is-size-3">{{ user_data.today_count }}</div>
+                <div>
+                    <span>昨日 {{ user_data.yesterday_count }}</span> 
+                    <span>日环比 {{ user_data.ratio }}%</span>
+                    {% if user_data.ratio > 0 %}
+                    <span class="bk-is-size-7 bk-has-text-danger">▲</span>
+                    {% else %}
+                    <span class="bk-is-size-7 bk-has-text-success">▼</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="bk-has-background-primary-95 my-2" style="height: 1px;"></div>
+            <div class="bk-is-flex bk-is-justify-content-space-between bk-has-text-grey">
+                <div>本月新增用户</div>
+                <div>
+                    <span>{{ user_data.last_month_count }}人</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,7 +1,7 @@
 DEFAULTS = {
     # 站点基本设置
     'SITE_ID': 1,
-    'SITE_TITLE': 'baykeShop开源商城系统',
+    'SITE_TITLE': 'BaykeShop',
     'SITE_HEADER': 'baykeShop开源商城系统',
     'INDEX_TITLE': '欢迎使用BaykeShop商城系统',
     'DESCRIPTION': '基于Django构建的开源商城系统',
