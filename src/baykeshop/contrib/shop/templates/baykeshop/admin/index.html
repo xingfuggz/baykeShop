@@ -1,6 +1,6 @@
 {% extends 'admin/base_site.html' %}
 
-{% load i18n static %}
+{% load i18n static baykeconfig %}
 
 {% block extrastyle %}
 <link rel="stylesheet" href="{% static 'baykeshop/css/grid.css' %}">
@@ -11,7 +11,7 @@
 <!-- 数据统计 -->
 <div class="bk-grid">
     <div class="bk-cell">
-        <div class="bk-box bk-has-background-light bk-is-align-items-center bk-is-shadowless1">
+        <div class="bk-box bk-has-background-light1 bk-is-align-items-center bk-is-shadowless1">
             <div class="bk-is-flex bk-is-justify-content-space-between">
                 <div>销售额</div>
                 <div>
@@ -42,7 +42,7 @@
     </div>
     
     <div class="bk-cell">
-        <div class="bk-box bk-has-background-light bk-is-align-items-center bk-is-shadowless1">
+        <div class="bk-box bk-has-background-light1 bk-is-align-items-center bk-is-shadowless1">
             <div class="bk-is-flex bk-is-justify-content-space-between">
                 <div>用户访问量</div>
                 <div>
@@ -72,7 +72,7 @@
     </div>
   
     <div class="bk-cell">
-        <div class="bk-box bk-has-background-light bk-is-align-items-center bk-is-shadowless1">
+        <div class="bk-box bk-has-background-light1 bk-is-align-items-center bk-is-shadowless1">
             <div class="bk-is-flex bk-is-justify-content-space-between">
                 <div>订单量</div>
                 <div>
@@ -102,7 +102,7 @@
     </div>
    
     <div class="bk-cell">
-        <div class="bk-box bk-has-background-light bk-is-align-items-center bk-is-shadowless1">
+        <div class="bk-box bk-has-background-light1 bk-is-align-items-center bk-is-shadowless1">
             <div class="bk-is-flex bk-is-justify-content-space-between">
                 <div>新增用户</div>
                 <div>
@@ -132,4 +132,96 @@
     </div>
 </div>
 
+<!-- 快捷入口 -->
+<div class="bk-grid">
+    <div class="bk-cell">
+        <a class="bk-box py-5 bk-is-clickable" href="{% url 'admin:auth_user_changelist' %}">
+            <div class="bk-is-flex bk-is-flex-direction-column bk-is-align-items-center">
+                <span class="bk-icon bk-has-text-primary">
+                    <i class="mdi mdi-36px mdi-account-box-edit-outline"></i>
+                </span>
+                <span class="mt-3">用户管理</span>
+            </div>
+        </a>
+    </div>
+    <div class="bk-cell">
+        <a class="bk-box py-5 bk-is-clickable" href="{% url 'admin:system_baykedictmodel_changelist' %}">
+            <div class="bk-is-flex bk-is-flex-direction-column bk-is-align-items-center">
+                <span class="bk-icon bk-has-text-info">
+                    <i class="mdi mdi-36px mdi-cog-outline"></i>
+                </span>
+                <span class="mt-3">系统设置</span>
+            </div>
+        </a>
+    </div>
+    <div class="bk-cell">
+        <a class="bk-box py-5 bk-is-clickable" href="{% url 'admin:shop_baykeshopgoods_changelist' %}">
+            <div class="bk-is-flex bk-is-flex-direction-column bk-is-align-items-center">
+                <span class="bk-icon bk-has-text-link">
+                    <i class="mdi mdi-36px mdi-shopping-outline"></i>
+                </span>
+                <span class="mt-3">商品</span>
+            </div>
+        </a>
+    </div>
+    <div class="bk-cell">
+        <a class="bk-box py-5 bk-is-clickable" href="{% url 'admin:shop_baykeshoporders_changelist' %}">
+            <div class="bk-is-flex bk-is-flex-direction-column bk-is-align-items-center">
+                <span class="bk-icon bk-has-text-success">
+                    <i class="mdi mdi-36px mdi-list-box-outline"></i>
+                </span>
+                <span class="mt-3">订单管理</span>
+            </div>
+        </a>
+    </div>
+    <div class="bk-cell">
+        <a class="bk-box py-5 bk-is-clickable" href="{% url 'admin:article_baykearticlecontent_changelist' %}">
+            <div class="bk-is-flex bk-is-flex-direction-column bk-is-align-items-center">
+                <span class="bk-icon bk-has-text-warning">
+                    <i class="mdi mdi-36px mdi-book-open-outline"></i>
+                </span>
+                <span class="mt-3">内容管理</span>
+            </div>
+        </a>
+    </div>
+    <div class="bk-cell">
+        <a class="bk-box py-5 bk-is-clickable" href="{% url 'admin:shop_baykeshopbrand_changelist' %}">
+            <div class="bk-is-flex bk-is-flex-direction-column bk-is-align-items-center">
+                <span class="bk-icon bk-has-text-danger">
+                    <i class="mdi mdi-36px mdi-bank-outline"></i>
+                </span>
+                <span class="mt-3">品牌管理</span>
+            </div>
+        </a>
+    </div>
+    <div class="bk-cell">
+        <a class="bk-box py-5 bk-is-clickable" href="{% url 'admin:article_baykesidebar_changelist' %}">
+            <div class="bk-is-flex bk-is-flex-direction-column bk-is-align-items-center">
+                <span class="bk-icon bk-has-text-grey">
+                    <i class="mdi mdi-36px mdi-page-layout-sidebar-right"></i>
+                </span>
+                <span class="mt-3">侧边栏</span>
+            </div>
+        </a>
+    </div>
+ </div>
+
+<div class="bk-box pt-6">
+    {{ orders_chart|safe }}
+</div>
+
+<div class="bk-box pt-6">
+    <div class="bk-columns">
+        <div class="bk-column bk-is-6">
+            {{ users_chart|safe }}
+        </div>
+        <div class="bk-column bk-is-6">
+            {{ user_pie_chart|safe }}
+        </div>
+    </div>
+    
+</div>
+<div class="bk-has-text-centered">
+    {% dict_value 'COPYRIGHT' %}
+</div>
 {% endblock %}

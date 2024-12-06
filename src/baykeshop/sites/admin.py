@@ -2,9 +2,8 @@ from django.contrib import admin
 from baykeshop.forms import ModelForm
 from baykeshop.contrib.system.models import BaykeDictModel
 from baykeshop.db.analysis import  UserAnalysisService, OrderAnalysisService, VisitAnalysisService
-from baykeshop.contrib.shop.models import (
-    BaykeShopOrders
-)
+from baykeshop.contrib.shop.models import BaykeShopOrders
+from .echarts import orders_chart, users_chart, user_pie_chart
 
 
 class TabularInline(admin.TabularInline):
@@ -52,12 +51,16 @@ class AdminSite(admin.AdminSite):
         # 访问分析
         visit_analysis = VisitAnalysisService()
         visit_data = visit_analysis.get_data('%m-%d')
+        # orders_chart()
         
         extra_context = {
             "order_data": order_data,
             "sales_data": sales_data,
             "user_data": user_data,
             "visit_data": visit_data,
+            "orders_chart": orders_chart(),
+            "users_chart": users_chart(),
+            "user_pie_chart": user_pie_chart(),
         }
         return super().index(request, extra_context)
     
