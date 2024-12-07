@@ -1,0 +1,21 @@
+<textarea name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
+{% if widget.value %}{{ widget.value }}{% endif %}</textarea>
+
+<script>
+tinymce.init({
+    selector: 'textarea#id_{{ widget.name }}',
+    plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount code codesample',
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough code codesample | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+    height: 500,
+    width: '100%',
+    menubar: false,
+    // image_advtab: true,
+    license_key: 'gpl',
+    images_reuse_filename: true,
+    images_upload_url: '{% url "baykeshop_api:upload-image" %}',
+    // 指定接收的字段name名称
+    images_upload_param: 'image',
+    // 语言
+    language: 'zh_CN'
+})
+</script>

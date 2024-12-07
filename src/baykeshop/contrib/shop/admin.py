@@ -66,8 +66,8 @@ class BaykeShopGoodsAdmin(bayke_admin.ModelAdmin):
         (_('基本信息'), {
             'fields': ('name', 'category', 'brand',)
         }),
-        (_('S商品详情'), {
-            'classes': ('collapse',),
+        (_('商品详情'), {
+            # 'classes': ('collapse',),
             'fields': ('keywords', 'description', 'detail',)
         }),
     )

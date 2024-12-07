@@ -15,6 +15,7 @@ from baykeshop.api.carts import views as carts_views
 from baykeshop.api.orders import views as orders_views
 from baykeshop.api.pay import views as pay_views
 from baykeshop.api.comments import views as comments_views
+from baykeshop.api.upload import views as upload_views
 
 
 router = routers.DefaultRouter()
@@ -44,4 +45,7 @@ router.register('comments', comments_views.BaykeShopOrdersCommentViewSet, basena
 """
 router.register('orders', orders_views.BaykeShopOrdersViewSet, basename='orders')
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('upload/image/', upload_views.UploadImageView.as_view(), name='upload-image'),
+    *router.urls
+]

@@ -77,8 +77,11 @@ class Select(widgets.Select):
         context['icon_position'] = self.icon_position
         context['icons_class'] = self.icons_class
         return context
+    
 
+class RichTextWidget(widgets.Textarea):
+    """ 富文本 """
+    template_name = 'baykeshop/forms/widgets/richtext.html'
 
-class ClearableFileInput(widgets.ClearableFileInput):
-
-    template_name = 'baykeshop/forms/widgets/clearable_file_input.html'
+    class Media:
+        js = ('baykeshop/tinymce/tinymce.min.js',)

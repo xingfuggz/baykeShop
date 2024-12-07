@@ -64,31 +64,42 @@ class AnalysisService(DateService):
 
     def count(self):
         """总数"""
-        return self.get_queryset().count()
+        queryset = self.get_queryset()
+        if queryset.exists():  # 存在则取最后一条
+            return queryset.count()
+        return 0
 
     def today_count(self):
         """今日总数"""
-        return self.get_queryset().filter(date=self._today).count()
+        queryset = self.get_queryset().filter(date=self._today)
+        if queryset.exists():  # 存在则取最后一条
+            return queryset.count()
+        return 0
 
     def yesterday_count(self):
         """昨日总数"""
-        return self.get_queryset().filter(date=self._yesterday).count()
+        queryset = self.get_queryset().filter(date=self._yesterday)
+        if queryset.exists():  # 存在则取最后一条
+            return queryset.count()
+        return 0
 
     def last_week_count(self):
         """最近一周总数"""
-        return (
-            self.get_queryset()
-            .filter(date__range=(self._last_week, self._today))
-            .count()
+        queryset = self.get_queryset().filter(
+            date__range=(self._last_week, self._today)
         )
+        if queryset.exists():
+            return queryset.count()
+        return 0
 
     def last_month_count(self):
         """最近一月总数"""
-        return (
-            self.get_queryset()
-            .filter(date__range=(self._last_month, self._today))
-            .count()
+        queryset = self.get_queryset().filter(
+            date__range=(self._last_month, self._today)
         )
+        if queryset.exists():
+            return queryset.count()
+        return 0
 
     def get_last_week_data(self):
         """最近一周数据"""
@@ -292,7 +303,8 @@ class VisitAnalysisService(AnalysisService):
 
     def _count(self):
         """总量计算"""
-        return self.get_queryset().aggregate(count_uv=Sum("uv"), count_pv=Sum("pv"))
+        datas = self.get_queryset().aggregate(count_uv=Sum("uv"), count_pv=Sum("pv"))
+        return self._to_int_dict(datas)
 
     def count(self):
         """总访问量"""
@@ -300,35 +312,27 @@ class VisitAnalysisService(AnalysisService):
 
     def today_count(self):
         """今日访问量"""
-        return (
-            self.get_queryset()
-            .filter(date=self._today)
-            .aggregate(count_pv=Sum("pv"), count_uv=Sum("uv"))
-        )
+        queryset = self.get_queryset().filter(date=self._today)
+        datas = queryset.aggregate(count_pv=Sum("pv"), count_uv=Sum("uv"))
+        return self._to_int_dict(datas)
 
     def yesterday_count(self):
         """昨日访问量"""
-        return (
-            self.get_queryset()
-            .filter(date=self._yesterday)
-            .aggregate(count_pv=Sum("pv"), count_uv=Sum("uv"))
-        )
+        queryset = self.get_queryset().filter(date=self._yesterday)
+        datas = queryset.aggregate(count_pv=Sum("pv"), count_uv=Sum("uv"))
+        return self._to_int_dict(datas)
 
     def last_week_count(self):  # 获取上周访问量
         """上周访问量"""
-        return (
-            self.get_queryset()
-            .filter(date__range=(self._last_week, self._yesterday))
-            .aggregate(count_pv=Sum("pv"), count_uv=Sum("uv"))
-        )
+        queryset = self.get_queryset().filter(date__range=(self._last_week, self._yesterday))
+        datas = queryset.aggregate(count_pv=Sum("pv"), count_uv=Sum("uv"))
+        return self._to_int_dict(datas)
 
     def last_month_count(self):  # 获取上月访问量
         """上月访问量"""
-        return (
-            self.get_queryset()
-            .filter(date__range=(self._last_month, self._yesterday))
-            .aggregate(count_pv=Sum("pv"), count_uv=Sum("uv"))
-        )
+        queryset = self.get_queryset().filter(date__range=(self._last_month, self._yesterday))
+        datas = queryset.aggregate(count_pv=Sum("pv"), count_uv=Sum("uv"))
+        return self._to_int_dict(datas)
 
     def get_last_week_data(self):
         """最近一周的pv及uv数据"""
