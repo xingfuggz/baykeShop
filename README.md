@@ -32,7 +32,7 @@
 
 ## 系统截图
 
-<img src="src\baykeshop\contrib\shop\static\baykeshop\images\home.jpeg" />
+![输入图片说明](src/baykeshop/contrib/shop/static/baykeshop/images/home.jpeg)
 
 ## 演示站点
 
