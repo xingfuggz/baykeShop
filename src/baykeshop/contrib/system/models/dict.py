@@ -2,6 +2,7 @@ import re
 import json
 
 from django.db import models
+from django.db.utils import OperationalError
 from django.utils.translation import gettext_lazy as _
 from baykeshop.contrib.system.validators import (
     validate_dict_value, is_bool, is_dict, is_json, is_list
@@ -57,5 +58,6 @@ class BaykeDictModel(BaseModel):
                 return obj.value.splitlines()
             if is_json(obj.value):
                 return json.loads(obj.value)
-        except cls.DoesNotExist:
+        except Exception:
             return None
+        

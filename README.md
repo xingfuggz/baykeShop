@@ -50,12 +50,10 @@ pip install baykeshop
 1. django项目settings.py中配置
 
 ```python
-from baykeshop import INSTALLED_APPS as _INSTALLED_APPS
-# 该配置项配置完整如下所示
+import baykeshop
+
 INSTALLED_APPS = [
     # 'django.contrib.admin',
-    'baykeshop.AdminConfig',
-    
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -64,7 +62,7 @@ INSTALLED_APPS = [
     # 需要依赖站点系统
     'django.contrib.sites',
     'rest_framework',
-    *_INSTALLED_APPS,
+    *baykeshop.INSTALLED_APPS,
 ]
 
 # 配置站点系统ID（'django.contrib.sites'）

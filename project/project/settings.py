@@ -29,11 +29,9 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-from baykeshop import INSTALLED_APPS as _INSTALLED_APPS
+import baykeshop
 INSTALLED_APPS = [
     # 'django.contrib.admin',
-    'baykeshop.AdminConfig',
-
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -42,7 +40,7 @@ INSTALLED_APPS = [
     # 需要依赖站点系统
     'django.contrib.sites',
     'rest_framework',
-    *_INSTALLED_APPS,
+    *baykeshop.INSTALLED_APPS,
 ]
 
 MIDDLEWARE = [
