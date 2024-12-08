@@ -1,7 +1,7 @@
 [project]
 name = "baykeshop"
 version = "2.0.1-alpha"
-description = "Add your description here"
+description = "BaykeShop开源商城系统，基于django框架！"
 readme = "README.md"
 authors = [
     { name = "轻编程", email = "2539909370@qq.com" }
