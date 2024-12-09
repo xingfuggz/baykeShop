@@ -3,10 +3,11 @@ from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.utils import timezone
+from django.conf import settings
 from rest_framework import serializers
 
 from baykeshop.contrib.shop.models import BaykeShopOrders
-from baykeshop.payment import alipay as alipay_sdk
+from baykeshop.payment import AliPay
 
 
 class BaykeShopOrdersPaySerializer(serializers.ModelSerializer):
@@ -49,22 +50,14 @@ class BaykeShopOrdersPaySerializer(serializers.ModelSerializer):
         return instance
 
     def get_pay_url(self, instance):
-        """获取支付链接"""
-        url = ''
-        # 支付宝回调地址
-        callback_url=self.context['request'].build_absolute_uri(reverse('shop:alipay-callback')),
+        """ 获取支付链接 """
         if instance.pay_type == BaykeShopOrders.PayType.CASH:
             messages.success(self.context['request'], _('订单已提交，核销中...'))
             return reverse('member:orders-detail', kwargs={'order_sn': instance.order_sn})
-        try:
-            url = alipay_sdk.page_pay(
-                order_sn=instance.order_sn, 
-                total_price=str(instance.pay_price), 
-                subject=instance.order_sn,
-                return_url=callback_url,
-                notify_url=callback_url
-            )
-        except Exception as e:
-            alipay_sdk.logger.error(e)
-            # assert ValueError('支付异常')
-        return url
+        
+        # 支付宝回调地址
+        callback_url=self.context['request'].build_absolute_uri(reverse('shop:alipay-callback'))
+        alipay = AliPay(return_url=callback_url, notify_url=callback_url, debug=settings.DEBUG)
+        alipay_url = alipay.trade_page_pay(instance)
+        return alipay_url
+    

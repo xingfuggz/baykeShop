@@ -1,6 +1,6 @@
 [project]
 name = "baykeshop"
-version = "1.3.9"
+version = "1.3.10"
 description = "BaykeShop开源商城系统，基于django框架！"
 readme = "README.md"
 authors = [
@@ -24,3 +24,8 @@ packages = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "daphne>=4.1.2",
+]

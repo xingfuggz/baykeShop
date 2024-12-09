@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 import baykeshop
 INSTALLED_APPS = [
     # 'django.contrib.admin',
+    "daphne",
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -42,7 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     *baykeshop.INSTALLED_APPS,
 ]
-
+ASGI_APPLICATION = "project.asgi.application"
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -133,5 +134,3 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_ID = 1
-
-# FORM_RENDERER = "baykeshop.forms.settings.CustomFormRenderer"
