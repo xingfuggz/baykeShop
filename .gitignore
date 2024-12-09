@@ -143,7 +143,7 @@ deploy/*.pid
 deploy/sock
 deploy/*.log
 deploy/*.sock
-media/
+project/media/
 
 .hintrc
 
