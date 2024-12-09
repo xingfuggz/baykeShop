@@ -34,7 +34,9 @@
 
 课程地址：https://www.bilibili.com/cheese/play/ss11391
 
-[![django商城系统开发实战](src/baykeshop/contrib/shop/static/baykeshop/images/banner.png)]([https://www.bilibili.com/cheese/play/ss11391](https://www.bilibili.com/cheese/play/ss11391))
+<a href="https://www.bilibili.com/cheese/play/ss11391">
+    <img src="src/baykeshop/contrib/shop/static/baykeshop/images/banner.png" alt="后台首页">
+</a>
 
 ## 系统截图
 
