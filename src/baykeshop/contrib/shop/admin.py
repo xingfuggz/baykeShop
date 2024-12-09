@@ -80,7 +80,7 @@ class BaykeShopGoodsAdmin(bayke_admin.ModelAdmin):
     
     @admin.display(description='商品价格')
     def price(self, obj):
-        return obj.price
+        return round(obj.price, 2)
     
     @admin.display(description='商品销量')
     def sales(self, obj):
