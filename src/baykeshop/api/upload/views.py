@@ -9,9 +9,8 @@
 @微信    :baywanyun
 '''
 from django.conf import settings
-from django.core.files.storage import default_storage
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage, FileSystemStorage
+
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
@@ -38,8 +37,10 @@ class UploadImageView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         image = serializer.validated_data['file']
         # 上传到指定目录
-        default_storage.location = settings.MEDIA_ROOT / 'uploads'
-        default_storage.base_url = settings.MEDIA_URL + 'uploads/'
-        file_name = default_storage.save(image.name, image)
-        url = default_storage.url(file_name)
+        storeage = FileSystemStorage(
+            location=settings.MEDIA_ROOT / 'uploads',
+            base_url=settings.MEDIA_URL + 'uploads/'
+        )
+        file_name = storeage.save(image.name, image)
+        url = storeage.url(file_name)
         return Response({'location': url})
