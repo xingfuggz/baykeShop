@@ -88,11 +88,23 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 ```
 
-3. 配置数据库
+3. 配置图片显示前缀
+在项目的settings.py文件中的TEMPLATES配置中，添加如下代码：
+
+```python
+'context_processors': [
+    ...
+    # 添加图片前缀全局变量
+    'django.template.context_processors.media',
+    ...
+],
+```
+
+4. 配置数据库
 
 这里我们不做强制配置，直接使用默认的数据库即可，也可以根据自己需要配置数据库，具体请参考Django官方文档。
 
-4. 配置缓存
+5. 配置缓存
 
 这里我们不做强制配置，直接使用默认的缓存即可，也可以根据自己需要配置缓存，具体请参考Django官方文档。
 
