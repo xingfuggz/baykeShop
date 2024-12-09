@@ -30,9 +30,15 @@
 1. 用户管理
 2. 用户组管理
 
+## 商城系统开发实战课程
+
+课程地址：https://www.bilibili.com/cheese/play/ss11391
+
+[![django商城系统开发实战](src/baykeshop/contrib/shop/static/baykeshop/images/banner.png)]([https://www.bilibili.com/cheese/play/ss11391](https://www.bilibili.com/cheese/play/ss11391))
+
 ## 系统截图
 
-![输入图片说明](src/baykeshop/contrib/shop/static/baykeshop/images/home.jpeg)
+![后台首页](src/baykeshop/contrib/shop/static/baykeshop/images/home.jpeg)
 
 ## 演示站点
 
