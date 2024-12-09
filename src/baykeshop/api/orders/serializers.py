@@ -9,10 +9,13 @@
 @微信    :baywanyun
 '''
 
+from django.db.models.signals import post_save
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
+
 from rest_framework import serializers
+
 from baykeshop.contrib.shop.models import (
     BaykeShopOrdersGoods, BaykeShopOrders, BaykeShopGoodsImages,
     BaykeShopCarts
@@ -69,9 +72,12 @@ class BaykeShopOrdersCreateSerializer(serializers.ModelSerializer):
         baykeshopordersgoods_set = validated_data.pop('baykeshopordersgoods_set')
         pay_price = sum([item['sku'].price * item['quantity'] for item in baykeshopordersgoods_set])
         orders = BaykeShopOrders.objects.create(pay_price=pay_price, **validated_data)
-        BaykeShopOrdersGoods.objects.bulk_create(
+        created_objects = BaykeShopOrdersGoods.objects.bulk_create(
             [BaykeShopOrdersGoods(orders=orders, **self.goods_format(item)) for item in baykeshopordersgoods_set]
         )
+        # 手动触发post_save信号
+        for obj in created_objects:
+            post_save.send(sender=BaykeShopOrdersGoods, instance=obj, created=True)
         # 清理购物车数据
         if source == 'carts':
             skus = [item['sku'] for item in baykeshopordersgoods_set]
