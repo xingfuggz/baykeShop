@@ -56,7 +56,7 @@ class BaykeArticleContent(BaseArticleModel):
     
     @property
     def description(self):
-        desc = strip_tags(self.content[:150])
+        desc = strip_tags(self.content)[:250]
         return desc
     
     @property
