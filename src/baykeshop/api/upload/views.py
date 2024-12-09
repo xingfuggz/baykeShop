@@ -37,7 +37,9 @@ class UploadImageView(GenericAPIView):
         serializer = self.get_serializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         image = serializer.validated_data['file']
-        path = settings.MEDIA_ROOT / 'uploads' / image.name
-        file_name = default_storage.save(path, image)
+        # 上传到指定目录
+        default_storage.location = settings.MEDIA_ROOT / 'uploads'
+        default_storage.base_url = settings.MEDIA_URL + 'uploads/'
+        file_name = default_storage.save(image.name, image)
         url = default_storage.url(file_name)
         return Response({'location': url})
