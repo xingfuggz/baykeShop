@@ -26,5 +26,6 @@ class BaykeShopCartsListView(LoginRequiredMixin, ListView):
         ))
         for item in queryset:
             item['specs'] = json.loads(item['specs'])
+            item['total_price'] = round(item['total_price'], 2)
         return queryset
 

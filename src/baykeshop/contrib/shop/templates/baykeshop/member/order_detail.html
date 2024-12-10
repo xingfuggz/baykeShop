@@ -74,7 +74,7 @@
                 </div>
                 <div class="bk-cell">
                     <div class="bk-is-flex bk-is-align-items-center bk-is-justify-content-center" style="height: 100%;">
-                        <span class="bk-has-text-weight-bold">￥{{ item.total_price }}</span> 
+                        <span class="bk-has-text-weight-bold">￥{{ item.total_price|floatformat:"-2g" }}</span> 
                     </div>
                 </div>
             </div>
@@ -82,7 +82,7 @@
         <hr class="my-2 bk-has-background-white">
         {% endfor %}
         <div class="bk-has-text-right">
-            <h1 class="bk-is-size-5">共{{ order.total_quantity }}件商品，总金额<span>￥{{ order.total_price }}</span></h1>
+            <h1 class="bk-is-size-5">共{{ order.total_quantity }}件商品，总金额<span>￥{{ order.total_price|floatformat:"-2g" }}</span></h1>
             <div class="bk-buttons bk-is-justify-content-end mt-3">
                 {% if order.status == 0 %}
                 <a class="bk-button bk-is-link" href="{% url 'shop:orders-pay' order.order_sn %}">

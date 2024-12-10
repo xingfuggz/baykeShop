@@ -184,9 +184,11 @@
             }
         },
         computed: {
+            // 全选状态
             isAllSelected() {
                 return this.cartsListData.length > 0 && this.seclectCarts.length === this.cartsListData.length;
             },
+            // 勾选状态
             checkedItems: {
                 get() {
                     const items = {};
@@ -207,7 +209,6 @@
                 acc[cart.id] = true;
                 return acc;
             }, {});
-            // this.checkedItems = this.checkedItems;
         },
         methods: {
             // 全选
@@ -237,11 +238,11 @@
             minusQuantity(cart) {
                 if (cart.quantity > 1) {
                     cart.quantity--;
-                    cart.total_price = cart.sku__price * cart.quantity;
-                    this.totalPrice = this.seclectCarts.reduce((acc, cur) => {
-                        const cart = this.cartsListData.find(cart => cart.id === cur);
-                        return acc + parseFloat(cart.total_price);
-                    }, 0).toFixed(2);
+                    // cart.total_price = cart.sku__price * cart.quantity;
+                    // this.totalPrice = this.seclectCarts.reduce((acc, cur) => {
+                    //     const cart = this.cartsListData.find(cart => cart.id === cur);
+                    //     return acc + parseFloat(cart.total_price);
+                    // }, 0).toFixed(2);
                     this.updateQuantityAPI(cart);
                 }
             },
@@ -249,11 +250,11 @@
             addQuantity(cart) {
                 if (cart.quantity < cart.sku__stock) {
                     cart.quantity++;
-                    cart.total_price = cart.sku__price * cart.quantity;
-                    this.totalPrice = this.seclectCarts.reduce((acc, cur) => {
-                        const cart = this.cartsListData.find(cart => cart.id === cur);
-                        return acc + parseFloat(cart.total_price);
-                    }, 0).toFixed(2);
+                    // cart.total_price = cart.sku__price * cart.quantity;
+                    // this.totalPrice = this.seclectCarts.reduce((acc, cur) => {
+                    //     const cart = this.cartsListData.find(cart => cart.id === cur);
+                    //     return acc + parseFloat(cart.total_price);
+                    // }, 0).toFixed(2);
                     this.updateQuantityAPI(cart);
                 }
             },
@@ -303,9 +304,7 @@
                         skuids.push(item.sku_id)
                     }
                 })
-                if (skuids.length === 0) {
-                    return
-                }
+                if (skuids.length === 0) return
                 
                 skuids = skuids.join(',')
                 window.location.href = `{% url "shop:carts" %}${skuids}/`
@@ -316,7 +315,6 @@
                 handler(newValue) {
                     // 监听选中商品数量，计算总价
                     const totalPrice = newValue.reduce((acc, cur) => {
-                        console.log(cur, acc);
                         const cart = this.cartsListData.find(cart => cart.id === cur);
                         return acc + parseFloat(cart.total_price);
                     }, 0);

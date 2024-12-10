@@ -122,7 +122,7 @@
                 </div>
                 <div class="bk-cell">
                     <div class="bk-is-flex bk-is-align-items-center bk-is-justify-content-center" style="height: 100%;">
-                        <span class="bk-has-text-weight-bold">￥{{ item.total_price }}</span> 
+                        <span class="bk-has-text-weight-bold">￥{{ item.total_price|floatformat:"-2g" }}</span> 
                     </div>
                 </div>
             </div>
