@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html
 from django.utils import timezone
 from django.template.loader import render_to_string
+from django.core.exceptions import FieldDoesNotExist
 # Register your models here.
 from baykeshop.sites import admin as bayke_admin
 from .forms import BaykeShopGoodsSKUForm
@@ -80,7 +81,9 @@ class BaykeShopGoodsAdmin(bayke_admin.ModelAdmin):
     
     @admin.display(description='商品价格')
     def price(self, obj):
-        return round(obj.price, 2)
+        if obj.price:
+            return round(obj.price, 2)
+        return None
     
     @admin.display(description='商品销量')
     def sales(self, obj):
