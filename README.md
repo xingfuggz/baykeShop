@@ -50,8 +50,12 @@
 
 ## 快速开始
 
-```
+```python
+# 如果配置了国内源，同步不一定及时，这个命令可能安装不是最新版，可改用第二个命令安装
 pip install baykeshop
+
+# 保持最新版本请用PYPI的源
+pip install baykeshop -i https://pypi.org/simple --upgrade
 ```
 ## 基本配置
 
