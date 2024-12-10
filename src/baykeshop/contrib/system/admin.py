@@ -40,7 +40,7 @@ class BaykeDictModelAdmin(bayke_admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         # 判断是否是系统内置字典
         if obj and hasattr(bayke_settings, obj.key):
-            self.message_user(request, _(f"{obj.key}为系统内置字典不允许删除"), "ERROR")
+            self.message_user(request, _(f"{obj.key}为系统内置字典不允许删除"), "WARNING")
             return False
         return super().has_delete_permission(request, obj)
 
