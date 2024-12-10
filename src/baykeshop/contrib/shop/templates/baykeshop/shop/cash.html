@@ -31,7 +31,7 @@
                 <div class="bk-has-text-right px-6">
                     <div class="bk-is-size-4 bk-has-text-weight-bold bk-has-text-link">
                         <span class="">{{ count }}{% translate '件商品，总价' %}:</span>
-                        <span class="is-size-3">￥{{ total }}</span>
+                        <span class="is-size-3">￥{{ total|floatformat:"-2g"  }}</span>
                     </div>
                     <div class="mt-3">
                         <button class="bk-button bk-is-link bk-is-large" id="create-order-btn">
