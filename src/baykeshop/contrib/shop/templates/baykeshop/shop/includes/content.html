@@ -1,4 +1,4 @@
-{% load i18n baykeshop %}
+{% load i18n static baykeshop %}
 <div class="bk-box bk-is-radiusless p-6 mt-3" id="tab-container">
     <div class="bk-tabs">
         <ul>
@@ -27,7 +27,11 @@
                     <article class="bk-media">
                         <figure class="bk-media-left">
                             <p class="bk-image bk-is-32x32">
-                                <img class="bk-is-rounded" src="{% if comment.user.baykeshopuser.avatar %}{{ comment.user.baykeshopuser.avatar.url }}{% endif %}">
+                                {% if comment.user.baykeshopuser.avatar %}
+                                <img class="bk-is-rounded" src="{{ comment.user.baykeshopuser.avatar.url }}">
+                                {% else %}
+                                <img class="bk-is-rounded" src="{% static 'baykeshop/images/logo.jpg' %}">
+                                {% endif %}
                             </p>
                         </figure>
                         <div class="bk-media-content">
