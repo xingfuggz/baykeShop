@@ -51,7 +51,9 @@ class BaseGoodsSKUModel(BaseModel):
     specs = models.JSONField(
         verbose_name=_("规格"), default=list, help_text=_("规格数据"), blank=True
     )
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_("价格"))
+    price = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name=_("价格"), default=0.00
+    )
     sku_sn = models.CharField(
         max_length=50, verbose_name=_("商品编码"), blank=True, default=""
     )
@@ -61,7 +63,7 @@ class BaseGoodsSKUModel(BaseModel):
         decimal_places=2,
         verbose_name=_("划线价"),
         blank=True,
-        default="",
+        default=0.00,
         help_text=_("商品价格划线价，不参与价位计算筛选, 仅供前端显示使用"),
     )
     stock = models.PositiveSmallIntegerField(default=0, verbose_name=_("库存"))
