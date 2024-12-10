@@ -87,7 +87,6 @@ class AliPay:
         """
         request = AlipayTradePagePayRequest()
         request.biz_model = self.trade_page_pay_model(instance)
-        # callback_url=self.context['request'].build_absolute_uri(reverse('shop:alipay-callback'))
         request.return_url = self.return_url
         request.notify_url = self.notify_url
         return request
