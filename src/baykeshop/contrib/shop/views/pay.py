@@ -88,3 +88,4 @@ class AlipayCallbackView(AlipayCallBackVerifySignMixin, View):
                 order.status = BaykeShopOrders.OrderStatus.PAID
                 order.save()
             return HttpResponse("success")
+        

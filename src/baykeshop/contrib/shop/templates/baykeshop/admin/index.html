@@ -19,9 +19,9 @@
                 </div>
             </div>
             <div>
-                <div class="bk-is-size-3">{{ sales_data.today_sales }}</div>
+                <div class="bk-is-size-3">{{ sales_data.today_sales|floatformat:"-2g" }}</div>
                 <div>
-                    <span>昨日 {{ sales_data.yesterday_sales }}</span> 
+                    <span>昨日 {{ sales_data.yesterday_sales|floatformat:"-2g" }}</span> 
                     <span>日环比 {{ sales_data.sales_ratio }}%</span>
                     
                     {% if sales_data.sales_ratio > 0 %}

@@ -204,7 +204,7 @@ class OrderAnalysisService(AnalysisService):
         """昨日销售额"""
         return (
             self.get_queryset()
-            .filter(date__range=(self._yesterday, self._today))
+            .filter(date=self._yesterday)
             .aggregate(sales=Sum("pay_price"))["sales"]
             or 0
         )
