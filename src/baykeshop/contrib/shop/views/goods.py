@@ -3,6 +3,7 @@ from django.views.generic.detail import SingleObjectMixin, DetailView
 from django.utils.translation import gettext_lazy as _
 from django.core.paginator import Paginator
 
+from baykeshop.contrib.system.models import Visit
 from baykeshop.contrib.shop.models import (
     BaykeShopCategory, BaykeShopGoods,
     BaykeShopOrdersComment
@@ -61,6 +62,10 @@ class BaykeShopGoodsDetailView(DetailView):
     model = BaykeShopGoods
     template_name = 'baykeshop/shop/detail.html'
     context_object_name = 'spu'
+
+    def get(self, request, *args, **kwargs):
+        Visit.objects.create_pv_uv(request, self.get_object())
+        return super().get(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

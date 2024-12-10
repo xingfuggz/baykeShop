@@ -35,7 +35,7 @@
             <div class="bk-is-flex bk-is-justify-content-space-between bk-has-text-grey">
                 <div>本月销售额</div>
                 <div>
-                    <span>{{ sales_data.last_month_sales }}元</span>
+                    <span>{{ sales_data.last_month_sales|floatformat:"-2g" }}元</span>
                 </div>
             </div>
         </div>
