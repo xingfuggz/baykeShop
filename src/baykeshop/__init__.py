@@ -6,3 +6,5 @@ INSTALLED_APPS = [
     'baykeshop.contrib.article'
 ]
 
+# 版本号
+__VERSION__ = "1.3.16"
