@@ -134,6 +134,28 @@ class BaykeShopGoodsAdmin(bayke_admin.ModelAdmin):
             '<img src="/media/{}" width="64" height="64" />', obj.image_url
         )
 
+    def save_formset(self, request, form, formset, change):
+        if formset.model == BaykeShopGoodsSKU:
+            for _form in formset:
+                if not _form.cleaned_data:
+                    print(_form.instance, _form.cleaned_data)
+                    self.message_user(
+                        request,
+                        f"【{_form.instance}】的商品规格未设置，请设置后再保存，至少包含一个SKU！",
+                        level="ERROR",
+                    )
+                    break
+        if formset.model == BaykeShopGoodsImages:
+            for _form in formset:
+                if not _form.cleaned_data:
+                    self.message_user(
+                        request,
+                        f"【{_form.instance}】的商品图片未设置，请设置后再保存，至少包含一张图片！",
+                        level="ERROR",
+                    )
+                    break
+        return super().save_formset(request, form, formset, change)
+
 
 @admin.register(BaykeShopBrand)
 class BaykeShopBrandAdmin(bayke_admin.ModelAdmin):

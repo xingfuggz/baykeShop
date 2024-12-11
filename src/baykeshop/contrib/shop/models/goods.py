@@ -154,4 +154,4 @@ class BaykeShopGoodsImages(BaseModel):
         ordering = ["order"]
 
     def __str__(self):
-        return f"{self.goods.name} - {self.image.url}"
+        return self.goods.name
