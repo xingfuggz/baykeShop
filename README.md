@@ -50,6 +50,8 @@
 
 ## 快速开始
 
+视频教程：https://www.bilibili.com/video/BV11Zq2YgESy/
+
 ```python
 # 如果配置了国内源，同步不一定及时，这个命令可能安装不是最新版，可改用第二个命令安装
 pip install baykeshop
