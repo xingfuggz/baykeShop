@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.sites.models import Site
 from django.contrib.sites.admin import SiteAdmin
+from django.contrib.auth.models import Permission
 from django.utils.translation import gettext_lazy as _
 from baykeshop.sites import admin as bayke_admin
 
@@ -50,3 +51,53 @@ class BaykeBannersAdmin(bayke_admin.ModelAdmin):
     list_display = ("title", "image", "url", "is_show", "order", "created_time")
     search_fields = ("title", "url")
     fieldsets = ((None, {"fields": ("title", "image", "url", "is_show", "order")}),)
+
+
+class BaykeMenuInline(bayke_admin.TabularInline):
+    model = BaykeMenus
+    extra = 1
+    autocomplete_fields = ("permission",)
+    
+
+@admin.register(Permission)
+class PermissionAdmin(bayke_admin.ModelAdmin):
+    list_display = ("name", "codename")
+    search_fields = ("name", "codename")
+    fieldsets = (
+        (None, {"fields": ("name", "codename")}),
+    )
+
+
+@admin.register(BaykeMenus)
+class BaykeMenusAdmin(bayke_admin.ModelAdmin):
+    list_display = ("name", "parent", "icon", "is_show", "order", "created_time")
+    search_fields = ("name",)
+    fields = ("name", "icon", "is_show", "order",)
+    readonly_fields = ("parent", "permission")
+    list_select_related = ("permission",)
+    autocomplete_fields = ("permission",)
+    inlines = (BaykeMenuInline,)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "parent":
+            kwargs["queryset"] = BaykeMenus.objects.filter(parent__isnull=True, is_show=True)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    def get_inlines(self, request, obj):
+        """ 禁用子菜单 """
+        if obj and obj.parent:
+            return []
+        return super().get_inlines(request, obj)
+    
+    def get_readonly_fields(self, request, obj=None):
+        """ 禁用子菜单 """
+        if obj and obj.parent:
+            return []
+        return super().get_readonly_fields(request, obj)
+    
+    def get_fields(self, request, obj=None):
+        """ 编辑子菜单时允许修改父类和权限标识 """
+        if obj and obj.parent:
+            return ("name", "icon", "parent", "permission", "order", "is_show")
+        return super().get_fields(request, obj)
+    

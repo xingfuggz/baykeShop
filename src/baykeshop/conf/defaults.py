@@ -29,6 +29,8 @@ DEFAULTS = {
     'REGEX_PHONE' : r'^1[3-9]\d{9}$',
     # 上传图片大小
     'MAX_IMAGE_SIZE': 2 * 1024 * 1024,
+    # 自定义菜单开关
+    'USE_MENU': False,
 }
 
 IMPORT_STRINGS = [
