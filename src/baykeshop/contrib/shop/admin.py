@@ -237,18 +237,9 @@ class BaykeShopOrdersAdmin(bayke_admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         # 未支付和未发货订单可操作修改
-        if obj and obj.status in [0, 1]:
+        if obj and obj.status in [0]:
             return super().has_change_permission(request, obj)
         return False
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = super().get_readonly_fields(request, obj)
-        # 已支付订单不能再修改支付金额
-        if obj and obj.status >= BaykeShopOrders.OrderStatus.SHIPPED:
-            readonly_fields = list(readonly_fields) + [
-                "pay_price",
-            ]
-        return readonly_fields
 
     @admin.display(description="订单商品")
     def order_skus(self, obj):

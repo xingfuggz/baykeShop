@@ -88,4 +88,4 @@ class Command(BaseCommand):
             site_id, 'ICP', "备案号", 
             bayke_settings.ICP
         )
-
+        management.call_command("createmenus")

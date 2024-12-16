@@ -72,6 +72,7 @@ class PermissionAdmin(bayke_admin.ModelAdmin):
 class BaykeMenusAdmin(bayke_admin.ModelAdmin):
     list_display = ("name", "parent", "icon", "is_show", "order", "created_time")
     search_fields = ("name",)
+    list_editable = ("is_show", "order")
     fields = ("name", "icon", "is_show", "order",)
     readonly_fields = ("parent", "permission")
     list_select_related = ("permission",)

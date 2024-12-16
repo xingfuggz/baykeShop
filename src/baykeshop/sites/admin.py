@@ -114,10 +114,11 @@ class AdminSite(admin.AdminSite):
             model_dict = {
                 "name": parent.name,
                 "icon": parent.icon,
+                "order": parent.order,
                 "models": self.get_models(request, values),
             }
             menus.append(model_dict)
-        
+        menus = sorted(menus, key=lambda x: x["order"])
         return menus
 
     def get_models(self, request, values):
@@ -126,6 +127,7 @@ class AdminSite(admin.AdminSite):
             item = {}
             item["name"] = menu.name
             item["icon"] = menu.icon
+            item["order"] = menu.order
             item["model"] = menu.permission.content_type.model_class()
             item["perms"] = self._registry[item["model"]].get_model_perms(request)
             item["object_name"] = item["model"]._meta.object_name
@@ -148,6 +150,7 @@ class AdminSite(admin.AdminSite):
                 except NoReverseMatch:
                     pass
             menus.append(item)
+        menus = sorted(menus, key=lambda x: x["order"])
         return menus
 
 
