@@ -178,3 +178,21 @@ uv run python manage.py init
 # 启动项目
 uv run python manage.py runserver
 ```
+# 自定义菜单
+
+1.3.17版之后加入了自定义菜单功能，该功能默认是关闭的，在1.3.17版本init命令初始化的时候会自动生成一个自定义菜单！
+
+开启只需要在项目的settings.py中配置如下代码即可：
+
+```python
+BAYKE_SETTINGS = {
+    'USE_MENU': True,
+}
+```
+USE_MENU为是否使用自定义菜单，默认为False，如果为True，则使用自定义菜单，否则使用默认菜单。
+
+## 自定义菜单使用
+
+开启自定义菜单后，会在系统菜单中看到一个二级菜单“菜单管理”，可以添加一级菜单和二级菜单，一级菜单不能关联权限及点击，二级菜单是实际的权限菜单，如果想让某个用户可以看到该菜单那么只需要分配模型的view权限给用户即可，那么改菜单只需要关联一个模型view权限即可。
+
+![权限菜单](src/baykeshop/contrib/shop/static/baykeshop/images/perm.png)
