@@ -29,8 +29,30 @@
                                 </span>
                             </button>
                         </div>
+                        
                     </form>
-                    {% block form_footer %}{% endblock %}
+                    {% block form_footer %}
+                    <div class="bk-field mt-3">
+                        <a href="{% url 'member:register' %}" class="bk-button bk-is-light bk-is-fullwidth">
+                            <span class="bk-icon">
+                                <i class="mdi mdi-account-plus"></i>
+                            </span>
+                            <span>
+                                {% translate '注册账号' %}
+                            </span>
+                        </a>
+                    </div>
+                    <div class="bk-field mt-3">
+                        <a href="{% url 'member:password_reset' %}" class="bk-button bk-is-light bk-is-fullwidth">
+                            <span class="bk-icon">
+                                <i class="mdi mdi-form-textbox-password"></i>
+                            </span>
+                            <span>
+                                {% translate '忘记密码?' %}
+                            </span>
+                        </a>
+                    </div>
+                    {% endblock %}
                 </div>
             </div>
         </div>

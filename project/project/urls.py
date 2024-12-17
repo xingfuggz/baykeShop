@@ -26,5 +26,5 @@ urlpatterns = [
     # 开发时媒体文件
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
     # 开发时静态文件
-    *static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    *static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
 ]

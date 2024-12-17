@@ -1,104 +1,11 @@
 from django import forms
-from django.contrib.auth.forms import (
-    UserCreationForm, AuthenticationForm, PasswordChangeForm
-)
-from django.contrib.auth import password_validation
 from django.utils.translation import gettext_lazy as _
 
 from baykeshop.forms.mixins import BaseFormMixins
 from baykeshop.forms import widgets
 from baykeshop.contrib.shop.models import BaykeShopOrdersComment
-from .models import BaykeShopUserAddress, BaykeShopUser
-
-
-class LoginForm(BaseFormMixins, AuthenticationForm):
-    """ 登录表单 """
-    username = forms.CharField(
-        label=_('用户名'),
-        widget=widgets.TextInput(
-            attrs={'placeholder': _('请输入用户名'), 'autofocus': True},
-            icon_position='bk-has-icons-left bk-has-icons-right',
-            icons_class={'left': 'mdi mdi-account', 'right': 'mdi mdi-check'}
-        ),
-        required=True,
-    )
-    password = forms.CharField(
-        label=_('密码'),
-        widget=widgets.PasswordInput(
-            attrs={'placeholder': _('请输入密码')},
-            icon_position='bk-has-icons-left',
-            icons_class={'left': 'mdi mdi-lock', 'right': ''}
-        ),
-        required=True,
-    )
-
-
-class RegisterForm(BaseFormMixins, UserCreationForm):
-    """ 注册表单 """
-
-    username = forms.CharField(
-        label=_("用户名"),
-        strip=False,
-        widget=widgets.TextInput(
-            attrs={'placeholder': _('请输入用户名'), "autofocus": True},
-            icon_position='bk-has-icons-left bk-has-icons-right',
-            icons_class={'left': 'mdi mdi-account', 'right': 'mdi mdi-check'}
-        )
-    )
-    password1 = forms.CharField(
-        label=_("Password"),
-        widget=widgets.PasswordInput(
-            attrs={'placeholder': _('请输入密码'), "autocomplete": "new-password"},
-            icon_position='bk-has-icons-left',
-            icons_class={'left': 'mdi mdi-lock', 'right': ''}
-        ),
-        strip=False,
-        help_text=password_validation.password_validators_help_text_html(),
-    )
-    password2 = forms.CharField(
-        label=_("Password confirmation"),
-        widget=widgets.PasswordInput(
-            attrs={'placeholder': _('请再次输入密码')},
-            icon_position='bk-has-icons-left',
-            icons_class={'left': 'mdi mdi-lock', 'right': ''}
-        ),
-        help_text=_("Enter the same password as before, for verification."),
-    )
-
-
-class ChangePasswordForm(BaseFormMixins, PasswordChangeForm):
-    """ 修改密码表单 """
-
-    old_password = forms.CharField(
-        label=_("Old password"),
-        strip=False,
-        widget=widgets.PasswordInput(
-            attrs={'placeholder': _('请输入旧密码'), "autocomplete": "current-password"},
-            icon_position='bk-has-icons-left',
-            icons_class={'left': 'mdi mdi-lock', 'right': ''}
-        )
-    )
-    new_password1 = forms.CharField(
-        label=_("New password"),
-        widget=widgets.PasswordInput(
-            attrs={'placeholder': _('请输入新密码'), "autocomplete": "new-password"},
-            icon_position='bk-has-icons-left',
-            icons_class={'left': 'mdi mdi-lock', 'right': ''}
-        ),
-        strip=False,
-        help_text=password_validation.password_validators_help_text_html(),
-    )
-    new_password2 = forms.CharField(
-        label=_("New password confirmation"),
-        strip=False,
-        widget=widgets.PasswordInput(
-            attrs={'placeholder': _('请再次输入新密码'), "autocomplete": "new-password"},
-            icon_position='bk-has-icons-left',
-            icons_class={'left': 'mdi mdi-lock', 'right': ''}
-        ),
-        help_text=_("Enter the same password as before, for verification."),
-    )
-        
+from baykeshop.contrib.member.models import BaykeShopUserAddress, BaykeShopUser
+ 
 
 class BaykeShopUserAddressForm(BaseFormMixins, forms.ModelForm):
     """ 收货地址表单 """
