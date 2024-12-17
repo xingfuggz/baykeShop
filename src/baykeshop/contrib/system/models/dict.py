@@ -16,7 +16,7 @@ class BaykeDictModel(BaseModel):
     name = models.CharField(max_length=50, verbose_name=_('名称'))
     key = models.SlugField(max_length=50, verbose_name=_('键'))
     value = models.TextField(
-        verbose_name=_('值'), 
+        verbose_name=_('值'),
         help_text=_('''
             布尔值：true/false; 
             键值对：key1:value1一行一对;

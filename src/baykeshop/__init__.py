@@ -7,4 +7,4 @@ INSTALLED_APPS = [
 ]
 
 # 版本号
-__VERSION__ = "1.3.18"
+__VERSION__ = "1.3.19"

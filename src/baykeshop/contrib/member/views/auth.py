@@ -71,7 +71,6 @@ class BaykePasswordResetView(PasswordResetView):
     success_url = reverse_lazy("member:password_reset_done")
     template_name = "baykeshop/member/password_reset.html"
     form_class = BaykePasswordResetForm
-    from_email = BaykeDictModel.get_key_value("EMAIL_HOST_USER")
 
     
 class BaykePasswordResetDoneView(PasswordResetDoneView):

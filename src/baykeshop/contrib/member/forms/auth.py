@@ -150,7 +150,9 @@ class BaykePasswordResetForm(BaseFormMixins, PasswordResetForm):
         subject = "".join(subject.splitlines())
         body = loader.render_to_string(email_template_name, context)
         # 指定邮件发送服务器
+        # DEVELOP_EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
         PRODUCTION_EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+        from_email = BaykeDictModel.get_key_value("EMAIL_HOST_USER")
         connection = get_connection(
             fail_silently=False,
             host=BaykeDictModel.get_key_value("EMAIL_HOST"),
@@ -158,7 +160,7 @@ class BaykePasswordResetForm(BaseFormMixins, PasswordResetForm):
             username=BaykeDictModel.get_key_value("EMAIL_HOST_USER"),
             password=BaykeDictModel.get_key_value("EMAIL_HOST_PASSWORD"),
             use_ssl=BaykeDictModel.get_key_value("EMAIL_USE_SSL"),
-            from_email=BaykeDictModel.get_key_value("EMAIL_HOST_USER"),
+            from_email=from_email,
             backend=PRODUCTION_EMAIL_BACKEND
         )
         email_message = EmailMultiAlternatives(subject, body, from_email, [to_email], connection=connection)
