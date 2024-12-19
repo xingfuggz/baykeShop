@@ -1,12 +1,10 @@
-from typing import Any
-from django.db.models.query import QuerySet
 from django.contrib.auth import get_user_model
 from django.views.generic import ListView, MonthArchiveView
 from django.views.generic.detail import DetailView, SingleObjectMixin
 from django.utils.translation import gettext_lazy as _
 # Create your views here.
 from baykeshop.contrib.system.models import Visit
-from .models import BaykeArticleCategory, BaykeArticleTags, BaykeArticleContent
+from baykeshop.contrib.article.models import BaykeArticleCategory, BaykeArticleTags, BaykeArticleContent
 
 # Create your views here.
 

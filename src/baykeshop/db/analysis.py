@@ -324,13 +324,17 @@ class VisitAnalysisService(AnalysisService):
 
     def last_week_count(self):  # 获取上周访问量
         """上周访问量"""
-        queryset = self.get_queryset().filter(date__range=(self._last_week, self._yesterday))
+        queryset = self.get_queryset().filter(
+            date__range=(self._last_week, self._yesterday)
+        )
         datas = queryset.aggregate(count_pv=Sum("pv"), count_uv=Sum("uv"))
         return self._to_int_dict(datas)
 
     def last_month_count(self):  # 获取上月访问量
         """上月访问量"""
-        queryset = self.get_queryset().filter(date__range=(self._last_month, self._yesterday))
+        queryset = self.get_queryset().filter(
+            date__range=(self._last_month, self._yesterday)
+        )
         datas = queryset.aggregate(count_pv=Sum("pv"), count_uv=Sum("uv"))
         return self._to_int_dict(datas)
 

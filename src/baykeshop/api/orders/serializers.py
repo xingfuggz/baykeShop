@@ -88,7 +88,7 @@ class BaykeShopOrdersCreateSerializer(serializers.ModelSerializer):
     
     def get_image(self, sku):
         images = BaykeShopGoodsImages.objects.filter(goods=sku.goods)
-        if images.exists(): 
+        if images.exists():
             return images.first().image
         return ''
 
