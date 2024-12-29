@@ -32,7 +32,7 @@ class BaykeDictModelAdmin(bayke_admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         # 判断是否是系统内置字典
-        if hasattr(bayke_settings, obj.key):
+        if obj and hasattr(bayke_settings, obj.key):
             return [
                 "key",
             ]
